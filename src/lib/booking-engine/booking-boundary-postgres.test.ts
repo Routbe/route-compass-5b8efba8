@@ -204,6 +204,10 @@ describe("group lifecycle and guest access", () => {
     const id = (r["bookingIds"] as string[])[0];
     const masked = await db.query<{ v: Record<string, unknown> }>("select public.rout_booking_guest_view($1::uuid, $2) as v", [id, "0".repeat(64)]);
     expect(masked.rows[0]!.v).toEqual({ id, status: "confirmed", masked: true });
+    for (const bad of [null, "kort", "A".repeat(64)]) {
+      const v = await db.query<{ v: Record<string, unknown> }>("select public.rout_booking_guest_view($1::uuid, $2) as v", [id, bad]);
+      expect(v.rows[0]!.v["masked"]).toBe(true);
+    }
     const open = await db.query<{ v: Record<string, unknown> }>("select public.rout_booking_guest_view($1::uuid, $2) as v", [id, r["token"]]);
     expect(open.rows[0]!.v["guestName"]).toBe("Ann");
     expect(open.rows[0]!.v["masked"]).toBe(false);
