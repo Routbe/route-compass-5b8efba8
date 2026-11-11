@@ -1,13 +1,29 @@
 /**
- * Worker side: sync calendars (zero-knowledge) and pre-compute 30 days of
- * free_bits per user. Visitors only ever read availability_cache.
+ * Worker side: sync calendars (zero-knowledge) and pre-compute free_bits per
+ * user for as far ahead as their event types allow (30–366 days). Visitors only
+ * ever read availability_cache. Every per-user step runs AS that user
+ * (withDbContext), so cron work reads and writes through RLS like the owner.
  */
-import { sql } from "@/lib/neon";
+import { sql, withDbContext } from "@/lib/neon";
 import { computeDays } from "./bitmap";
 import { addMinutes, startOfUtcDay } from "./time";
 import type { AvailabilityRule, UtcInterval } from "./types";
 
 export const HORIZON_DAYS = 30;
+export const MAX_HORIZON_DAYS = 366;
+
+/** Cache horizon: the furthest an active type of this host can be booked, at least 30 days. */
+export function horizonFor(maxDaysAhead: number[]): number {
+  const furthest = Math.max(HORIZON_DAYS - 1, ...maxDaysAhead.filter((n) => Number.isFinite(n)));
+  return Math.min(MAX_HORIZON_DAYS, furthest + 1);
+}
+
+async function hostHorizon(userId: string): Promise<number> {
+  const rows = (await sql`select t.max_days_ahead from public.booking_event_types t
+    where t.is_active and (t.user_id = ${userId}::uuid or exists (
+      select 1 from public.booking_event_type_hosts h where h.event_type_id = t.id and h.user_id = ${userId}::uuid))`) as { max_days_ahead: number }[];
+  return horizonFor(rows.map((r) => Number(r.max_days_ahead)));
+}
 
 export async function enqueueRecompute(userId: string, reason: string, delaySeconds = 20) {
   await sql`insert into public.availability_jobs (user_id, reason, run_after)
@@ -18,8 +34,9 @@ export async function enqueueRecompute(userId: string, reason: string, delaySeco
 const iv = (r: { s: string; e: string }): UtcInterval => ({ startUtc: new Date(r.s), endUtc: new Date(r.e) });
 
 export async function recomputeUser(userId: string, now = new Date()) {
+  const horizon = await hostHorizon(userId);
   const from = startOfUtcDay(now);
-  const to = addMinutes(from, HORIZON_DAYS * 1440);
+  const to = addMinutes(from, horizon * 1440);
   const F = from.toISOString(), T = to.toISOString();
   const [rules, overrides, events, bookings] = (await Promise.all([
     sql`select weekday, start_minute, end_minute, timezone from public.availability_rules where user_id = ${userId}::uuid`,
@@ -44,7 +61,7 @@ export async function recomputeUser(userId: string, now = new Date()) {
     freeOverrides: overrides.filter((o) => o.kind === "free").map(iv),
     busy: [...overrides.filter((o) => o.kind === "busy").map(iv), ...events.map(iv), ...bookings.map(iv)],
     fromDay: from,
-    days: HORIZON_DAYS,
+    days: horizon,
   });
   await sql.transaction([
     sql`delete from public.availability_cache where user_id = ${userId}::uuid and (day < ${days[0]!.day}::date or day > ${days[days.length - 1]!.day}::date)`,
@@ -64,7 +81,7 @@ export async function runDueJobs(limit = 25) {
   let done = 0;
   for (const j of due) {
     try {
-      await recomputeUser(j.user_id);
+      await withDbContext({ userId: j.user_id, workspaceId: null }, () => recomputeUser(j.user_id));
       done++;
     } catch (e) {
       console.error("[availability] recompute", e instanceof Error ? e.message : "error");
@@ -77,17 +94,20 @@ export async function runDueJobs(limit = 25) {
   return { claimed: due.length, done };
 }
 
-/** Sync ICS + CalDAV calendars that are due; only BusyBlocks are written. */
+/** Sync ICS + CalDAV calendars that are due; only BusyBlocks are written. Each runs as its owner. */
 export async function syncDueCalendars(limit = 20) {
-  return syncCalendars(null, limit);
+  const due = (await sql`select id::text as id, user_id::text as user_id from public.rout_booking_due_calendars(${limit})`) as { id: string; user_id: string }[];
+  let synced = 0;
+  for (const c of due) synced += await withDbContext({ userId: c.user_id, workspaceId: null }, () => syncCalendars([c.id]));
+  return { synced, checked: due.length };
 }
 
-/** Sync specific calendars right away (owner pressed "sync now"). */
+/** Sync specific calendars right away (owner pressed "sync now"); runs in the caller's RLS context. */
 export async function syncCalendarIds(ids: string[]) {
-  return syncCalendars(ids, ids.length);
+  return { synced: await syncCalendars(ids), checked: ids.length };
 }
 
-async function syncCalendars(ids: string[] | null, limit: number) {
+async function syncCalendars(ids: string[]): Promise<number> {
   const key = process.env["BOOKING_HMAC_KEY"] ?? process.env["CONTACT_HASH_SALT"];
   if (!key) throw new Error("BOOKING_HMAC_KEY missing");
   const { open } = await import("@/lib/crypto/secretbox.server");
@@ -95,14 +115,14 @@ async function syncCalendars(ids: string[] | null, limit: number) {
   const { toBusyBlocks } = await import("./adapters/zero-knowledge");
   const { icsFeedCredentials, caldavCredentials } = await import("./types");
   const cals = (await sql`select id, user_id, adapter, credentials_ciphertext, credentials_iv, sync_cursor
-    from public.connected_calendars where adapter in ('ics','caldav') and sync_status <> 'disconnected'
-      and (${ids}::uuid[] is null and (last_synced_at is null or last_synced_at < now() - interval '10 minutes') or id = any(${ids ?? []}::uuid[]))
-    order by last_synced_at nulls first limit ${limit}`) as { id: string; user_id: string; adapter: string; credentials_ciphertext: string; credentials_iv: string; sync_cursor: string | null }[];
+    from public.connected_calendars where adapter in ('ics','caldav') and sync_status <> 'disconnected' and id = any(${ids}::uuid[])`) as
+    { id: string; user_id: string; adapter: string; credentials_ciphertext: string; credentials_iv: string; sync_cursor: string | null }[];
   const now = new Date();
-  const from = addMinutes(startOfUtcDay(now), -1440);
-  const to = addMinutes(from, (HORIZON_DAYS + 2) * 1440);
   let synced = 0;
   for (const c of cals) {
+    const horizon = await hostHorizon(c.user_id);
+    const from = addMinutes(startOfUtcDay(now), -1440);
+    const to = addMinutes(from, (horizon + 2) * 1440);
     try {
       const creds = JSON.parse(await open(c.credentials_ciphertext, c.credentials_iv, `calendar:${c.id}`));
       let raw;
@@ -134,5 +154,5 @@ async function syncCalendars(ids: string[] | null, limit: number) {
       await sql`update public.connected_calendars set last_synced_at = now(), sync_status = 'error', last_error_code = ${code} where id = ${c.id}::uuid`;
     }
   }
-  return { synced, checked: cals.length };
+  return synced;
 }
