@@ -43,7 +43,7 @@ export function classifySaveError(raw: unknown, now: Date = new Date()): SaveErr
   if (m.includes("database") || m.includes("econnrefused") || m.includes("connection") || m.includes("neon") || m.includes("too many clients")) {
     return pick("db_unavailable", 503);
   }
-  if (m.includes("failed to fetch") || m.includes("networkerror") || m.includes("load failed")) return pick("network", 0);
+  if (m.includes("failed to fetch") || m.includes("fetch failed") || m.includes("networkerror") || m.includes("network error") || m.includes("load failed") || m.includes("network request failed")) return pick("network", 0);
   return pick("unknown", 500);
 }
 

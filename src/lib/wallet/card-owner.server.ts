@@ -23,5 +23,10 @@ export async function myRootCard(userId: string) {
 export async function memberHasTwoFactor(userId: string): Promise<boolean> {
   const { enrolledFactors } = await import("@/lib/auth/step-up.server");
   const { hasSecondFactor } = await import("@/lib/auth/step-up-rules");
-  return hasSecondFactor(await enrolledFactors(userId).catch(() => ({ passkey: false, totp: false })));
+  const enrolled = await enrolledFactors(userId).catch((e: unknown) => {
+    // Fail closed, but never silently: a broken lookup must not look like "no 2FA" in the logs.
+    console.error("[card] second-factor lookup failed", e instanceof Error ? e.message : e);
+    return { passkey: false, totp: false };
+  });
+  return hasSecondFactor(enrolled);
 }

@@ -26,19 +26,23 @@ export function SovereignTrustWidget() {
         <div className="rounded-xl border border-border p-3">
           <p className="text-sm font-medium">Echte mens</p>
           <p className="text-xs text-muted-foreground">{claims.isVerifiedHuman ? "Bewezen" : "Nog niet bewezen"}</p>
-          <Button type="button" variant="outline" size="sm" className="mt-3 w-full gap-2" disabled aria-disabled="true">
-            <Fingerprint className="h-4 w-4" aria-hidden /> Verifieer als Echte Mens (via eID/itsme)
-          </Button>
+          {!claims.isVerifiedHuman && (
+            <Button type="button" variant="outline" size="sm" className="mt-3 w-full gap-2" disabled aria-disabled="true">
+              <Fingerprint className="h-4 w-4" aria-hidden /> Verifieer als Echte Mens (via eID/itsme)
+            </Button>
+          )}
         </div>
         <div className="rounded-xl border border-border p-3">
           <p className="text-sm font-medium">Leeftijd 18+</p>
           <p className="text-xs text-muted-foreground">{claims.isOver18 ? "Bewezen" : "Nog niet bewezen"}</p>
-          <Button type="button" variant="outline" size="sm" className="mt-3 w-full gap-2" disabled aria-disabled="true">
-            <BadgeCheck className="h-4 w-4" aria-hidden /> Verifieer 18+ Leeftijd
-          </Button>
+          {!claims.isOver18 && (
+            <Button type="button" variant="outline" size="sm" className="mt-3 w-full gap-2" disabled aria-disabled="true">
+              <BadgeCheck className="h-4 w-4" aria-hidden /> Verifieer 18+ Leeftijd
+            </Button>
+          )}
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">Binnenkort beschikbaar.</p>
+      {!(claims.isVerifiedHuman && claims.isOver18) && <p className="text-xs text-muted-foreground">Binnenkort beschikbaar.</p>}
 
       <p className="rounded-xl bg-muted/50 p-3 text-xs leading-relaxed text-muted-foreground">
         ROUT slaat nooit je exacte geboortedatum of ID-documenten op. We verifiëren je eenmalig via officiële partners en

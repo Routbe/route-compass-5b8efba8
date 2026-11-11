@@ -13,6 +13,12 @@ import { requireAuth } from "@/lib/auth/middleware";
 
 export const RECOVERY_RESTORES_PER_HOUR = 5;
 
+/** Hash-chained security audit entry (security_audit_logs); never carries a shard, word or key. */
+async function audit(userId: string, eventType: string, payload: Record<string, unknown> = {}) {
+  const { recordSecurityEvent } = await import("@/lib/audit-log.server");
+  await recordSecurityEvent({ eventType, userId, payload });
+}
+
 const vaultSchema = z.object({
   vaultId: z.string().regex(/^[0-9a-f]{32}$/),
   version: z.literal(1),
@@ -57,6 +63,7 @@ export const saveRecoveryVault = createServerFn({ method: "POST" })
     await sql`select public.rout_recovery_vault_put(${context.userId}::uuid, ${v.vaultId}, ${v.sealedMaster}, ${JSON.stringify(v.commitments)}::jsonb)`;
     const { notifyUser } = await import("@/lib/notifications.server");
     await notifyUser(context.userId, "recovery_vault_changed", { action: "saved" });
+    await audit(context.userId, "recovery_vault.saved", { vaultId: v.vaultId });
     return { ok: true as const };
   });
 
@@ -80,6 +87,7 @@ export const saveSealedShard = createServerFn({ method: "POST" })
     } catch {
       return { ok: false as const, error: "server_shard_limit" };
     }
+    await audit(context.userId, "recovery_vault.shard_sealed", { vaultId: data.vaultId, index: data.index });
     return { ok: true as const };
   });
 
@@ -92,6 +100,7 @@ export const deleteRecoveryVault = createServerFn({ method: "POST" })
     await sql`select public.rout_recovery_vault_delete(${context.userId}::uuid)`;
     const { notifyUser } = await import("@/lib/notifications.server");
     await notifyUser(context.userId, "recovery_vault_changed", { action: "deleted" });
+    await audit(context.userId, "recovery_vault.deleted");
     return { ok: true as const };
   });
 
@@ -104,7 +113,11 @@ export const beginRecovery = createServerFn({ method: "POST" })
     const vault = await loadVault(context.userId);
     if (!vault) return { ok: false as const, error: "no_vault" };
     const rows = (await sql`select public.rout_recovery_attempt(${context.userId}::uuid, ${data.practice ? "practice" : "started"}) as recent`) as { recent: number }[];
-    if (Number(rows[0]?.recent ?? 0) >= RECOVERY_RESTORES_PER_HOUR) return { ok: false as const, error: "rate_limited" };
+    if (Number(rows[0]?.recent ?? 0) >= RECOVERY_RESTORES_PER_HOUR) {
+      await audit(context.userId, "recovery_vault.rate_limited", { practice: data.practice });
+      return { ok: false as const, error: "rate_limited" };
+    }
+    await audit(context.userId, data.practice ? "recovery_vault.practice_started" : "recovery_vault.restore_started", { vaultId: vault.vault_id });
     const shards = (await sql`select * from public.rout_recovery_shards_get(${context.userId}::uuid)`) as ShardRow[];
     const { notifyUser } = await import("@/lib/notifications.server");
     await notifyUser(context.userId, "recovery_attempt", { practice: data.practice });
@@ -127,5 +140,6 @@ export const finishRecovery = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { sql } = await import("@/lib/neon");
     await sql`select public.rout_recovery_attempt(${context.userId}::uuid, ${data.outcome})`;
+    await audit(context.userId, `recovery_vault.${data.outcome}`);
     return { ok: true as const };
   });
