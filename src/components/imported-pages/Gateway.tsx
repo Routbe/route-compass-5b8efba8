@@ -36,6 +36,10 @@ import { SovereignVisual } from "@/components/gateway/SovereignVisual";
 import everydayImage from "@/assets/rout-qr-everyday-refined.jpg";
 import { ProfileScene, QrScene, AnalyticsScene, SocialScene, WorkspaceScene, DeveloperScene } from "@/components/gateway/StoryVisuals";
 import { HomeSections } from "@/components/gateway/HomeSections";
+import { TopicTiles } from "@/components/discover/DiscoverIndex";
+import { LightBars } from "@/components/discover/LightBars";
+import { discoverCopy } from "@/lib/discover/copy";
+import { CHAPTER_TOPIC } from "@/lib/discover/topics";
 import { IdentityVisual, WalletVisual, CommerceVisual, IntegrationMesh } from "@/components/gateway/InfrastructureVisuals";
 
 const TYPING_KEYS = ["gateway.typing.qr", "gateway.typing.handle", "gateway.typing.paste"] as const;
@@ -91,6 +95,7 @@ const USES = [
   { key: "agents", to: "/about/ai-agents", Icon: TerminalSquare },
 ] as const;
 const AGENT_STEPS = ["s1", "s2", "s3", "s4"] as const;
+const STANDARDS = ["OpenID Connect", "Passkeys", "Google Wallet", "Apple Wallet", "SEPA · EPC-QR", "NFC", "Mastodon", "Bluesky", "Spotify", "Steam", "MCP", "AGPL-3.0"] as const;
 const GATEWAY_JSON_LD = JSON.stringify([
   {
     "@context": "https://schema.org",
@@ -143,7 +148,8 @@ function Reveal({ children, className }: { children: ReactNode; className?: stri
  */
 export default function Gateway() {
   const { user, loading } = useAuth();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const discover = discoverCopy(locale);
   const reduced = useReducedMotion();
   const editorialRef = useEditorialMotion<HTMLDivElement>();
   const typing = useMemo(() => ["rout.be/u/jona", "rout.be/w/maximilien", ...TYPING_KEYS.map((k) => t(k))], [t]);
@@ -255,6 +261,13 @@ export default function Gateway() {
         <div className="sovereign-domains" aria-hidden>{["identity", "wallet", "social", "analytics"].map(key => <span key={key}>{t(`story.${key}.short`)}</span>)}</div>
       </section>
 
+      <section className="dsc dsc-marquee home-marquee" data-topic="profiles" aria-label={discover.ui.homeMarquee}>
+        <p className="dsc-label">{discover.ui.homeMarquee}</p>
+        <div className="dsc-marquee-track">
+          <div className="dsc-marquee-row">{[...STANDARDS, ...STANDARDS].map((w, i) => <span key={i} aria-hidden={i >= STANDARDS.length}>{w}</span>)}</div>
+        </div>
+      </section>
+
       <HomeSections />
 
       <section id="ecosystem" className="story-intro story-section scroll-mt-20">
@@ -262,13 +275,15 @@ export default function Gateway() {
           <p className="story-small-label">{t("story.intro.kicker")}</p>
           <h2 className="story-heading mt-6">{t("story.intro.title")}</h2>
           <p className="story-prose mt-6">{t("story.intro.text")}</p>
-          <div className="story-index mt-12">{CHAPTERS.map(({ key }, i) => <a key={key} href={`#chapter-${key}`}><span className="font-mono text-primary">0{i + 1}</span>{t(`story.${key}.short`)}<ArrowRight className="h-3 w-3" /></a>)}</div>
         </Reveal>
+        <Reveal className="dsc home-tiles mt-12"><TopicTiles /></Reveal>
+        <div className="story-inner mt-10"><Button asChild variant="outline" className="gap-3"><Link to="/discover">{discover.ui.allTopics}<ArrowUpRight className="h-4 w-4" /></Link></Button></div>
       </section>
 
-      {CHAPTERS.map(({ key, to, Visual, points }, i) => <section key={key} id={`chapter-${key}`} className={`story-section story-chapter story-chapter-${key}`}>
+      {CHAPTERS.map(({ key, to, Visual, points }, i) => <section key={key} id={`chapter-${key}`} data-topic={CHAPTER_TOPIC[key]} className={`story-section story-chapter story-chapter-${key}`}>
+        <LightBars />
         <Reveal className="story-inner">
-          <div className="story-chapter-heading"><div className="story-chapter-number" aria-hidden>0{i + 1}</div><div><p className="story-small-label">ROUT / {t(`story.${key}.short`)}</p><h2 className="story-heading mt-5">{t(`story.${key}.title`)}</h2><p className="story-prose mt-6">{t(`story.${key}.text`)}</p><Button asChild variant="outline" className="mt-7 gap-3"><Link to={to}>{t(`story.${key}.cta`)}<ArrowUpRight className="h-4 w-4" /></Link></Button></div></div>
+          <div className="story-chapter-heading"><div className="story-chapter-number" aria-hidden>0{i + 1}</div><div><p className="story-small-label">ROUT / {t(`story.${key}.short`)}</p><h2 className="story-heading mt-5">{t(`story.${key}.title`)}</h2><p className="story-prose mt-6">{t(`story.${key}.text`)}</p><div className="mt-7 flex flex-wrap gap-3"><Button asChild className="story-chapter-cta gap-3"><Link to={`/discover/${CHAPTER_TOPIC[key]}`}>{discover.topics[CHAPTER_TOPIC[key]].brand}<ArrowUpRight className="h-4 w-4" /></Link></Button><Button asChild variant="outline" className="gap-3"><Link to={to}>{t(`story.${key}.cta`)}<ArrowUpRight className="h-4 w-4" /></Link></Button></div></div></div>
           {key === "wallet" && <div className="story-card-photograph"><img src={infrastructureImage} width={1920} height={1024} loading="lazy" alt={t("infra.cardPreview")} /><div className="story-card-copy"><p className="story-small-label">ROUT / PASS</p><h3>{t("story.wallet.point1.title")}</h3><p>{t("story.wallet.text")}</p><Button asChild variant="outline"><Link to={to}>{t("story.wallet.cta")}<ArrowUpRight /></Link></Button></div></div>}
           <div className="story-product-stage"><Visual /></div>
           <div className="story-feature-rows">{Array.from({ length: points }, (_, j) => <div key={j}><span className="font-mono text-xs text-primary">0{j + 1}</span><h3>{t(`story.${key}.point${j + 1}.title`)}</h3><p>{t(`story.${key}.point${j + 1}.text`)}</p></div>)}</div>

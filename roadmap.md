@@ -46,4 +46,8 @@
 - [ ] Ingelogde kaarttest: bevriezen, blokkeren, vervangen, scanpagina, widget
 - [x] Testen live-blokken en afspraakbevestiging uitgevoerd (55 geslaagd)
 - [x] Accounts samenvoegen: database-samenvoeging weigert nu als het tweede account nog kaart-, wallet-, herstel- of ouderrecords heeft (migratie 0215, nog niet op live Neon toegepast)
-- [ ] Migraties 0214 en 0215 op live Neon toepassen (wacht op akkoord eigenaar)
+- [x] Migraties 0214 en 0215 op live Neon toegepast en gecontroleerd
+- [ ] Overige wachtende migraties (0204 E2EE = alleen feature-branch, 0205–0207, 0213): eerst nakijken, dan akkoord vragen
+- [x] Ontdek-pagina's: per onderdeel een eigen landingspagina (Profielen, QR Studio, Links & statistieken, ROUT ID, ROUT-kaart, Steun voor makers, Vragen & stories, Workspaces, Developers) met illustraties, effecten en links naar de detailpagina's, in NL/EN/FR/DE
+- [x] Hoofdpagina na de kop: meer visuele effecten (Neon-stijl met eigen zwier), onderdelen-overzicht als beeldtegels, knoppen naar de nieuwe Ontdek-pagina's i.p.v. inlogscherm
+- [ ] Detailpagina's (docs): knop "Open ROUT Studio" is vervangen door link naar het onderdeel (klaar); vaste Nederlandse teksten ("Zo werkt het", "Veelgestelde vragen", "Verder met ROUT") nog vertalen

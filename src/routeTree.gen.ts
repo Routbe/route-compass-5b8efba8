@@ -135,6 +135,8 @@ import { Route as DeveloperAiMcpRouteImport } from './routes/developer.ai-mcp'
 import { Route as DeveloperCredentialsRouteImport } from './routes/developer.credentials'
 import { Route as DeveloperIdentityOauthRouteImport } from './routes/developer.identity-oauth'
 import { Route as DeveloperWebhooksRouteImport } from './routes/developer.webhooks'
+import { Route as DiscoverIndexRouteImport } from './routes/discover.index'
+import { Route as DiscoverTopicRouteImport } from './routes/discover.$topic'
 import { Route as ESlugRouteImport } from './routes/e.$slug'
 import { Route as EventSlugRouteImport } from './routes/event.$slug'
 import { Route as FIdRouteImport } from './routes/f.$id'
@@ -1066,6 +1068,16 @@ const DeveloperIdentityOauthRoute = DeveloperIdentityOauthRouteImport.update({
 const DeveloperWebhooksRoute = DeveloperWebhooksRouteImport.update({
   id: '/developer/webhooks',
   path: '/developer/webhooks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverIndexRoute = DiscoverIndexRouteImport.update({
+  id: '/discover/',
+  path: '/discover/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverTopicRoute = DiscoverTopicRouteImport.update({
+  id: '/discover/$topic',
+  path: '/discover/$topic',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ESlugRoute = ESlugRouteImport.update({
@@ -2803,6 +2815,7 @@ export interface FileRoutesByFullPath {
   '/developer/credentials': typeof DeveloperCredentialsRoute
   '/developer/identity-oauth': typeof DeveloperIdentityOauthRoute
   '/developer/webhooks': typeof DeveloperWebhooksRoute
+  '/discover/$topic': typeof DiscoverTopicRoute
   '/e/$slug': typeof ESlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/f/$id': typeof FIdRoute
@@ -2882,6 +2895,7 @@ export interface FileRoutesByFullPath {
   '/auth/': typeof AuthIndexRoute
   '/compare/': typeof CompareIndexRoute
   '/dev/': typeof DevIndexRoute
+  '/discover/': typeof DiscoverIndexRoute
   '/features/': typeof FeaturesIndexRoute
   '/guide/': typeof GuideIndexRoute
   '/info/': typeof InfoIndexRoute
@@ -3215,6 +3229,7 @@ export interface FileRoutesByTo {
   '/developer/credentials': typeof DeveloperCredentialsRoute
   '/developer/identity-oauth': typeof DeveloperIdentityOauthRoute
   '/developer/webhooks': typeof DeveloperWebhooksRoute
+  '/discover/$topic': typeof DiscoverTopicRoute
   '/e/$slug': typeof ESlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/f/$id': typeof FIdRoute
@@ -3293,6 +3308,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthIndexRoute
   '/compare': typeof CompareIndexRoute
   '/dev': typeof DevIndexRoute
+  '/discover': typeof DiscoverIndexRoute
   '/features': typeof FeaturesIndexRoute
   '/guide': typeof GuideIndexRoute
   '/info': typeof InfoIndexRoute
@@ -3640,6 +3656,7 @@ export interface FileRoutesById {
   '/developer/credentials': typeof DeveloperCredentialsRoute
   '/developer/identity-oauth': typeof DeveloperIdentityOauthRoute
   '/developer/webhooks': typeof DeveloperWebhooksRoute
+  '/discover/$topic': typeof DiscoverTopicRoute
   '/e/$slug': typeof ESlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/f/$id': typeof FIdRoute
@@ -3719,6 +3736,7 @@ export interface FileRoutesById {
   '/auth/': typeof AuthIndexRoute
   '/compare/': typeof CompareIndexRoute
   '/dev/': typeof DevIndexRoute
+  '/discover/': typeof DiscoverIndexRoute
   '/features/': typeof FeaturesIndexRoute
   '/guide/': typeof GuideIndexRoute
   '/info/': typeof InfoIndexRoute
@@ -4068,6 +4086,7 @@ export interface FileRouteTypes {
     | '/developer/credentials'
     | '/developer/identity-oauth'
     | '/developer/webhooks'
+    | '/discover/$topic'
     | '/e/$slug'
     | '/event/$slug'
     | '/f/$id'
@@ -4147,6 +4166,7 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/compare/'
     | '/dev/'
+    | '/discover/'
     | '/features/'
     | '/guide/'
     | '/info/'
@@ -4480,6 +4500,7 @@ export interface FileRouteTypes {
     | '/developer/credentials'
     | '/developer/identity-oauth'
     | '/developer/webhooks'
+    | '/discover/$topic'
     | '/e/$slug'
     | '/event/$slug'
     | '/f/$id'
@@ -4558,6 +4579,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/compare'
     | '/dev'
+    | '/discover'
     | '/features'
     | '/guide'
     | '/info'
@@ -4904,6 +4926,7 @@ export interface FileRouteTypes {
     | '/developer/credentials'
     | '/developer/identity-oauth'
     | '/developer/webhooks'
+    | '/discover/$topic'
     | '/e/$slug'
     | '/event/$slug'
     | '/f/$id'
@@ -4983,6 +5006,7 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/compare/'
     | '/dev/'
+    | '/discover/'
     | '/features/'
     | '/guide/'
     | '/info/'
@@ -5293,6 +5317,7 @@ export interface RootRouteChildren {
   DeveloperCredentialsRoute: typeof DeveloperCredentialsRoute
   DeveloperIdentityOauthRoute: typeof DeveloperIdentityOauthRoute
   DeveloperWebhooksRoute: typeof DeveloperWebhooksRoute
+  DiscoverTopicRoute: typeof DiscoverTopicRoute
   ESlugRoute: typeof ESlugRoute
   EventSlugRoute: typeof EventSlugRoute
   FIdRoute: typeof FIdRoute
@@ -5316,6 +5341,7 @@ export interface RootRouteChildren {
   VCardIdRoute: typeof VCardIdRoute
   WSlugRoute: typeof WSlugRoute
   WorkspaceTransferTokenRoute: typeof WorkspaceTransferTokenRoute
+  DiscoverIndexRoute: typeof DiscoverIndexRoute
   ApiAccessVerifyRoute: typeof ApiAccessVerifyRoute
   ApiAdminMailCheckRoute: typeof ApiAdminMailCheckRoute
   ApiAgentIdentityRoute: typeof ApiAgentIdentityRoute
@@ -6322,6 +6348,20 @@ declare module '@tanstack/react-router' {
       path: '/developer/webhooks'
       fullPath: '/developer/webhooks'
       preLoaderRoute: typeof DeveloperWebhooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover/': {
+      id: '/discover/'
+      path: '/discover'
+      fullPath: '/discover/'
+      preLoaderRoute: typeof DiscoverIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover/$topic': {
+      id: '/discover/$topic'
+      path: '/discover/$topic'
+      fullPath: '/discover/$topic'
+      preLoaderRoute: typeof DiscoverTopicRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/e/$slug': {
@@ -9122,6 +9162,7 @@ const rootRouteChildren: RootRouteChildren = {
   DeveloperCredentialsRoute: DeveloperCredentialsRoute,
   DeveloperIdentityOauthRoute: DeveloperIdentityOauthRoute,
   DeveloperWebhooksRoute: DeveloperWebhooksRoute,
+  DiscoverTopicRoute: DiscoverTopicRoute,
   ESlugRoute: ESlugRoute,
   EventSlugRoute: EventSlugRoute,
   FIdRoute: FIdRoute,
@@ -9145,6 +9186,7 @@ const rootRouteChildren: RootRouteChildren = {
   VCardIdRoute: VCardIdRoute,
   WSlugRoute: WSlugRoute,
   WorkspaceTransferTokenRoute: WorkspaceTransferTokenRoute,
+  DiscoverIndexRoute: DiscoverIndexRoute,
   ApiAccessVerifyRoute: ApiAccessVerifyRoute,
   ApiAdminMailCheckRoute: ApiAdminMailCheckRoute,
   ApiAgentIdentityRoute: ApiAgentIdentityRoute,
