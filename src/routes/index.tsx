@@ -5,6 +5,7 @@ import Page from "@/components/imported-pages/Gateway";
 import { getRequestLocale } from "@/lib/locale.functions";
 import { resolveHostProfile } from "@/lib/domain-routing.functions";
 import { canonicalLinks, socialMeta } from "@/lib/social-meta";
+import { PAGE_CARDS, pageCardImage } from "@/lib/page-cards";
 import { getPublicProfileByHandle } from "@/lib/studio-profile.functions";
 import { fediverseHeadLinks, type FediverseIdentity } from "@/lib/fediverse-profile";
 import { profileSocialMeta } from "@/lib/social-meta";
