@@ -103,6 +103,15 @@ it("never moves or destroys a secondary disclosure ledger", async () => {
   } finally { await db.exec("rollback"); }
 }, 30_000);
 
+it("refuses a merge while the secondary still owns a card replacement record", async () => {
+  try {
+    await seed();
+    await db.query("insert into public.rout_card_generations(user_id,generation) values($1,1)", [S]);
+    await caller(S);
+    await expect(merge()).rejects.toThrow("merge_blocked:rout_card_generations");
+  } finally { await db.exec("rollback"); }
+}, 30_000);
+
 it("runtime cannot assume the executor role or call the function without a user context", async () => {
   try {
     await seed(); await db.exec("set local role rout_app");
