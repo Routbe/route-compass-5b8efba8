@@ -67,7 +67,7 @@
 - [x] Menu (drie streepjes): uitgelogd → uitlegpagina's, ingelogd → werkende tools
 - [x] Plan boekingssysteem goedgekeurd
 - [x] Fase 1 (code): veilige publieke databasefuncties (db/0216), boeken controleert werkuren, locks over middernacht, groepsacties, per-host slots, DST-correct, volledige herhaalregels (rrule), cache volgt boekingsvenster
-- [ ] Fase 1 (live): db/0216 op Neon zetten + schema-snapshot vernieuwen — wacht op akkoord eigenaar
+- [x] Fase 1 (live): db/0216 + 0217 op Neon, snapshot vernieuwd, publieke boekingspagina getest
 - [ ] Fase 2: soft-lock 5 min + aftelklok, limieten dag/week/maand, werkdagenvenster, aansluitende slots
 - [ ] Fase 3: Google / Microsoft / CalDAV tweeweg (wacht op Google- en Microsoft-sleutels)
 - [ ] Fase 4: gewogen round-robin, routing-formulier, Meet/Teams/Jitsi, locaties
