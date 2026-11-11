@@ -67,3 +67,46 @@ describe("wall time to UTC (RFC 5545)", () => {
     expect(zonedToUtc(2026, 1, 10, 9 * 60, "Asia/Kolkata").toISOString()).toBe("2026-01-10T03:30:00.000Z");
   });
 });
+
+import { parseIcsBusy } from "./adapters/ics-parse";
+
+const feed = (...lines: string[]) => ["BEGIN:VCALENDAR", ...lines, "END:VCALENDAR"].join("\r\n");
+
+describe("external calendar recurrence (RFC 5545)", () => {
+  it("a weekly 10:00 Brussels meeting stays at 10:00 local across the DST change", () => {
+    const raw = parseIcsBusy(feed("BEGIN:VEVENT", "UID:a", "DTSTART;TZID=Europe/Brussels:20261019T100000",
+      "DTEND;TZID=Europe/Brussels:20261019T110000", "RRULE:FREQ=WEEKLY;COUNT=3", "END:VEVENT"),
+      new Date("2026-10-01T00:00:00Z"), new Date("2026-12-01T00:00:00Z"));
+    expect(raw.map((r) => r.startUtc.toISOString())).toEqual([
+      "2026-10-19T08:00:00.000Z", "2026-10-26T09:00:00.000Z", "2026-11-02T09:00:00.000Z",
+    ]);
+  });
+
+  it("supports monthly rules such as the first Monday", () => {
+    const raw = parseIcsBusy(feed("BEGIN:VEVENT", "UID:m", "DTSTART;TZID=Europe/Brussels:20260105T090000",
+      "DURATION:PT1H", "RRULE:FREQ=MONTHLY;BYDAY=1MO;COUNT=3", "END:VEVENT"),
+      new Date("2026-01-01T00:00:00Z"), new Date("2026-06-01T00:00:00Z"));
+    expect(raw.map((r) => r.startUtc.toISOString())).toEqual([
+      "2026-01-05T08:00:00.000Z", "2026-02-02T08:00:00.000Z", "2026-03-02T08:00:00.000Z",
+    ]);
+  });
+
+  it("EXDATE removes an occurrence and RECURRENCE-ID moves one", () => {
+    const raw = parseIcsBusy(feed(
+      "BEGIN:VEVENT", "UID:s", "DTSTART;TZID=Europe/Brussels:20260202T100000", "DURATION:PT30M",
+      "RRULE:FREQ=DAILY;COUNT=4", "EXDATE;TZID=Europe/Brussels:20260203T100000", "END:VEVENT",
+      "BEGIN:VEVENT", "UID:s", "RECURRENCE-ID;TZID=Europe/Brussels:20260204T100000",
+      "DTSTART;TZID=Europe/Brussels:20260204T150000", "DURATION:PT30M", "END:VEVENT"),
+      new Date("2026-02-01T00:00:00Z"), new Date("2026-03-01T00:00:00Z"));
+    expect(raw.map((r) => r.startUtc.toISOString()).sort()).toEqual([
+      "2026-02-02T09:00:00.000Z", "2026-02-04T14:00:00.000Z", "2026-02-05T09:00:00.000Z",
+    ]);
+  });
+
+  it("UNTIL in UTC is honoured on real instants", () => {
+    const raw = parseIcsBusy(feed("BEGIN:VEVENT", "UID:u", "DTSTART;TZID=Europe/Brussels:20260202T100000", "DURATION:PT30M",
+      "RRULE:FREQ=DAILY;UNTIL=20260204T090000Z", "END:VEVENT"),
+      new Date("2026-02-01T00:00:00Z"), new Date("2026-03-01T00:00:00Z"));
+    expect(raw).toHaveLength(3);
+  });
+});

@@ -1,9 +1,14 @@
 /**
- * Minimal, busy-only iCalendar reader. Reads only UID, DTSTART, DTEND/DURATION,
- * TRANSP, STATUS, RRULE (DAILY/WEEKLY, INTERVAL, COUNT, UNTIL, BYDAY) and EXDATE.
+ * Busy-only iCalendar reader. Reads only UID, DTSTART, DTEND/DURATION, TRANSP,
+ * STATUS, RRULE (full RFC 5545 via `rrule`), EXDATE and RECURRENCE-ID.
  * SUMMARY, DESCRIPTION, ATTENDEE, LOCATION … are never even extracted.
+ *
+ * Recurrences expand on the event's own wall clock (TZID), and each occurrence
+ * is then converted to UTC on its own date, so a weekly 10:00 meeting stays at
+ * 10:00 local across summer/winter time instead of drifting by an hour.
  */
-import { addMinutes, zonedToUtc } from "../time";
+import { RRule } from "rrule";
+import { addMinutes, wallParts, zonedToUtc } from "../time";
 import type { RawExternalEvent } from "./zero-knowledge";
 
 const READ = new Set(["UID", "DTSTART", "DTEND", "DURATION", "TRANSP", "STATUS", "RRULE", "EXDATE", "RECURRENCE-ID"]);
@@ -53,74 +58,120 @@ function parseLine(line: string): Prop | null {
   return { name: (name ?? "").toUpperCase(), params, value: line.slice(colon + 1) };
 }
 
-const DAY_CODES = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+type Wall = { year: number; month: number; day: number; minute: number; second: number };
 
-function expand(start: Date, rrule: string, windowEnd: Date, exdates: Set<number>): Date[] {
-  const r = Object.fromEntries(rrule.split(";").map((kv) => kv.split("=") as [string, string]));
-  const freq = r["FREQ"];
-  if (freq !== "DAILY" && freq !== "WEEKLY") return [start];
-  const interval = Math.max(1, Number(r["INTERVAL"] ?? 1));
-  const count = r["COUNT"] ? Number(r["COUNT"]) : Infinity;
-  const until = r["UNTIL"] ? parseIcsDate(r["UNTIL"], {}, "UTC")?.at ?? windowEnd : windowEnd;
-  const end = until < windowEnd ? until : windowEnd;
-  const byDay = (r["BYDAY"] ?? "").split(",").filter(Boolean).map((d) => DAY_CODES.indexOf(d.slice(-2)));
-  const out: Date[] = [];
-  let n = 0;
-  for (let d = 0; out.length < MAX_OCCURRENCES && n < count; d++) {
-    const at = addMinutes(start, d * 1440);
-    if (at > end) break;
-    const weeks = Math.floor(d / 7);
-    const ok = freq === "DAILY" ? d % interval === 0 : weeks % interval === 0 && (byDay.length ? byDay.includes(at.getUTCDay()) : d % 7 === 0);
-    if (!ok) continue;
-    n++;
-    if (!exdates.has(at.getTime())) out.push(at);
+/** DTSTART as wall time in its zone (UTC "Z" values use the zone "UTC"). */
+function wallOf(value: string, params: Record<string, string>, fallbackTz: string): { wall: Wall; tz: string } | null {
+  const v = value.trim();
+  const d = /^(\d{4})(\d{2})(\d{2})$/.exec(v);
+  if (d) return { wall: { year: +d[1]!, month: +d[2]!, day: +d[3]!, minute: 0, second: 0 }, tz: params["TZID"] ?? fallbackTz };
+  const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/.exec(v);
+  if (!m) return null;
+  return {
+    wall: { year: +m[1]!, month: +m[2]!, day: +m[3]!, minute: +m[4]! * 60 + +m[5]!, second: +m[6]! },
+    tz: m[7] === "Z" ? "UTC" : params["TZID"] ?? fallbackTz,
+  };
+}
+
+function safeZone(tz: string): string {
+  try { new Intl.DateTimeFormat("en-US", { timeZone: tz }); return tz; } catch { return "UTC"; }
+}
+
+/**
+ * Occurrences of RRULE in real UTC. The rule runs on "floating" dates (wall
+ * time written as if it were UTC) and each hit is mapped through the zone.
+ * UNTIL is applied on real instants afterwards, because rrule would compare a
+ * UTC UNTIL against floating dates.
+ */
+function expand(dt: { wall: Wall; tz: string }, rrule: string, windowStart: Date, windowEnd: Date, exdates: Set<number>, lengthMin: number): Date[] {
+  const tz = safeZone(dt.tz);
+  const parts = Object.fromEntries(rrule.split(";").map((kv) => { const i = kv.indexOf("="); return [kv.slice(0, i).toUpperCase(), kv.slice(i + 1)]; }));
+  const untilRaw = parts["UNTIL"];
+  delete parts["UNTIL"];
+  const until = untilRaw ? parseIcsDate(untilRaw, {}, tz)?.at ?? null : null;
+  const floatingStart = new Date(Date.UTC(dt.wall.year, dt.wall.month - 1, dt.wall.day, 0, dt.wall.minute, dt.wall.second));
+  let rule: RRule;
+  try {
+    const options = RRule.parseString(Object.entries(parts).map(([k, v]) => `${k}=${v}`).join(";"));
+    rule = new RRule({ ...options, dtstart: floatingStart, tzid: null });
+  } catch {
+    return [];
   }
+  // Floating window with a day of margin each side plus the event length.
+  const from = new Date(windowStart.getTime() - 86400000 - lengthMin * 60000);
+  const to = new Date(windowEnd.getTime() + 86400000);
+  const out: Date[] = [];
+  rule.between(from, to, true, (occ) => {
+    const real = zonedToUtc(occ.getUTCFullYear(), occ.getUTCMonth() + 1, occ.getUTCDate(), occ.getUTCHours() * 60 + occ.getUTCMinutes(), tz);
+    const at = new Date(real.getTime() + occ.getUTCSeconds() * 1000);
+    if (until && at > until) return false;
+    if (!exdates.has(at.getTime())) out.push(at);
+    return out.length < MAX_OCCURRENCES;
+  });
   return out;
 }
 
 /** Busy-only events overlapping [windowStart, windowEnd). */
 export function parseIcsBusy(text: string, windowStart: Date, windowEnd: Date, fallbackTz = "UTC"): RawExternalEvent[] {
-  const out: RawExternalEvent[] = [];
+  const events: Prop[][] = [];
   let cur: Prop[] | null = null;
   let depth = 0;
   for (const line of unfold(text)) {
     if (/^BEGIN:VEVENT$/i.test(line)) { cur = []; depth = 0; continue; }
     if (cur && /^BEGIN:/i.test(line)) { depth++; continue; } // VALARM etc.
     if (cur && /^END:/i.test(line) && depth > 0) { depth--; continue; }
-    if (/^END:VEVENT$/i.test(line) && cur) {
-      const get = (n: string) => cur!.find((p) => p.name === n);
-      const ds = get("DTSTART");
-      const start = ds ? parseIcsDate(ds.value, ds.params, fallbackTz) : null;
-      if (start) {
-        const de = get("DTEND");
-        const dur = get("DURATION");
-        let lengthMin: number;
-        if (de) {
-          const e = parseIcsDate(de.value, de.params, fallbackTz);
-          lengthMin = e ? (e.at.getTime() - start.at.getTime()) / 60000 : 0;
-        } else if (dur) lengthMin = parseDuration(dur.value) ?? 0;
-        else lengthMin = start.allDay ? 1440 : 0;
-        const exdates = new Set<number>();
-        for (const p of cur.filter((p) => p.name === "EXDATE"))
-          for (const v of p.value.split(",")) { const x = parseIcsDate(v, p.params, fallbackTz); if (x) exdates.add(x.at.getTime()); }
-        const rr = get("RRULE");
-        const starts = rr ? expand(start.at, rr.value, windowEnd, exdates) : [start.at];
-        const uid = get("UID")?.value ?? `${start.at.getTime()}`;
-        const transparent = get("TRANSP")?.value.trim().toUpperCase() === "TRANSPARENT";
-        const cancelled = get("STATUS")?.value.trim().toUpperCase() === "CANCELLED";
-        if (lengthMin > 0) {
-          for (const s of starts) {
-            const e = addMinutes(s, lengthMin);
-            if (e > windowStart && s < windowEnd) out.push({ externalId: uid, startUtc: s, endUtc: e, transparent, cancelled });
-          }
-        }
-      }
-      cur = null;
-      continue;
-    }
+    if (/^END:VEVENT$/i.test(line) && cur) { events.push(cur); cur = null; continue; }
     if (cur && depth === 0) {
       const p = parseLine(line);
       if (p && READ.has(p.name)) cur.push(p);
+    }
+  }
+
+  // RECURRENCE-ID instances replace that occurrence of their series (same UID).
+  const overridden = new Map<string, Set<number>>();
+  for (const ev of events) {
+    const rid = ev.find((p) => p.name === "RECURRENCE-ID");
+    const uid = ev.find((p) => p.name === "UID")?.value;
+    if (!rid || !uid) continue;
+    const at = parseIcsDate(rid.value, rid.params, fallbackTz)?.at;
+    if (!at) continue;
+    if (!overridden.has(uid)) overridden.set(uid, new Set());
+    overridden.get(uid)!.add(at.getTime());
+  }
+
+  const out: RawExternalEvent[] = [];
+  for (const ev of events) {
+    const get = (n: string) => ev.find((p) => p.name === n);
+    const ds = get("DTSTART");
+    const start = ds ? parseIcsDate(ds.value, ds.params, fallbackTz) : null;
+    if (!start || !ds) continue;
+    const de = get("DTEND");
+    const dur = get("DURATION");
+    let lengthMin: number;
+    if (de) {
+      const e = parseIcsDate(de.value, de.params, fallbackTz);
+      lengthMin = e ? (e.at.getTime() - start.at.getTime()) / 60000 : 0;
+    } else if (dur) lengthMin = parseDuration(dur.value) ?? 0;
+    else lengthMin = start.allDay ? 1440 : 0;
+    if (lengthMin <= 0) continue;
+    const uid = get("UID")?.value ?? `${start.at.getTime()}`;
+    const exdates = new Set<number>(overridden.get(uid) && !get("RECURRENCE-ID") ? overridden.get(uid) : []);
+    for (const p of ev.filter((p) => p.name === "EXDATE"))
+      for (const v of p.value.split(",")) { const x = parseIcsDate(v, p.params, fallbackTz); if (x) exdates.add(x.at.getTime()); }
+    const rr = get("RRULE");
+    const wall = rr ? wallOf(ds.value, ds.params, fallbackTz) : null;
+    const starts = rr && wall ? expand(wall, rr.value, windowStart, windowEnd, exdates, lengthMin) : [start.at];
+    const transparent = get("TRANSP")?.value.trim().toUpperCase() === "TRANSPARENT";
+    const cancelled = get("STATUS")?.value.trim().toUpperCase() === "CANCELLED";
+    for (const s of starts) {
+      // All-day events last one local day each, even on a 23- or 25-hour DST day.
+      let e = addMinutes(s, lengthMin);
+      if (start.allDay && rr && wall) {
+        const w = wallParts(s, safeZone(wall.tz));
+        const days = Math.round(lengthMin / 1440);
+        e = zonedToUtc(w.year, w.month, w.day + days, 0, safeZone(wall.tz));
+      }
+      if (e > windowStart && s < windowEnd) out.push({ externalId: uid, startUtc: s, endUtc: e, transparent, cancelled });
     }
   }
   return out;
