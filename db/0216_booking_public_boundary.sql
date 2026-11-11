@@ -116,6 +116,16 @@ language sql stable security definer set search_path = public, pg_temp as $$
   order by c.day, hosts.ord
 $$;
 
+-- Profile widget: the first public type of a handle (optionally a specific one).
+create or replace function public.rout_booking_public_type_for_handle(p_handle text, p_type uuid)
+returns table(id uuid, title text) language sql stable security definer set search_path = public, pg_temp as $$
+  select t.id, t.title from public.booking_event_types t
+  join public.profiles p on p.id = t.user_id
+  where lower(p.username) = lower(p_handle) and (p_type is null or t.id = p_type)
+    and public.rout_booking_type_public(t.id)
+  order by t.created_at limit 1
+$$;
+
 -- Server-internal: hosts whose cache is missing or older than p_max_age (lazy refresh).
 create or replace function public.rout_booking_stale_hosts(p_id uuid, p_max_age interval)
 returns uuid[] language sql stable security definer set search_path = public, pg_temp as $$
@@ -311,6 +321,7 @@ begin
     'rout_booking_type_public(uuid)',
     'rout_booking_public_event_type(uuid)',
     'rout_booking_public_days(uuid, date, date)',
+    'rout_booking_public_type_for_handle(text, uuid)',
     'rout_booking_stale_hosts(uuid, interval)',
     'rout_booking_create(uuid, timestamptz, text, text, text, text, jsonb)',
     'rout_booking_group_ids(uuid)',
@@ -328,6 +339,7 @@ begin
     foreach f in array array[
       'rout_booking_public_event_type(uuid)',
       'rout_booking_public_days(uuid, date, date)',
+      'rout_booking_public_type_for_handle(text, uuid)',
       'rout_booking_stale_hosts(uuid, interval)',
       'rout_booking_create(uuid, timestamptz, text, text, text, text, jsonb)',
       'rout_booking_set_checkout(uuid, text)',

@@ -40,8 +40,8 @@ beforeAll(async () => {
     create table public.workspaces(id uuid primary key, name text);
     insert into public.workspaces values ('${WS}', 'Team');
     create table public.workspace_members(workspace_id uuid, user_id uuid, role text);
-    create table public.profiles(id uuid primary key, display_name text, display_prefs jsonb, is_banned boolean, is_suspended boolean);
-    insert into public.profiles values ('${A}', 'Ann Host', '{}', false, false), ('${B}', 'Bob Host', '{}', false, false);
+    create table public.profiles(id uuid primary key, username text, display_name text, display_prefs jsonb, is_banned boolean, is_suspended boolean);
+    insert into public.profiles values ('${A}', 'ann', 'Ann Host', '{}', false, false), ('${B}', 'bob', 'Bob Host', '{}', false, false);
     create function public.rout_current_user_id() returns uuid language sql stable as $$ select nullif(current_setting('rout.current_user_id', true), '')::uuid $$;
     create function public.rout_is_workspace_member(ws uuid) returns boolean language sql stable security definer as $$
       select exists (select 1 from public.workspace_members m where m.workspace_id = ws and m.user_id = public.rout_current_user_id()) $$;
@@ -84,10 +84,6 @@ beforeEach(async () => {
 
 describe("anonymous boundary", () => {
   it("rout_app without a session sees no rows, but the public function returns the type", async () => {
-    await db.exec("begin; set local role rout_app;");
-    try {
-      await db.exec("grant select on public.booking_event_types to rout_app");
-    } finally { await db.exec("rollback"); }
     await db.exec("grant select on public.booking_event_types to rout_app");
     await db.exec("begin; set local role rout_app;");
     try {
@@ -98,6 +94,11 @@ describe("anonymous boundary", () => {
       expect(pub.rows[0]!.r["hostName"]).toBe("Ann Host");
       expect(JSON.stringify(pub.rows[0]!.r)).not.toContain(A);
     } finally { await db.exec("rollback"); }
+  });
+
+  it("the profile widget finds the first public type of a handle", async () => {
+    const r = await db.query<{ id: string }>("select id from public.rout_booking_public_type_for_handle('ANN', null)");
+    expect(r.rows[0]?.id).toBe(SOLO);
   });
 
   it("public days expose host ordinals, never host ids", async () => {
