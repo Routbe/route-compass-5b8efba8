@@ -231,7 +231,7 @@ export async function drawCardFaces(card: Omit<WalletCardPayload, "heroImageUrl"
   f.font = `600 20px ui-monospace, SFMono-Regular, monospace`;
   f.fillText(frontValue.replace(/^https?:\/\//, ""), cx, FRONT_QR.y + FRONT_QR.size + 44);
   f.globalAlpha = 1;
-  // Front: big public QR (rout.be/<handle>/<4 digits, new every 10 min>). Anyone may scan it:
+  // Front: big public QR (rout.be/<handle>/<6 digits, new every 10 min>). Anyone may scan it:
   // phones open the profile, partners (pool, transit) check the digits are fresh.
   // Error correction H (30 %), so the centred ROUT seal (< 8 % of the area) never breaks scanning.
   const fq = drawQr(f, frontValue, FRONT_QR.x, FRONT_QR.y, FRONT_QR.size, "H", FRONT_QR.quiet, 12);

@@ -202,7 +202,7 @@ export const getCardLiveness = createServerFn({ method: "POST" })
     // Age tier is told to the owner only; visitors never learn a member is a minor.
     const { isMinorUser } = await import("@/lib/minor-safety.server");
     const minor = owner && context.userId ? await isMinorUser(context.userId).catch(() => true) : false;
-    // Front QR digits (rout.be/<handle>/<4 digits>, new every 10 min): owner of an active root card only.
+    // Front QR digits (rout.be/<handle>/<6 digits>, new every 10 min): owner of an active root card only.
     const { frontCode, frontWindow, FRONT_WINDOW_S } = await import("./card-front-code");
     const fw = frontWindow(now);
     const front = live && card.space === "root" ? await frontCode(key, card.serial, fw) : null;

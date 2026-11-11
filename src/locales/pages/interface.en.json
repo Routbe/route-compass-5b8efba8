@@ -176,5 +176,11 @@
   "exportDialog.density.fix": "Shorten the content or use a dynamic short link.",
   "exportDialog.print-size.title": "Print size is too small for this amount of data",
   "exportDialog.print-size.detail": "This code density requires at least {{mm}} mm to remain readable.",
-  "exportDialog.print-size.fix": "Increase print size to at least {{mm}} mm."
+  "exportDialog.print-size.fix": "Increase print size to at least {{mm}} mm.",
+  "stepUp.sms": "SMS code",
+  "stepUp.backup": "Recovery code",
+  "stepUp.password": "Password",
+  "stepUp.cardDescription": "Your ROUT card is protected. Confirm with one of your active methods. The confirmation works for one action and expires after 2 minutes.",
+  "stepUp.needTwoFactor": "Turn on two-step verification first (passkey, authenticator app or SMS) in your account settings.",
+  "stepUp.sendSms": "Send code by SMS"
 }

@@ -32,11 +32,12 @@ export function decideEndSessionRedirect(input: {
  * Logout CSRF guard: a session is only ended when the request demonstrably comes
  * from ROUT itself (or a typed URL/bookmark). Cross-site GETs carry the Lax
  * session cookie, so they get a confirmation page instead of an instant logout.
+ * The Referer header is never read (privacy rule): without Sec-Fetch-Site or
+ * Origin the caller gets the confirmation page, which is the safe default.
  */
 export function isTrustedLogoutRequest(input: {
   secFetchSite: string | null;
   origin: string | null;
-  referer: string | null;
   selfHost: string;
 }): boolean {
   const site = input.secFetchSite?.toLowerCase() ?? null;
@@ -51,7 +52,5 @@ export function isTrustedLogoutRequest(input: {
   };
   const self = input.selfHost.toLowerCase();
   const origin = hostOf(input.origin);
-  if (origin) return origin === self;
-  const referer = hostOf(input.referer);
-  return referer === self;
+  return origin === self;
 }

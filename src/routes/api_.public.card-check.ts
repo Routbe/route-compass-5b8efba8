@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
 /**
- * GET /api/public/card-check?h=<handle>&c=<4 digits>
+ * GET /api/public/card-check?h=<handle>&c=<6 digits>
  *
  * For partners (pool, transit, events) that scan the front QR of a ROUT Card
  * (rout.be/<handle>/<code>): answers only whether the code is fresh (≤ 10 min)
@@ -10,7 +10,7 @@ import { z } from "zod";
  */
 const Query = z.object({
   h: z.string().trim().min(1).max(100).regex(/^@?[\w.-]+$/),
-  c: z.string().regex(/^\d{4}$/),
+  c: z.string().regex(/^\d{6}$/),
 });
 
 const HEADERS = {
@@ -36,6 +36,9 @@ export const Route = createFileRoute("/api_/public/card-check")({
         const { hitRateLimit, clientIp } = await import("@/lib/rate-limit-db.server");
         const limit = await hitRateLimit("card-front-check", clientIp(request), { limit: 60, windowSec: 60 }, { failClosed: true });
         if (!limit.ok) return json({ fresh: false, reason: "limited" }, 429);
+        // Per card as well: many IPs together must not be able to guess one member's code.
+        const cardLimit = await hitRateLimit("card-front-check-card", parsed.data.h.replace(/^@/, "").toLowerCase(), { limit: 120, windowSec: 600 }, { failClosed: true });
+        if (!cardLimit.ok) return json({ fresh: false, reason: "limited" }, 429);
         try {
           const { generateWalletPayload } = await import("@/lib/wallet/wallet-payload.server");
           const card = await generateWalletPayload(parsed.data.h.replace(/^@/, ""), { space: "root" });

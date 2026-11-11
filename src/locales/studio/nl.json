@@ -919,5 +919,16 @@
   "studio.logoBar.choose": "{{count}} logo's onder je bio. Kies in Vormgeving → Lagen-studio: onder elkaar doorlopen of een horizontale schuifbalk.",
   "booking.done.masked": "Open de link uit je bevestigingsmail om het tijdstip en de details te zien.",
   "studio.editor.qrWorkspace": "Workspace QR-code",
-  "studio.editor.qrWorkspaceDownload": "Workspace QR-code ontwerpen en downloaden"
+  "studio.editor.qrWorkspaceDownload": "Workspace QR-code ontwerpen en downloaden",
+  "studio.effects.title": "Kaarteffecten",
+  "studio.effects.help": "Een zachte glans op je blokken en een gloed rond live-blokken (Steam, muziek) zolang je actief bent.",
+  "studio.guestbook.counts": "{{total}} berichten · {{pinned}}/{{limit}} vastgezet",
+  "socialBlock.failed": "Koppelen lukte niet. Probeer opnieuw.",
+  "socialBlock.verified": "Geverifieerd",
+  "socialBlock.settings": "Koppeling en volgers",
+  "socialBlock.bioHint": "Zet je ROUT-link in de bio van dit account en klik op Koppelen. Zo bewijzen we dat het account van jou is.",
+  "socialBlock.snapHint": "Je meldt je aan bij Snapchat. ROUT bewaart geen wachtwoord en geen locatie, alleen je naam en Bitmoji.",
+  "socialBlock.connect": "Koppelen",
+  "socialBlock.unavailable": "Voor dit platform kan je account nog niet gekoppeld worden.",
+  "socialBlock.followers": "Aantal volgers tonen"
 }

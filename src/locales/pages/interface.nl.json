@@ -176,5 +176,11 @@
   "exportDialog.density.fix": "Verkort de inhoud of gebruik een dynamische korte link.",
   "exportDialog.print-size.title": "Afdrukgrootte te klein voor deze hoeveelheid gegevens",
   "exportDialog.print-size.detail": "Deze codedichtheid vereist minstens {{mm}} mm om leesbaar te blijven.",
-  "exportDialog.print-size.fix": "Vergroot de afdruk tot minstens {{mm}} mm."
+  "exportDialog.print-size.fix": "Vergroot de afdruk tot minstens {{mm}} mm.",
+  "stepUp.sms": "Sms-code",
+  "stepUp.backup": "Herstelcode",
+  "stepUp.password": "Wachtwoord",
+  "stepUp.cardDescription": "Je ROUT-kaart is beveiligd. Bevestig met een van je actieve methodes. De bevestiging geldt voor één handeling en vervalt na 2 minuten.",
+  "stepUp.needTwoFactor": "Zet eerst tweestapsverificatie aan (passkey, authenticator-app of sms) in je accountinstellingen.",
+  "stepUp.sendSms": "Stuur code per sms"
 }

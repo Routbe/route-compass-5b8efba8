@@ -4,17 +4,18 @@
 - [x] Startpagina: 2 profielkaarten + 1 privé ROUT-kaart
 - [x] Command Center-widget met status en snelle acties
 - [ ] Volledige beveiligingsdoorlichting van het portaal (diepe scan loopt; daarna bevindingen oplossen op risico)
-- [ ] Zero-trust scan (beveiligde kaartcode /kaart/… klaar; adres /c/[SERIAL] nog toevoegen): toont alleen "// VERIFICATIE VEREIST" en vraagt passkey/2FA vóór data
+- [x] Zero-trust scan: /s/<token> → /kaart/<token> toont alleen "// VERIFICATIE VEREIST" en vraagt passkey/2FA vóór data (geen extra /c/-adres: /s/ en /v/ dekken dit, een derde ingang vergroot alleen het aanvalsoppervlak)
 - [x] Kaart-API: 401 "Step-Up Required" (max 5 min) voor geheimen, bevriezen, blokkeren, vervangen; oude serial meteen bevroren
 - [x] Bevriezen (tijdelijk, terug te draaien) naast blokkeren; live status ACTIEF / GEBLOKKEERD / BEVROREN
 - [ ] Beheer-weergave in vlakke obsidian-stijl met 1px raster en "//"-accenten
 - [x] Regeltests: 2FA verplicht, step-up 5 min, oude serial ongeldig na vervangen, juiste wallet-kaart
 - [ ] Ingelogd testen van de kaart-flows: testaccount rout-test-kaart2 gemaakt (passkey werkt); wacht op akkoord om het als geverifieerd te markeren
 - [ ] Na testen: beide testaccounts (rout-test-kaart, rout-test-kaart2) verwijderen na akkoord
-- [ ] Command Center-kaartwidget: Nederlandse tekst verschijnt ook als de site in het Engels staat
+- [x] Command Center-kaartwidget: teksten in NL/EN/FR/DE
 - [ ] Google Wallet echt testen (wacht op Google Wallet- en WALLET_ID_SECRET-sleutels)
 - [x] Eigen code-doorlichting beveiliging (wallet, kaart, auth, API) naast de scan — kaartcodes gebonden aan kaart, bevestigingen eenmalig, vervangen atomisch
-- [ ] Restpunten beveiliging: 4-cijfer voorkant-code, bevestiging aan sessie binden
+- [x] Voorkant-code nu 6 cijfers + limiet per kaart en per IP
+- [ ] Bevestiging aan sessie binden (uitgesteld: passkey-bevestiging kan de sessie vervangen; bevestiging is al aan gebruiker + handeling gebonden, eenmalig, 2 min)
 - [x] Knoppen leesbaar overal (o.a. Google Wallet-knop bij Wallet/profielkaarten) — Wallet-knoppen, verwijderknop Mijn gegevens, statusschakelaar
 - [ ] Twee stijlen op elke pagina: hoofdstijl (rustig, klassiek, fysieke knop met indruk-effect en schaduw) standaard + glasstijl (luxe); ontbrekende stukken en status-schakelaar die buiten kader valt
 - [ ] Alle widgets nakijken
@@ -28,7 +29,7 @@
 - [x] Workspace-studio: knop heet "Workspace QR-code" en opent meteen de QR van die workspace
 - [ ] Hoofdstijl = strakke klassieke toets (geen gloed, harde schaduwrand + indruk-effect); glasstijl echt glas; knopvormen veranderen mee
 - [x] Onthouden welke pagina laatst open was (privé of geverifieerd)
-- [ ] ROUT-badge klopt niet altijd
+- [x] ROUT-badge klopt niet altijd: badge op externe sites volgt nu dezelfde regel als het profiel (geen vinkje/schild zonder verificatie, verborgen badge = neutraal, privé/geblokkeerd = niet gevonden, korte cache)
 - [x] AI-agent sandbox: MCP-tools zonder login, live end-to-end getest op Neon (rout_app-rol)
 - [x] Wees-data: agent-workspaces en sandbox-sleutels leven 24 uur; opruimen bij elke nieuwe sandbox + bestaande cron-route
 - [x] Rate limit: max 5 sandbox-registraties per IP per uur (plus 5 per IP per 24 u in de database)
@@ -37,9 +38,12 @@
 - [x] Workspace-slug: draft-username mist het achtervoegsel dat de database aan de slug toevoegt
 - [x] Workspace QR-code: knop "Profiel-QR-code" hernoemen en bewaarde workspace-QR laden
 - [x] Studio onthoudt laatst gekozen privé/geverifieerd
-- [ ] ROUT-badge: "badge verbergen" respecteren op externe sites; doneerpagina en etalage even streng als profiel
+- [x] ROUT-badge: "badge verbergen" respecteren op externe sites en deelafbeelding
+- [x] Doneerpagina en etalage: zelfde badge-regel; doneerpagina toont geen wettelijke naam bij privacy-schild en niets bij privé-profiel
 - [x] Kleine Studio-labels ("Verborgen") binnen hun kader houden
 - [ ] Glasstijl verbeteren
-- [ ] Kaartteksten EN/FR/DE (beveiligingsvak + ~30 teksten)
+- [x] Kaartteksten EN/FR/DE (beveiligingsvak, kaartvenster, scanpagina, bevestigvenster, Steam/Last.fm, Studio)
 - [ ] Ingelogde kaarttest: bevriezen, blokkeren, vervangen, scanpagina, widget
 - [x] Testen live-blokken en afspraakbevestiging uitgevoerd (55 geslaagd)
+- [x] Accounts samenvoegen: database-samenvoeging weigert nu als het tweede account nog kaart-, wallet-, herstel- of ouderrecords heeft (migratie 0215, nog niet op live Neon toegepast)
+- [ ] Migraties 0214 en 0215 op live Neon toepassen (wacht op akkoord eigenaar)

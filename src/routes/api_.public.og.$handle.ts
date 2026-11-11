@@ -58,16 +58,14 @@ export const Route = createFileRoute("/api_/public/og/$handle")({
           const p = prefs as typeof prefs & Record<string, unknown>;
           const custom = Boolean(p["typographyCustom"] || p["customDesign"]);
           accent = prefs.accentColor ?? (p["patternColor"] as string | null) ?? t.accent ?? accent;
-          const badge: OgBadge =
-            !verified || !prefs.badgeVisible || prefs.badgeType === "none"
-              ? null
-              : row["is_business"]
-                ? "domain"
-                : row["is_influencer"]
-                  ? "influencer"
-                  : prefs.badgeType === "human"
-                    ? "human"
-                    : "verified";
+          const { publicBadgeKind } = await import("@/lib/badge-rules");
+          const badge: OgBadge = publicBadgeKind({
+            verified,
+            isBusiness: row["is_business"] === true,
+            isInfluencer: row["is_influencer"] === true,
+            badgeVisible: prefs.badgeVisible,
+            badgeType: prefs.badgeType,
+          });
           design = {
             bg: (p["canvasColor"] as string | null) ?? t.bg,
             card: t.card,

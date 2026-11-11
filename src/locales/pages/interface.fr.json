@@ -176,5 +176,11 @@
   "exportDialog.density.fix": "Raccourcissez le contenu ou utilisez un lien court dynamique.",
   "exportDialog.print-size.title": "Taille d’impression trop petite pour cette quantité de données",
   "exportDialog.print-size.detail": "Cette densité nécessite au moins {{mm}} mm pour rester lisible.",
-  "exportDialog.print-size.fix": "Augmentez la taille d’impression à au moins {{mm}} mm."
+  "exportDialog.print-size.fix": "Augmentez la taille d’impression à au moins {{mm}} mm.",
+  "stepUp.sms": "Code SMS",
+  "stepUp.backup": "Code de récupération",
+  "stepUp.password": "Mot de passe",
+  "stepUp.cardDescription": "Ta carte ROUT est protégée. Confirme avec l'une de tes méthodes actives. La confirmation vaut pour une seule action et expire après 2 minutes.",
+  "stepUp.needTwoFactor": "Active d'abord la vérification en deux étapes (clé d'accès, application d'authentification ou SMS) dans les paramètres du compte.",
+  "stepUp.sendSms": "Envoyer le code par SMS"
 }
