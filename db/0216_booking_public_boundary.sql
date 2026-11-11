@@ -123,7 +123,7 @@ returns table(id uuid, title text) language sql stable security definer set sear
   join public.profiles p on p.id = t.user_id
   where lower(p.username) = lower(p_handle) and (p_type is null or t.id = p_type)
     and public.rout_booking_type_public(t.id)
-  order by t.created_at limit 1
+  order by t.created_at, t.id limit 1
 $$;
 
 -- Server-internal: hosts whose cache is missing or older than p_max_age (lazy refresh).
