@@ -47,7 +47,7 @@ export const TOPICS: Record<TopicSlug, TopicMeta> = {
   "rout-card": { primary: "/about/rout-card", docs: ["/about/rout-card", "/info/wallet", "/info/badges", "/info/account-security"] },
   "creator-support": { primary: "/info/tips", docs: ["/info/tips", "/info/payment-pages", "/info/bookings", "/info/referrals"] },
   questions: { primary: "/info/anonymous-questions", docs: ["/info/anonymous-questions", "/info/answers-and-stories", "/about/anonymous-questions", "/info/parental-consent"] },
-  workspaces: { primary: "/solutions/agencies", docs: ["/solutions/agencies", "/product/custom-domains", "/features/asset-manager", "/info/account-merge"] },
+  workspaces: { primary: "/solutions/agencies", docs: ["/solutions/agencies", "/product/custom-domains", "/features/asset-manager", "/features/design-studio"] },
   developers: { primary: "/developers", docs: ["/developers", "/developer/identity-oauth", "/developer/ai-mcp", "/developer/webhooks", "/developer/credentials", "/about/open-source"] },
 };
 
