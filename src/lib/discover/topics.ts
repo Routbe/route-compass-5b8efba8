@@ -89,3 +89,12 @@ export type DiscoverUi = {
 };
 
 export type DiscoverCopy = { ui: DiscoverUi; topics: Record<TopicSlug, TopicCopy> };
+
+/** The product line a detail page belongs to, if any (first match in TOPICS order). */
+export function topicForPath(path: string): TopicSlug | null {
+  for (const slug of TOPIC_SLUGS) {
+    const meta = TOPICS[slug];
+    if (meta.primary === path || meta.docs.includes(path)) return slug;
+  }
+  return null;
+}
