@@ -51,7 +51,6 @@ async function handle(request: Request, params: URLSearchParams): Promise<Respon
   const trusted = isTrustedLogoutRequest({
     secFetchSite: request.headers.get("sec-fetch-site"),
     origin: request.headers.get("origin"),
-    referer: request.headers.get("referer"),
     selfHost: request.headers.get("host") ?? new URL(request.url).host,
   });
   if (!trusted) return confirmPage(params);

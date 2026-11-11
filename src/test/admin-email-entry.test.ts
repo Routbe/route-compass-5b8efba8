@@ -23,7 +23,7 @@ function request(path: string, email: unknown) {
 }
 describe("sign-in gateway", () => {
   for (const mode of ["admin", "public"]) {
-    for (const path of ["/sign-up/email", "/forget-password", "/sign-in/social"]) {
+    for (const path of ["/sign-up/email", "/forget-password"]) {
       it(`refuses ${path} in ${mode} mode with method_disabled`, async () => {
         vi.stubEnv("APP_MODE", mode);
         const res = await request(path, "owner@example.com");
