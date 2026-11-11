@@ -60,3 +60,10 @@
 - [x] Studio: oranje status "alleen op dit toestel bewaard" + lokaal bewaren + opnieuw proberen bij verbinding; echte foutmelding blijft nu zichtbaar
 - [ ] Studio "failed to fetch": oorzaak nog niet gereproduceerd; volgende melding toont de echte browserfout in het detailvenster
 - [x] Ontwerpdocument: cryptografisch datamodel, dreigingsmodel, mappenstructuur Rust/WASM
+
+## Nieuwe vraag (11-11): boekingssysteem van het hoogste niveau
+- [x] Fase 0: audit van bestaande boekingsmotor (bevindingen in het plan)
+- [x] Developer Console: kop en voet bleven wit bij licht thema
+- [x] Menu (drie streepjes): uitgelogd → uitlegpagina's, ingelogd → werkende tools
+- [ ] Plan boekingssysteem (fases 1–7): wacht op akkoord eigenaar
+- [ ] Eigen Ontdek-pagina voor afspraken (/discover/bookings) — onderdeel van het plan
