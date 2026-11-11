@@ -77,7 +77,7 @@ export const Route = createFileRoute("/api_/public/badge/$handle")({
           kind = "plain";
         }
 
-        return new Response(badgeSvg(handle, verified, theme, size), {
+        return new Response(badgeSvg(handle, kind, theme, size), {
           headers: {
             "content-type": "image/svg+xml; charset=utf-8",
             // Short cache: a withdrawn verification must disappear from other sites quickly.
