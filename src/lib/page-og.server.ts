@@ -180,14 +180,20 @@ export function renderTopicCardSvg(slug: TopicSlug, locale: Locale, copy: { bran
     const x = 740 + (i % 2) * 210, y = 170 + Math.floor(i / 2) * 150 + (i % 2) * 40;
     return `<g transform="rotate(${i % 2 ? 4 : -4} ${x + 100} ${y + 40})"><rect x="${x}" y="${y}" width="200" height="84" rx="22" fill="#151413" stroke="${i % 2 ? b : a}" stroke-opacity=".55"/><circle cx="${x + 30}" cy="${y + 42}" r="9" fill="${i % 2 ? b : a}"/>${textBlock(chipLines(c), x + 50, y + [48, 38, 28][chipLines(c).length - 1]!, chipLines(c).length > 2 ? 15 : 18, "#EDEAE3", 600, 1.2)}</g>`;
   }).join("");
+  // Headline never ends in an ellipsis: step the size down until it fits in three lines.
+  const head = [{ size: 58, max: 20 }, { size: 50, max: 23 }, { size: 44, max: 27 }]
+    .map((o) => ({ size: o.size, lines: wrap(copy.title, o.max, 9) }))
+    .find((o) => o.lines.length <= (o.size === 58 ? 2 : 3)) ?? { size: 40, lines: wrap(copy.title, 30, 3) };
+  const barY = Math.round(200 + (head.lines.length - 1) * head.size * 1.12 + 40);
+  const leadLines = Math.max(1, Math.min(3, Math.floor((520 - (barY + 56)) / 31) + 1));
   const body = `<rect width="${W}" height="${H}" fill="#0E0D0C"/>
 <radialGradient id="ga" cx="78%" cy="40%" r="50%"><stop offset="0" stop-color="${a}" stop-opacity=".30"/><stop offset="1" stop-color="${a}" stop-opacity="0"/></radialGradient><rect width="${W}" height="${H}" fill="url(#ga)"/>
 <radialGradient id="gb" cx="15%" cy="95%" r="40%"><stop offset="0" stop-color="${b}" stop-opacity=".16"/><stop offset="1" stop-color="${b}" stop-opacity="0"/></radialGradient><rect width="${W}" height="${H}" fill="url(#gb)"/>
 ${chips}
 <rect x="72" y="72" width="${chipW}" height="44" rx="22" fill="${a}" fill-opacity=".1" stroke="${a}" stroke-opacity=".45"/><rect x="78" y="78" width="48" height="32" rx="16" fill="${a}"/><text x="102" y="100" font-size="15" font-weight="700" fill="#14130F" text-anchor="middle">${num}</text><text x="140" y="101" font-size="19" font-weight="600" fill="#F7F3EA">${esc(copy.brand)}</text>
-${textBlock(wrap(copy.title, 20, 3), 72, 215, 58, "#F7F3EA")}
-<rect x="72" y="${215 + Math.min(3, wrap(copy.title, 20, 3).length) * 65 - 20}" width="72" height="4" rx="2" fill="${a}"/>
-${textBlock(wrap(copy.lead, 50, 3), 72, 430, 22, "#A8A196", 400, 1.4)}
+${textBlock(head.lines, 72, 200, head.size, "#F7F3EA")}
+<rect x="72" y="${barY}" width="72" height="4" rx="2" fill="${a}"/>
+${textBlock(wrap(copy.lead, 50, leadLines), 72, barY + 56, 22, "#A8A196", 400, 1.4)}
 ${footer("#F7F3EA", "#7A746B", `rout.be/discover/${slug}`)}`;
   void locale;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="Inter">${body}</svg>`;
