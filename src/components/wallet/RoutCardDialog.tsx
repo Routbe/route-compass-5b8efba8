@@ -699,7 +699,7 @@ export function RoutCardDialog({ open, onOpenChange, handle, space, inline = fal
           <div className="grid gap-2 rounded-2xl border border-border p-3 text-xs text-muted-foreground">
             <p className="flex items-start gap-2">
               <QrCode className="mt-0.5 h-4 w-4 shrink-0 text-foreground" aria-hidden />
-              <span>{t("card.frontQrNote", { defaultValue: "Grote QR vooraan: iedereen mag hem scannen en komt op je profiel. De 4 cijfers achteraan wisselen elke 10 minuten, zodat een gelekte foto snel waardeloos is." })}</span>
+              <span>{t("card.frontQrNote", { defaultValue: "Grote QR vooraan: iedereen mag hem scannen en komt op je profiel. De 6 cijfers achteraan wisselen elke 10 minuten, zodat een gelekte foto snel waardeloos is." })}</span>
             </p>
             <p className="flex items-start gap-2">
               <Nfc className="mt-0.5 h-4 w-4 shrink-0 text-foreground" aria-hidden />
