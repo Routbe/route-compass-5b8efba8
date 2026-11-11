@@ -223,9 +223,8 @@ export function ProfileHubPicker({ values, onChange }: Props) {
           {activeWs ? wsPath ?? workspacePublicPath(activeWs.slug, null) : profilePath(shown || "jouwnaam", verified)}
         </p>
         <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-          Gratis profiel op rout.be. Custom domeinen beschikbaar op Pro. Gratis profielen gebruiken
-          de <strong>/u/</strong> namespace. Verifieer je account om je eigen unieke handle te
-          claimen.
+          Gratis profiel op rout.be. Custom domeinen beschikbaar op Pro.
+          {!verified && <> Gratis profielen gebruiken de <strong>/u/</strong> namespace. Verifieer je account om je eigen unieke handle te claimen.</>}
         </p>
       </div>
 
