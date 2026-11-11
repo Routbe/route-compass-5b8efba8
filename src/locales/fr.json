@@ -1893,6 +1893,7 @@
   "cardSec.reveal": "Confirme que c'est toi pour afficher ta carte",
   "cardSec.addGoogle": "Ajouter la carte ROUT à Google Wallet",
   "cardSec.walletNotConfigured": "Google Wallet n'a pas encore été configuré par l'administrateur.",
+  "cardSec.keyNotConfigured": "Les cartes de profil fonctionnent déjà, mais ta carte ROUT privée a besoin de sa propre clé de sécurité sur le serveur. L'administrateur doit d'abord la configurer.",
   "cardSec.walletFailed": "L'ajout à Google Wallet a échoué.",
   "cardSec.freeze": "Geler",
   "cardSec.thaw": "Dégeler",

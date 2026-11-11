@@ -307,3 +307,6 @@
 .gateway-editorial .story-chapter[data-topic] .story-product-stage::before { content: ""; position: absolute; inset: 10% 15%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in oklab, var(--tp) 18%, transparent), transparent); filter: blur(30px); }
 .gateway-editorial .story-chapter[data-topic] .story-feature-rows > div > span { color: var(--tp); }
 @media (prefers-reduced-motion: reduce) { .gateway-editorial .story-chapter[data-topic] > .dsc-bars span { animation: none; } }
+
+/* Selecting text on a product page uses that product's own accent. */
+.dsc ::selection { background-color: color-mix(in oklab, var(--tp) 34%, transparent); }

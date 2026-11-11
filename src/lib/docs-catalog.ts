@@ -3,6 +3,7 @@ import { z } from "zod";
 import sources from "virtual:rout-docs";
 import { canonicalLink, SITE_ORIGIN } from "@/lib/site";
 import type { Locale } from "@/lib/i18n";
+import { pageCardImage, type PageKey } from "@/lib/page-cards";
 
 export const DOC_CATEGORIES = ["about", "info", "dev", "safety", "qr-code-generator", "product", "features", "solutions", "compare", "guide", "support"] as const;
 export type DocCategory = typeof DOC_CATEGORIES[number];
@@ -40,11 +41,20 @@ export function docsInCategory(category: DocCategory, locale: Locale = "nl") {
   const rank = (doc: DocEntry) => { const slug = doc.path === `/${category}` ? "index" : doc.path.split("/").at(-1) ?? ""; const position = (articleOrder[category] ?? ["index"]).indexOf(slug); return position < 0 ? Number.MAX_SAFE_INTEGER : position; };
   return docs.filter(d => d.category === category).map(d => getDoc(d.path, locale) ?? d).sort((a, b) => rank(a) - rank(b) || a.path.localeCompare(b.path));
 }
+/** The code-drawn ROUT card closest to a doc page (one fixed card per section and locale). */
+export function docCardKey(path: string): PageKey {
+  if (path === "/about/sovereignty" || path === "/sovereignty") return "sovereignty";
+  if (path === "/safety/privacy" || path === "/privacy") return "privacy";
+  if (path === "/safety/terms" || path === "/terms") return "terms";
+  if (path === "/about" || path.startsWith("/about/")) return "about";
+  return "home";
+}
+export function docCardImage(path: string, locale: Locale = "nl") { return pageCardImage(docCardKey(path), locale); }
 export function docHead(path: string, locale: Locale = "nl") {
   const doc = getDoc(path, locale);
   const title = doc?.seo_title ?? `${doc?.title ?? "Documentatie"} — ROUT`;
   const description = doc?.seo_description ?? doc?.description ?? "ROUT-documentatie";
-  return { meta: [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "article" }, { property: "og:url", content: `${SITE_ORIGIN}${path}` }, { name: "twitter:card", content: "summary" }, ...(doc?.seo_keywords ? [{ name: "keywords", content: doc.seo_keywords.join(", ") }] : [])], links: [canonicalLink(path)], scripts: doc ? [{ type: "application/ld+json", children: JSON.stringify(docStructuredData(doc)).replace(/</g, "\\u003c") }] : [] };
+  return { meta: [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "article" }, { property: "og:url", content: `${SITE_ORIGIN}${path}` }, { property: "og:image", content: docCardImage(path, locale) }, { property: "og:image:width", content: "1200" }, { property: "og:image:height", content: "630" }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:image", content: docCardImage(path, locale) }, ...(doc?.seo_keywords ? [{ name: "keywords", content: doc.seo_keywords.join(", ") }] : [])], links: [canonicalLink(path)], scripts: doc ? [{ type: "application/ld+json", children: JSON.stringify(docStructuredData(doc)).replace(/</g, "\\u003c") }] : [] };
 }
 
 export function docStructuredData(doc: DocEntry) {

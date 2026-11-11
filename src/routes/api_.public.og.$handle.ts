@@ -108,13 +108,11 @@ export const Route = createFileRoute("/api_/public/og/$handle")({
         if (!wantsSvg) {
           try {
             const { svgToPng } = await import("@/lib/og-render.server");
+            const { cachedOgPng } = await import("@/lib/og-png-cache.server");
             // resvg haalt zelf geen externe afbeeldingen op: de avatar moet
             // als data-URI in de vector zitten voor we rasteriseren.
-            const png = await svgToPng(
-              build(),
-              new URL(request.url).origin,
-              String(design.bg),
-            );
+            const svg = build();
+            const png = await cachedOgPng(svg, async () => new Uint8Array(await svgToPng(svg, origin, String(design.bg))));
             return new Response(png as unknown as BodyInit, {
               headers: { "content-type": "image/png", "cache-control": cache },
             });

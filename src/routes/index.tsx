@@ -5,6 +5,7 @@ import Page from "@/components/imported-pages/Gateway";
 import { getRequestLocale } from "@/lib/locale.functions";
 import { resolveHostProfile } from "@/lib/domain-routing.functions";
 import { canonicalLinks, socialMeta } from "@/lib/social-meta";
+import { PAGE_CARDS, pageCardImage } from "@/lib/page-cards";
 import { getPublicProfileByHandle } from "@/lib/studio-profile.functions";
 import { fediverseHeadLinks, type FediverseIdentity } from "@/lib/fediverse-profile";
 import { profileSocialMeta } from "@/lib/social-meta";
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/")({
     return { ...locale, hostHandle: host.handle, hostProfile };
   },
   head: ({ loaderData }) => ({
-    meta: loaderData?.hostProfile ? profileSocialMeta({ locale: loaderData.locale, handle: loaderData.hostHandle ?? "", displayName: loaderData.hostProfile["display_name"] as string | null, bio: loaderData.hostProfile["bio"] as string | null, avatarUrl: loaderData.hostProfile["avatar_url"] as string | null, url: "/" }) : socialMeta(loaderData?.locale ?? "en"),
+    meta: loaderData?.hostProfile ? profileSocialMeta({ locale: loaderData.locale, handle: loaderData.hostHandle ?? "", displayName: loaderData.hostProfile["display_name"] as string | null, bio: loaderData.hostProfile["bio"] as string | null, avatarUrl: loaderData.hostProfile["avatar_url"] as string | null, url: "/" }) : [...socialMeta(loaderData?.locale ?? "en", pageCardImage("home", loaderData?.locale ?? "en")), { name: "theme-color", content: PAGE_CARDS.home.themeColor }],
     links: [...canonicalLinks("/"), ...fediverseHeadLinks(loaderData?.hostProfile?.["fediverse"] as FediverseIdentity | null)],
     // ROUT's knowledge graph (Organization, founder, ROUT OS) is rendered sitewide from __root.
   }),
