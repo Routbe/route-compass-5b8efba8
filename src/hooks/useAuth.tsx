@@ -112,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient.clear();
     // Local-first snapshots are private: never leave them on a shared device.
     await import("@/lib/local-first/snapshot-store").then((m) => m.clearSnapshots()).catch(() => undefined);
+    await import("@/lib/local-first/studio-draft-store").then((m) => m.clearStudioDrafts()).catch(() => undefined);
     try {
       await authClient.signOut();
     } catch {
