@@ -604,6 +604,8 @@ export interface PublicCardFreezesRow {
   "serial": string;
   "user_id": string;
   "frozen_at": string | Date;
+  "blocked": boolean;
+  "reason": string | null;
 }
 
 export interface PublicCardTokenUsesRow {
@@ -1318,6 +1320,13 @@ export interface PublicOnboardingDraftsRow {
   "updated_at": string | Date;
 }
 
+export interface PublicPairwiseSubjectsRow {
+  "sub": string;
+  "sector_hash": string;
+  "public_key": string;
+  "created_at": string | Date;
+}
+
 export interface PublicParentAuthorizationsRow {
   "id": string;
   "user_id": string;
@@ -1729,6 +1738,32 @@ export interface PublicRateLimitsRow {
   "hits": number;
 }
 
+export interface PublicRecoveryAttemptsRow {
+  "id": string;
+  "user_id": string;
+  "outcome": string;
+  "created_at": string | Date;
+}
+
+export interface PublicRecoverySealedShardsRow {
+  "vault_id": string;
+  "shard_index": number;
+  "slot": string;
+  "credential": string;
+  "ciphertext": string;
+  "created_at": string | Date;
+}
+
+export interface PublicRecoveryVaultsRow {
+  "user_id": string;
+  "vault_id": string;
+  "version": number;
+  "threshold": number;
+  "sealed_master": string;
+  "commitments": JsonValue;
+  "created_at": string | Date;
+}
+
 export interface PublicReferralsRow {
   "id": string;
   "inviter_id": string;
@@ -1773,6 +1808,12 @@ export interface PublicRoutCalendarsRow {
   "expires_at": string | Date | null;
   "created_at": string | Date;
   "updated_at": string | Date;
+}
+
+export interface PublicRoutCardGenerationsRow {
+  "user_id": string;
+  "generation": number;
+  "replaced_at": string | Date;
 }
 
 export interface PublicSavedQrsRow {
@@ -2593,6 +2634,7 @@ export interface DbTables {
   "public.omni_jobs": PublicOmniJobsRow;
   "public.omni_matrix_items": PublicOmniMatrixItemsRow;
   "public.onboarding_drafts": PublicOnboardingDraftsRow;
+  "public.pairwise_subjects": PublicPairwiseSubjectsRow;
   "public.parent_authorizations": PublicParentAuthorizationsRow;
   "public.phone_otp_codes": PublicPhoneOtpCodesRow;
   "public.physical_key_events": PublicPhysicalKeyEventsRow;
@@ -2624,11 +2666,15 @@ export interface DbTables {
   "public.qa_trust_charges": PublicQaTrustChargesRow;
   "public.qr_scans": PublicQrScansRow;
   "public.rate_limits": PublicRateLimitsRow;
+  "public.recovery_attempts": PublicRecoveryAttemptsRow;
+  "public.recovery_sealed_shards": PublicRecoverySealedShardsRow;
+  "public.recovery_vaults": PublicRecoveryVaultsRow;
   "public.referrals": PublicReferralsRow;
   "public.reserved_brand_releases": PublicReservedBrandReleasesRow;
   "public.reserved_brands": PublicReservedBrandsRow;
   "public.reserved_handles": PublicReservedHandlesRow;
   "public.rout_calendars": PublicRoutCalendarsRow;
+  "public.rout_card_generations": PublicRoutCardGenerationsRow;
   "public.saved_qrs": PublicSavedQrsRow;
   "public.security_audit_checkpoints": PublicSecurityAuditCheckpointsRow;
   "public.security_audit_logs": PublicSecurityAuditLogsRow;

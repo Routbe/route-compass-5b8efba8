@@ -2244,9 +2244,9 @@
       ],
       "constraints": [
         {
-          "name": "agent_sandboxes_48h",
+          "name": "agent_sandboxes_24h",
           "kind": "c",
-          "def": "CHECK ((expires_at = (created_at + '48:00:00'::interval)))"
+          "def": "CHECK ((expires_at = (created_at + '24:00:00'::interval)))"
         },
         {
           "name": "agent_sandboxes_key_hash",
@@ -2401,9 +2401,9 @@
       ],
       "constraints": [
         {
-          "name": "agent_workspace_claims_48h",
+          "name": "agent_workspace_claims_24h",
           "kind": "c",
-          "def": "CHECK ((expires_at = (created_at + '48:00:00'::interval)))"
+          "def": "CHECK (((claimed_at IS NOT NULL) OR (expires_at = (created_at + '24:00:00'::interval))))"
         },
         {
           "name": "agent_workspace_claims_claim_order",
@@ -6295,6 +6295,22 @@
           "default": "now()",
           "identity": null,
           "generated": null
+        },
+        {
+          "name": "blocked",
+          "type": "boolean",
+          "notNull": true,
+          "default": "false",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
         }
       ],
       "constraints": [
@@ -6302,6 +6318,11 @@
           "name": "card_freezes_pkey",
           "kind": "p",
           "def": "PRIMARY KEY (serial)"
+        },
+        {
+          "name": "card_freezes_reason_check",
+          "kind": "c",
+          "def": "CHECK (((reason IS NULL) OR (reason = ANY (ARRAY['lost'::text, 'stolen'::text, 'replaced'::text, 'other'::text]))))"
         },
         {
           "name": "card_freezes_serial_check",
@@ -6321,7 +6342,7 @@
             "public"
           ],
           "cmd": "DELETE",
-          "using": "(user_id = rout_current_user_id())",
+          "using": "((user_id = rout_current_user_id()) AND (NOT blocked))",
           "check": null
         },
         {
@@ -6343,6 +6364,16 @@
           "cmd": "SELECT",
           "using": "(user_id = rout_current_user_id())",
           "check": null
+        },
+        {
+          "name": "card_freezes_update_own",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "UPDATE",
+          "using": "(user_id = rout_current_user_id())",
+          "check": "((user_id = rout_current_user_id()) AND blocked)"
         }
       ],
       "grants": {
@@ -12127,9 +12158,39 @@
           "roles": [
             "public"
           ],
-          "cmd": "ALL",
+          "cmd": "SELECT",
           "using": "((workspace_id IS NOT NULL) AND rout_is_workspace_member(workspace_id))",
-          "check": "((workspace_id IS NOT NULL) AND rout_is_workspace_member(workspace_id))"
+          "check": null
+        },
+        {
+          "name": "rout_team_delete",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "DELETE",
+          "using": "((workspace_id IS NOT NULL) AND (rout_workspace_role(workspace_id) = ANY (ARRAY['owner'::text, 'admin'::text, 'developer'::text])))",
+          "check": null
+        },
+        {
+          "name": "rout_team_insert",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "INSERT",
+          "using": null,
+          "check": "((workspace_id IS NOT NULL) AND (rout_workspace_role(workspace_id) = ANY (ARRAY['owner'::text, 'admin'::text, 'developer'::text])))"
+        },
+        {
+          "name": "rout_team_update",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "UPDATE",
+          "using": "((workspace_id IS NOT NULL) AND (rout_workspace_role(workspace_id) = ANY (ARRAY['owner'::text, 'admin'::text, 'developer'::text])))",
+          "check": "((workspace_id IS NOT NULL) AND (rout_workspace_role(workspace_id) = ANY (ARRAY['owner'::text, 'admin'::text, 'developer'::text])))"
         }
       ],
       "grants": {
@@ -13826,6 +13887,72 @@
           "UPDATE"
         ]
       }
+    },
+    {
+      "schema": "public",
+      "name": "pairwise_subjects",
+      "columns": [
+        {
+          "name": "sub",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "sector_hash",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "public_key",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": "now()",
+          "identity": null,
+          "generated": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "pairwise_subjects_pkey",
+          "kind": "p",
+          "def": "PRIMARY KEY (sub)"
+        },
+        {
+          "name": "pairwise_subjects_public_key_check",
+          "kind": "c",
+          "def": "CHECK ((public_key ~ '^[A-Za-z0-9_-]{43}$'::text))"
+        },
+        {
+          "name": "pairwise_subjects_sector_hash_check",
+          "kind": "c",
+          "def": "CHECK ((sector_hash ~ '^[0-9a-f]{64}$'::text))"
+        },
+        {
+          "name": "pairwise_subjects_sub_check",
+          "kind": "c",
+          "def": "CHECK ((sub ~ '^[A-Za-z0-9_-]{43}$'::text))"
+        }
+      ],
+      "indexes": [],
+      "triggers": [],
+      "rls": true,
+      "forceRls": false,
+      "policies": [],
+      "grants": {}
     },
     {
       "schema": "public",
@@ -18152,6 +18279,263 @@
     },
     {
       "schema": "public",
+      "name": "recovery_attempts",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "notNull": true,
+          "default": null,
+          "identity": "a",
+          "generated": null
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "outcome",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": "now()",
+          "identity": null,
+          "generated": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "recovery_attempts_outcome_check",
+          "kind": "c",
+          "def": "CHECK ((outcome = ANY (ARRAY['started'::text, 'restored'::text, 'failed'::text, 'practice'::text, 'rotated'::text, 'created'::text])))"
+        },
+        {
+          "name": "recovery_attempts_pkey",
+          "kind": "p",
+          "def": "PRIMARY KEY (id)"
+        },
+        {
+          "name": "recovery_attempts_user_id_fkey",
+          "kind": "f",
+          "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX recovery_attempts_user_idx ON public.recovery_attempts USING btree (user_id, created_at DESC)"
+      ],
+      "triggers": [],
+      "rls": true,
+      "forceRls": false,
+      "policies": [],
+      "grants": {}
+    },
+    {
+      "schema": "public",
+      "name": "recovery_sealed_shards",
+      "columns": [
+        {
+          "name": "vault_id",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "shard_index",
+          "type": "smallint",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "slot",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "credential",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "ciphertext",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": "now()",
+          "identity": null,
+          "generated": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "recovery_sealed_shards_ciphertext_check",
+          "kind": "c",
+          "def": "CHECK (((char_length(ciphertext) <= 440) AND (ciphertext ~ '^v1\\.[A-Za-z0-9_-]{16}\\.[A-Za-z0-9_-]{22,}$'::text)))"
+        },
+        {
+          "name": "recovery_sealed_shards_credential_check",
+          "kind": "c",
+          "def": "CHECK (((char_length(credential) >= 8) AND (char_length(credential) <= 1400)))"
+        },
+        {
+          "name": "recovery_sealed_shards_pkey",
+          "kind": "p",
+          "def": "PRIMARY KEY (vault_id, shard_index)"
+        },
+        {
+          "name": "recovery_sealed_shards_shard_index_check",
+          "kind": "c",
+          "def": "CHECK (((shard_index >= 1) AND (shard_index <= 5)))"
+        },
+        {
+          "name": "recovery_sealed_shards_slot_check",
+          "kind": "c",
+          "def": "CHECK ((slot = 'passkey'::text))"
+        },
+        {
+          "name": "recovery_sealed_shards_vault_id_fkey",
+          "kind": "f",
+          "def": "FOREIGN KEY (vault_id) REFERENCES recovery_vaults(vault_id) ON DELETE CASCADE"
+        }
+      ],
+      "indexes": [],
+      "triggers": [
+        "CREATE TRIGGER recovery_shard_ceiling BEFORE INSERT OR UPDATE ON public.recovery_sealed_shards FOR EACH ROW EXECUTE FUNCTION rout_recovery_shard_ceiling()"
+      ],
+      "rls": true,
+      "forceRls": false,
+      "policies": [],
+      "grants": {}
+    },
+    {
+      "schema": "public",
+      "name": "recovery_vaults",
+      "columns": [
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "vault_id",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "version",
+          "type": "smallint",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "threshold",
+          "type": "smallint",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "sealed_master",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "commitments",
+          "type": "jsonb",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": "now()",
+          "identity": null,
+          "generated": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "recovery_vaults_id",
+          "kind": "c",
+          "def": "CHECK ((vault_id ~ '^[0-9a-f]{32}$'::text))"
+        },
+        {
+          "name": "recovery_vaults_pkey",
+          "kind": "p",
+          "def": "PRIMARY KEY (user_id)"
+        },
+        {
+          "name": "recovery_vaults_sealed",
+          "kind": "c",
+          "def": "CHECK ((sealed_master ~ '^[A-Za-z0-9_-]{16}\\.[A-Za-z0-9_-]{40,200}$'::text))"
+        },
+        {
+          "name": "recovery_vaults_shape",
+          "kind": "c",
+          "def": "CHECK (((version = 1) AND (threshold = 3) AND (jsonb_typeof(commitments) = 'array'::text) AND (jsonb_array_length(commitments) = 5)))"
+        },
+        {
+          "name": "recovery_vaults_user_id_fkey",
+          "kind": "f",
+          "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+        },
+        {
+          "name": "recovery_vaults_vault_id_key",
+          "kind": "u",
+          "def": "UNIQUE (vault_id)"
+        }
+      ],
+      "indexes": [],
+      "triggers": [],
+      "rls": true,
+      "forceRls": false,
+      "policies": [],
+      "grants": {}
+    },
+    {
+      "schema": "public",
       "name": "referrals",
       "columns": [
         {
@@ -18652,6 +19036,91 @@
       "grants": {
         "rout_app": [
           "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "schema": "public",
+      "name": "rout_card_generations",
+      "columns": [
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "generation",
+          "type": "integer",
+          "notNull": true,
+          "default": "0",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "replaced_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": "now()",
+          "identity": null,
+          "generated": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "rout_card_generations_generation_check",
+          "kind": "c",
+          "def": "CHECK (((generation >= 0) AND (generation < 1000)))"
+        },
+        {
+          "name": "rout_card_generations_pkey",
+          "kind": "p",
+          "def": "PRIMARY KEY (user_id)"
+        }
+      ],
+      "indexes": [],
+      "triggers": [],
+      "rls": true,
+      "forceRls": false,
+      "policies": [
+        {
+          "name": "rout_card_generations_insert_own",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "INSERT",
+          "using": null,
+          "check": "(user_id = rout_current_user_id())"
+        },
+        {
+          "name": "rout_card_generations_select_own",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "SELECT",
+          "using": "(user_id = rout_current_user_id())",
+          "check": null
+        },
+        {
+          "name": "rout_card_generations_update_own",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "UPDATE",
+          "using": "(user_id = rout_current_user_id())",
+          "check": "(user_id = rout_current_user_id())"
+        }
+      ],
+      "grants": {
+        "rout_app": [
           "INSERT",
           "SELECT",
           "UPDATE"
@@ -26586,7 +27055,7 @@
       "schema": "public",
       "name": "rout_agent_provision_workspace",
       "args": "p_client_id text, p_name text, p_slug text, p_description text, p_token_hash text",
-      "def": "CREATE OR REPLACE FUNCTION public.rout_agent_provision_workspace(p_client_id text, p_name text, p_slug text, p_description text, p_token_hash text)\n RETURNS TABLE(workspace_id uuid, slug text, expires_at timestamp with time zone)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\ndeclare\n  v_uid uuid := public.rout_current_user_id();\n  v_open integer;\n  v_ws uuid;\n  v_now timestamptz := now();\nbegin\n  if v_uid is null then raise exception 'not_authenticated'; end if;\n  perform pg_advisory_xact_lock(hashtext('agent_provision:' || v_uid::text));\n  select count(*) into v_open from public.agent_workspace_claims c\n   where c.requested_by = v_uid and c.claimed_at is null and c.expires_at > v_now;\n  if v_open >= 3 then raise exception 'agent_quota_reached'; end if;\n  if exists (select 1 from public.workspaces w where w.slug = lower(p_slug)) then\n    raise exception 'slug_taken';\n  end if;\n\n  insert into public.workspaces (name, slug, description, plan)\n  values (p_name, lower(p_slug), nullif(p_description, ''), 'free')\n  returning id into v_ws;\n\n  insert into public.agent_workspace_claims (workspace_id, client_id, requested_by, token_hash, created_at, expires_at)\n  values (v_ws, p_client_id, v_uid, p_token_hash, v_now, v_now + interval '48 hours');\n\n  return query select v_ws, lower(p_slug), v_now + interval '48 hours';\nend;\n$function$"
+      "def": "CREATE OR REPLACE FUNCTION public.rout_agent_provision_workspace(p_client_id text, p_name text, p_slug text, p_description text, p_token_hash text)\n RETURNS TABLE(workspace_id uuid, slug text, expires_at timestamp with time zone)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\ndeclare\n  v_uid uuid := public.rout_current_user_id();\n  v_open integer;\n  v_ws uuid;\n  v_now timestamptz := now();\nbegin\n  if v_uid is null then raise exception 'not_authenticated'; end if;\n  perform pg_advisory_xact_lock(hashtext('agent_provision:' || v_uid::text));\n  select count(*) into v_open from public.agent_workspace_claims c\n   where c.requested_by = v_uid and c.claimed_at is null and c.expires_at > v_now;\n  if v_open >= 3 then raise exception 'agent_quota_reached'; end if;\n  if exists (select 1 from public.workspaces w where w.slug = lower(p_slug)) then\n    raise exception 'slug_taken';\n  end if;\n  insert into public.workspaces (name, slug, description, plan)\n  values (p_name, lower(p_slug), nullif(p_description, ''), 'free')\n  returning id into v_ws;\n  insert into public.agent_workspace_claims (workspace_id, client_id, requested_by, token_hash, created_at, expires_at)\n  values (v_ws, p_client_id, v_uid, p_token_hash, v_now, v_now + interval '24 hours');\n  return query select v_ws, lower(p_slug), v_now + interval '24 hours';\nend;\n$function$"
     },
     {
       "schema": "public",
@@ -26610,7 +27079,7 @@
       "schema": "public",
       "name": "rout_agent_sandbox_register",
       "args": "p_key_hash text, p_pow_hash text, p_ip_bucket text, p_agent_name text",
-      "def": "CREATE OR REPLACE FUNCTION public.rout_agent_sandbox_register(p_key_hash text, p_pow_hash text, p_ip_bucket text, p_agent_name text)\n RETURNS TABLE(sandbox_id uuid, expires_at timestamp with time zone)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\ndeclare v_now timestamptz := now(); v_id uuid; v_count integer;\nbegin\n  perform pg_advisory_xact_lock(hashtext('agent_sandbox_ip:' || p_ip_bucket));\n  select count(*) into v_count from public.agent_sandboxes s\n   where s.ip_bucket = p_ip_bucket and s.created_at > v_now - interval '24 hours';\n  if v_count >= 5 then raise exception 'sandbox_quota_reached'; end if;\n  if exists (select 1 from public.agent_sandboxes s where s.pow_hash = p_pow_hash) then\n    raise exception 'challenge_used';\n  end if;\n  insert into public.agent_sandboxes (key_hash, pow_hash, ip_bucket, agent_name, created_at, expires_at)\n  values (p_key_hash, p_pow_hash, p_ip_bucket, p_agent_name, v_now, v_now + interval '48 hours')\n  returning id into v_id;\n  return query select v_id, v_now + interval '48 hours';\nend; $function$"
+      "def": "CREATE OR REPLACE FUNCTION public.rout_agent_sandbox_register(p_key_hash text, p_pow_hash text, p_ip_bucket text, p_agent_name text)\n RETURNS TABLE(sandbox_id uuid, expires_at timestamp with time zone)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\ndeclare v_now timestamptz := now(); v_id uuid; v_count integer;\nbegin\n  perform pg_advisory_xact_lock(hashtext('agent_sandbox_ip:' || p_ip_bucket));\n  select count(*) into v_count from public.agent_sandboxes s\n   where s.ip_bucket = p_ip_bucket and s.created_at > v_now - interval '24 hours';\n  if v_count >= 5 then raise exception 'sandbox_quota_reached'; end if;\n  if exists (select 1 from public.agent_sandboxes s where s.pow_hash = p_pow_hash) then\n    raise exception 'challenge_used';\n  end if;\n  insert into public.agent_sandboxes (key_hash, pow_hash, ip_bucket, agent_name, created_at, expires_at)\n  values (p_key_hash, p_pow_hash, p_ip_bucket, p_agent_name, v_now, v_now + interval '24 hours')\n  returning id into v_id;\n  return query select v_id, v_now + interval '24 hours';\nend; $function$"
     },
     {
       "schema": "public",
@@ -26644,6 +27113,12 @@
     },
     {
       "schema": "public",
+      "name": "rout_card_generation",
+      "args": "u uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_card_generation(u uuid)\n RETURNS integer\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$ select coalesce((select generation from public.rout_card_generations where user_id = u), 0) $function$"
+    },
+    {
+      "schema": "public",
       "name": "rout_card_status_by_hardware",
       "args": "hid uuid",
       "def": "CREATE OR REPLACE FUNCTION public.rout_card_status_by_hardware(hid uuid)\n RETURNS text\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n  select case when k.status = 'active' and k.public_key is not null\n    and k.key_alg in ('Ed25519','P-256') and k.card_serial is not null\n    and public.rout_card_status_by_serial(k.card_serial) = 'active'\n    then 'active' else 'frozen' end\n  from public.physical_keys k where k.hardware_id = hid\n$function$"
@@ -26652,7 +27127,7 @@
       "schema": "public",
       "name": "rout_card_status_by_serial",
       "args": "s text",
-      "def": "CREATE OR REPLACE FUNCTION public.rout_card_status_by_serial(s text)\n RETURNS text\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n  select case\n    when exists(select 1 from public.card_freezes where serial = s) then 'frozen'\n    when exists(select 1 from public.physical_keys where card_serial = s and status <> 'active') then 'frozen'\n    else 'active' end\n$function$"
+      "def": "CREATE OR REPLACE FUNCTION public.rout_card_status_by_serial(s text)\n RETURNS text\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n  select case\n    when exists(select 1 from public.card_freezes where serial = s and blocked) then 'blocked'\n    when exists(select 1 from public.card_freezes where serial = s) then 'frozen'\n    when exists(select 1 from public.physical_keys where card_serial = s and status <> 'active') then 'frozen'\n    else 'active' end\n$function$"
     },
     {
       "schema": "public",
@@ -26767,6 +27242,12 @@
       "name": "rout_pair_factory_card",
       "args": "hid uuid, proof_hash text, serial text",
       "def": "CREATE OR REPLACE FUNCTION public.rout_pair_factory_card(hid uuid, proof_hash text, serial text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\ndeclare uid uuid := public.rout_current_user_id();\ndeclare item public.factory_card_inventory%rowtype;\nbegin\n  if uid is null then return null; end if;\n  select * into item from public.factory_card_inventory\n    where hardware_id = hid and activation_hash = proof_hash\n      and status = 'pending' and user_id is null for update;\n  if not found then return null; end if;\n  -- Key and algorithm come exclusively from factory inventory, not the client.\n  insert into public.physical_keys\n    (hardware_id, user_id, card_serial, nfc_uid, public_key, key_alg, status)\n    values (item.hardware_id, uid, serial, item.nfc_uid, item.public_key, item.key_alg, 'active');\n  update public.factory_card_inventory set status = 'active', user_id = uid,\n    paired_at = now(), activation_hash = repeat('0', 64) where hardware_id = hid;\n  return hid;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_pairwise_register",
+      "args": "p_sub text, p_sector_hash text, p_public_key text",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_pairwise_register(p_sub text, p_sector_hash text, p_public_key text)\n RETURNS boolean\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\nbegin\n  insert into public.pairwise_subjects (sub, sector_hash, public_key) values (p_sub, p_sector_hash, p_public_key)\n  on conflict (sub) do nothing;\n  return exists (select 1 from public.pairwise_subjects where sub = p_sub and sector_hash = p_sector_hash and public_key = p_public_key);\nend $function$"
     },
     {
       "schema": "public",
@@ -26892,7 +27373,7 @@
       "schema": "public",
       "name": "rout_purge_unclaimed_agent_workspaces",
       "args": "",
-      "def": "CREATE OR REPLACE FUNCTION public.rout_purge_unclaimed_agent_workspaces()\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\ndeclare\n  v_ids uuid[];\nbegin\n  select coalesce(array_agg(c.workspace_id), '{}') into v_ids\n    from (select workspace_id from public.agent_workspace_claims\n           where claimed_at is null and expires_at <= now()\n           order by expires_at\n           limit 500\n           for update skip locked) c;\n  if cardinality(v_ids) = 0 then return 0; end if;\n\n  delete from public.oauth_clients where workspace_id = any (v_ids);\n  delete from public.tracked_qrs where workspace_id = any (v_ids);\n  delete from public.bookings where workspace_id = any (v_ids);\n  delete from public.workspace_transfers where workspace_id = any (v_ids);\n  delete from public.workspaces where id = any (v_ids);\n  return cardinality(v_ids);\nend;\n$function$"
+      "def": "CREATE OR REPLACE FUNCTION public.rout_purge_unclaimed_agent_workspaces()\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\ndeclare\n  v_ids uuid[];\nbegin\n  select coalesce(array_agg(c.workspace_id), '{}') into v_ids\n    from (select workspace_id from public.agent_workspace_claims\n           where claimed_at is null and expires_at <= now()\n           order by expires_at\n           limit 500\n           for update skip locked) c;\n  if cardinality(v_ids) > 0 then\n    delete from public.oauth_clients where workspace_id = any (v_ids);\n    delete from public.tracked_qrs where workspace_id = any (v_ids);\n    delete from public.bookings where workspace_id = any (v_ids);\n    delete from public.workspace_transfers where workspace_id = any (v_ids);\n    delete from public.workspaces where id = any (v_ids); -- drafts and claims cascade\n  end if;\n  -- Expired sandbox keys (and sandboxes that never created a workspace).\n  delete from public.agent_sandboxes where expires_at <= now();\n  return cardinality(v_ids);\nend;\n$function$"
     },
     {
       "schema": "public",
@@ -26953,6 +27434,54 @@
       "name": "rout_record_signup_age",
       "args": "p_email text, p_dob date, p_parent_email text, p_token_hash text",
       "def": "CREATE OR REPLACE FUNCTION public.rout_record_signup_age(p_email text, p_dob date, p_parent_email text, p_token_hash text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\ndeclare v_id uuid; v_minor boolean;\nbegin\n  select id into v_id from public.users\n   where lower(email) = lower(p_email) and date_of_birth is null and created_at > now() - interval '15 minutes'\n   limit 1;\n  if v_id is null then return null; end if;\n  v_minor := p_dob > (current_date - interval '16 years');\n  update public.users\n     set date_of_birth = p_dob,\n         parent_email = case when v_minor then lower(p_parent_email) else null end,\n         parent_consent_status = case when v_minor then 'pending'::public.parent_consent_status else 'none' end\n   where id = v_id;\n  if v_minor and p_token_hash is not null then\n    insert into public.parent_authorizations (user_id, token, action_type, expires_at)\n    values (v_id, p_token_hash, 'consent', now() + interval '30 days');\n  end if;\n  return v_id;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_recovery_attempt",
+      "args": "p_user uuid, p_outcome text",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_recovery_attempt(p_user uuid, p_outcome text)\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\ndeclare v_recent integer;\nbegin\n  select count(*) into v_recent from public.recovery_attempts\n   where user_id = p_user and outcome in ('started', 'failed', 'practice') and created_at > now() - interval '1 hour';\n  insert into public.recovery_attempts (user_id, outcome) values (p_user, p_outcome);\n  return v_recent;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_recovery_attempts_list",
+      "args": "p_user uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_recovery_attempts_list(p_user uuid)\n RETURNS TABLE(outcome text, created_at timestamp with time zone)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n  select outcome, created_at from public.recovery_attempts where user_id = p_user order by created_at desc limit 20\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_recovery_shard_ceiling",
+      "args": "",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_recovery_shard_ceiling()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'public'\nAS $function$\nbegin\n  perform 1 from public.recovery_vaults where vault_id = new.vault_id for update;\n  if (select count(*) from public.recovery_sealed_shards where vault_id = new.vault_id and shard_index <> new.shard_index) >= 2 then\n    raise exception 'recovery_server_shard_ceiling' using errcode = 'check_violation';\n  end if;\n  return new;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_recovery_shard_put",
+      "args": "p_user uuid, p_vault_id text, p_index smallint, p_credential text, p_ciphertext text",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_recovery_shard_put(p_user uuid, p_vault_id text, p_index smallint, p_credential text, p_ciphertext text)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\nbegin\n  if not exists (select 1 from public.recovery_vaults where user_id = p_user and vault_id = p_vault_id) then\n    raise exception 'recovery_vault_mismatch' using errcode = 'check_violation';\n  end if;\n  insert into public.recovery_sealed_shards (vault_id, shard_index, slot, credential, ciphertext)\n  values (p_vault_id, p_index, 'passkey', p_credential, p_ciphertext)\n  on conflict (vault_id, shard_index) do update set credential = excluded.credential, ciphertext = excluded.ciphertext, created_at = now();\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_recovery_shards_get",
+      "args": "p_user uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_recovery_shards_get(p_user uuid)\n RETURNS TABLE(shard_index smallint, credential text, ciphertext text)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n  select s.shard_index, s.credential, s.ciphertext from public.recovery_sealed_shards s\n  join public.recovery_vaults v on v.vault_id = s.vault_id where v.user_id = p_user order by s.shard_index\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_recovery_vault_delete",
+      "args": "p_user uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_recovery_vault_delete(p_user uuid)\n RETURNS void\n LANGUAGE sql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n  delete from public.recovery_vaults where user_id = p_user\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_recovery_vault_get",
+      "args": "p_user uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_recovery_vault_get(p_user uuid)\n RETURNS TABLE(vault_id text, version smallint, threshold smallint, sealed_master text, commitments jsonb, created_at timestamp with time zone)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n  select vault_id, version, threshold, sealed_master, commitments, created_at from public.recovery_vaults where user_id = p_user\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_recovery_vault_put",
+      "args": "p_user uuid, p_vault_id text, p_sealed text, p_commitments jsonb",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_recovery_vault_put(p_user uuid, p_vault_id text, p_sealed text, p_commitments jsonb)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\ndeclare v_rotated boolean;\nbegin\n  v_rotated := exists (select 1 from public.recovery_vaults where user_id = p_user);\n  delete from public.recovery_vaults where user_id = p_user;\n  insert into public.recovery_vaults (user_id, vault_id, version, threshold, sealed_master, commitments)\n  values (p_user, p_vault_id, 1, 3, p_sealed, p_commitments);\n  insert into public.recovery_attempts (user_id, outcome) values (p_user, case when v_rotated then 'rotated' else 'created' end);\nend $function$"
     },
     {
       "schema": "public",
