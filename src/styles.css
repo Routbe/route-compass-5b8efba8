@@ -427,6 +427,23 @@ textarea[data-tour^="cc-"] {
     overflow-wrap: anywhere;
   }
 
+  /* Page scrollbar and text selection follow the active theme (light, dark, dark islands). */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--color-foreground) 26%, transparent) var(--color-background);
+  }
+  * {
+    scrollbar-color: color-mix(in oklab, currentColor 24%, transparent) transparent;
+  }
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-ring) 38%, transparent);
+    color: var(--color-foreground);
+  }
+  input::selection,
+  textarea::selection {
+    background-color: color-mix(in oklab, var(--color-ring) 45%, transparent);
+  }
+
   pre {
     max-width: 100%;
     overflow-x: auto;
