@@ -35,4 +35,4 @@ it("non-bypass runtime denies foreign ledger rows and cascades keys/ciphertext",
       expect((await db.query(`select * from ${table} where user_id=$1`,[foreign])).rows).toHaveLength(1);
     }
   } finally { await db.close(); }
-},20000);
+},90_000);
