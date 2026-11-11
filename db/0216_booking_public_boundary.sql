@@ -145,7 +145,7 @@ begin
      or (p_intake is not null and (jsonb_typeof(p_intake) <> 'object' or octet_length(p_intake::text) > 65536)) then
     return jsonb_build_object('ok', false, 'reason', 'invalid_input');
   end if;
-  if (extract(epoch from p_start)::bigint % (t.slot_step_minutes * 60)) <> 0 or extract(second from p_start) <> trunc(extract(second from p_start)) then
+  if extract(epoch from p_start) % (t.slot_step_minutes * 60) <> 0 then
     return jsonb_build_object('ok', false, 'reason', 'outside_availability');
   end if;
   if p_start < now() + make_interval(hours => t.minimum_notice_hours) then return jsonb_build_object('ok', false, 'reason', 'too_soon'); end if;
@@ -205,9 +205,8 @@ begin
   exception when exclusion_violation then
     return jsonb_build_object('ok', false, 'reason', 'slot_taken');
   end;
-  -- Collective bookings share one guest token so one link covers the whole group.
+  -- The guest link uses the first row's token; group actions resolve the whole group.
   select booking_token into tok from public.bookings where id = ids[1];
-  if array_length(ids, 1) > 1 then update public.bookings set booking_token = tok || '' where false; end if;
   return jsonb_build_object('ok', true, 'bookingIds', to_jsonb(ids), 'hostIds', to_jsonb(chosen), 'token', tok,
     'status', st, 'holdExpiresAt', hold, 'groupId', grp);
 end $$;
