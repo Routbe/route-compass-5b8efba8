@@ -165,6 +165,8 @@ import { DesignTemplatesPanel } from "@/components/settings/DesignTemplatesPanel
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { SaveErrorDialog } from "@/components/dashboard/SaveErrorDialog";
 import { classifySaveError, type SaveErrorInfo } from "@/lib/save-errors";
+import { draftFingerprint, localDraftOffer, saveIndicator, studioDraftKey } from "@/lib/local-first/studio-draft-rules";
+import { deleteStudioDraft, getStudioDraft, putStudioDraft } from "@/lib/local-first/studio-draft-store";
 
 export type ProfileVariant = "verified" | "alias" | "workspace";
 
@@ -682,6 +684,54 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
     return () => window.removeEventListener("beforeunload", onLeave);
   }, [dirty]);
 
+  // On-device copy of unsent edits: survives a lost connection or a closed tab and
+  // is offered back on the next visit. It never counts as "saved at ROUT".
+  const draftKey = user ? studioDraftKey(user.id, space, isWorkspace ? wsCanvas?.workspaceId : null) : null;
+  const [localSavedRev, setLocalSavedRev] = useState(0);
+  const [localOffer, setLocalOffer] = useState<{ savedAt: number; value: typeof historySnapshot } | null>(null);
+  const localChecked = useRef<string | null>(null);
+  useEffect(() => {
+    if (loading || !draftKey || localChecked.current === draftKey) return;
+    localChecked.current = draftKey;
+    const serverPrint = draftFingerprint(historySnapshot);
+    void getStudioDraft<typeof historySnapshot>(draftKey).then((local) => {
+      const offer = localDraftOffer(local, serverPrint, Date.now());
+      if (offer === "restore" && local) setLocalOffer({ savedAt: local.savedAt, value: local.value });
+      else if (offer === "discard") void deleteStudioDraft(draftKey);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, draftKey]);
+  useEffect(() => {
+    if (loading || !draftKey || !dirty || localOffer) return;
+    const rev = editRev.current;
+    const value = historySnapshot;
+    const id = setTimeout(() => {
+      void putStudioDraft(draftKey, value, draftFingerprint(value)).then((ok) => {
+        if (ok) setLocalSavedRev((r) => Math.max(r, rev));
+      });
+    }, 250);
+    return () => clearTimeout(id);
+  }, [historySnapshot, dirty, loading, draftKey, localOffer]);
+  useEffect(() => {
+    if (!draftKey || dirty || saveError || !savedAt || localOffer) return;
+    void deleteStudioDraft(draftKey);
+  }, [savedAt, dirty, saveError, draftKey, localOffer]);
+  // Back online: try again right away instead of waiting for the next back-off step.
+  useEffect(() => {
+    const onOnline = () => { failCount.current = 0; flushRef.current(); };
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, []);
+  const restoreLocalDraft = () => {
+    if (!localOffer) return;
+    applySnapshot(localOffer.value);
+    setLocalOffer(null);
+  };
+  const dropLocalDraft = () => {
+    if (draftKey) void deleteStudioDraft(draftKey);
+    setLocalOffer(null);
+  };
+
   const currentSnapshot = (): StudioSnapshot => ({
     username: normalized,
     displayName: displayName.trim() || null,
@@ -717,7 +767,8 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
       results = hasPatches(patches) ? await Promise.all(calls) : [];
     } catch (e) {
       failCount.current += 1;
-      setSaveError(classifySaveError(e instanceof Error && /fetch|network|load failed/i.test(e.message) ? "failed to fetch" : e));
+      // Keep the browser's own message so the detail panel shows what really failed.
+      setSaveError(classifySaveError(e));
       setRetryIn((n) => n + 1);
       return;
     }
@@ -2117,6 +2168,18 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
 
       {/* Low, compact mobile bar: subtle autosave status + primary live-preview action.
           Desktop already shows the pinned preview aside, so this bar is mobile-only. */}
+      {localOffer && (
+        <div role="status" className="fixed inset-x-3 bottom-20 z-50 mx-auto max-w-md rounded-xl border border-warning/40 bg-background/95 p-3 text-sm shadow-lg backdrop-blur lg:bottom-6 lg:left-auto lg:right-6 lg:mx-0">
+          <p className="flex items-start gap-2">
+            <CloudOff className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden />
+            <span>{t("studio.editor.localFound", { time: new Date(localOffer.savedAt).toLocaleString() })}</span>
+          </p>
+          <div className="mt-3 flex justify-end gap-2">
+            <Button type="button" size="sm" variant="ghost" onClick={dropLocalDraft}>{t("studio.editor.localDiscard")}</Button>
+            <Button type="button" size="sm" onClick={restoreLocalDraft}>{t("studio.editor.localRestore")}</Button>
+          </div>
+        </div>
+      )}
       {saveError && (
         <SaveErrorDialog
           error={saveError}
@@ -2131,7 +2194,11 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
           aria-live="polite"
           className="fixed right-4 top-4 z-40 hidden items-center gap-1.5 rounded-full border border-border bg-background/80 px-3 py-1 text-[11px] text-muted-foreground shadow-sm backdrop-blur lg:flex"
         >
-          {saveError && !saving ? (
+          {saveError && !saving && indicator === "device-only" ? (
+            <button type="button" onClick={() => setErrorOpen(true)} className="flex items-center gap-1.5 text-warning underline">
+              <CloudOff className="h-3 w-3" aria-hidden /> {t("studio.editor.deviceOnly")}
+            </button>
+          ) : saveError && !saving ? (
             <button type="button" onClick={() => setErrorOpen(true)} className="text-destructive underline">
               {t("studio.editor.notSaved")}
             </button>
@@ -2155,7 +2222,12 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
               aria-live="polite"
               className="flex min-w-0 flex-1 items-center gap-1.5 truncate text-[11px] text-muted-foreground"
             >
-              {saveError && !saving ? (
+              {saveError && !saving && indicator === "device-only" ? (
+                <button type="button" onClick={() => setErrorOpen(true)} className="flex min-w-0 items-center gap-1.5 truncate text-left text-warning underline">
+                  <CloudOff className="h-3 w-3 shrink-0" aria-hidden />
+                  <span className="truncate">{t("studio.editor.deviceOnlyShort")}</span>
+                </button>
+              ) : saveError && !saving ? (
                 <button
                   type="button"
                   onClick={() => setErrorOpen(true)}
