@@ -933,7 +933,7 @@
   "socialBlock.followers": "Aantal volgers tonen",
   "studio.editor.deviceOnly": "Alleen op dit toestel bewaard — wordt verstuurd zodra ROUT bereikbaar is",
   "studio.editor.deviceOnlyShort": "Alleen op dit toestel bewaard",
-  "studio.editor.localFound": "Er staan wijzigingen van {time} op dit toestel die nog niet bij ROUT zijn aangekomen.",
+  "studio.editor.localFound": "Er staan wijzigingen van {{time}} op dit toestel die nog niet bij ROUT zijn aangekomen.",
   "studio.editor.localRestore": "Terugzetten",
   "studio.editor.localDiscard": "Weggooien"
 }

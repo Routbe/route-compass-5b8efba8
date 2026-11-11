@@ -933,7 +933,7 @@
   "socialBlock.followers": "Afficher le nombre d'abonnés",
   "studio.editor.deviceOnly": "Enregistré uniquement sur cet appareil — envoyé dès que ROUT est joignable",
   "studio.editor.deviceOnlyShort": "Uniquement sur cet appareil",
-  "studio.editor.localFound": "Cet appareil contient des modifications du {time} qui ne sont pas arrivées chez ROUT.",
+  "studio.editor.localFound": "Cet appareil contient des modifications du {{time}} qui ne sont pas arrivées chez ROUT.",
   "studio.editor.localRestore": "Restaurer",
   "studio.editor.localDiscard": "Supprimer"
 }

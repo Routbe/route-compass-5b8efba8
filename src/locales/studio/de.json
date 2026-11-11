@@ -933,7 +933,7 @@
   "socialBlock.followers": "Follower-Zahl anzeigen",
   "studio.editor.deviceOnly": "Nur auf diesem Gerät gespeichert — wird gesendet, sobald ROUT erreichbar ist",
   "studio.editor.deviceOnlyShort": "Nur auf diesem Gerät gespeichert",
-  "studio.editor.localFound": "Auf diesem Gerät liegen Änderungen vom {time}, die ROUT nie erreicht haben.",
+  "studio.editor.localFound": "Auf diesem Gerät liegen Änderungen vom {{time}}, die ROUT nie erreicht haben.",
   "studio.editor.localRestore": "Wiederherstellen",
   "studio.editor.localDiscard": "Verwerfen"
 }
