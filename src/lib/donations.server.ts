@@ -65,6 +65,16 @@ export async function readDonationTarget(rawHandle: string): Promise<DonationTar
 
   const { parseDisplayPrefs } = await import("./profile-display");
   const prefs = parseDisplayPrefs(profile["display_prefs"]);
+  // A profile the member set to private gets no public donation page either.
+  if (!prefs.publicProfile) return null;
+  const { publicBadgeKind } = await import("./badge-rules");
+  const badge = publicBadgeKind({
+    verified: profile["verified"] === true,
+    isBusiness: false,
+    isInfluencer: false,
+    badgeVisible: prefs.badgeVisible,
+    badgeType: prefs.badgeType,
+  });
 
   return {
     creatorId: String(profile["id"]),
@@ -76,11 +86,8 @@ export async function readDonationTarget(rawHandle: string): Promise<DonationTar
     badgeVisible: prefs.badgeVisible,
     badgeType: prefs.badgeType,
     badgeNameFormat: prefs.badgeNameFormat,
-    // Only shared when the creator shows their verified badge on this page.
-    legalName:
-      profile["verified"] === true && prefs.badgeVisible
-        ? ((profile["verified_legal_name"] as string | null) ?? null)
-        : null,
+    // Only shared with the blue verified badge; the privacy shield never reveals the legal name.
+    legalName: badge === "verified" ? ((profile["verified_legal_name"] as string | null) ?? null) : null,
   };
 }
 
