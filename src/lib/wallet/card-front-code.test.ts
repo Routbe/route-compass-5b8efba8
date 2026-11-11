@@ -6,7 +6,7 @@ const serial = "RC-TEST-0001";
 const t0 = 1_800_000_000_000;
 
 describe("ROUT Card front code", () => {
-  it("is exactly four digits", async () => {
+  it("is exactly six digits", async () => {
     expect(await frontCode(key, serial, frontWindow(t0))).toMatch(/^\d{6}$/);
   });
 
