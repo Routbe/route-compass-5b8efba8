@@ -51,3 +51,10 @@
 - [x] Ontdek-pagina's: per onderdeel een eigen landingspagina (Profielen, QR Studio, Links & statistieken, ROUT ID, ROUT-kaart, Steun voor makers, Vragen & stories, Workspaces, Developers) met illustraties, effecten en links naar de detailpagina's, in NL/EN/FR/DE
 - [x] Hoofdpagina na de kop: meer visuele effecten (Neon-stijl met eigen zwier), onderdelen-overzicht als beeldtegels, knoppen naar de nieuwe Ontdek-pagina's i.p.v. inlogscherm
 - [ ] Detailpagina's (docs): knop "Open ROUT Studio" is vervangen door link naar het onderdeel (klaar); vaste Nederlandse teksten ("Zo werkt het", "Veelgestelde vragen", "Verder met ROUT") nog vertalen
+
+## Nieuwe vraag (11-11): 2FA, herstelsleutel, verificatieknop, Studio-concept
+- [ ] ROUT-kaart: gebruiker met actieve tweestapsverificatie krijgt toch "zet eerst 2FA aan"
+- [ ] Herstelsleutel (2FA): automatisch 24-woorden herstelzin maken in de enclave, kopiëren, downloaden, lokale PDF-noodkit; alleen ciphertext + salt op server; step-up + audit bij aanmaken/gebruiken
+- [ ] Verificatieknop verbergen zodra iemand geverifieerd is (tot het opnieuw nodig is)
+- [ ] Studio: "Concept kon niet worden opgeslagen / failed to fetch" oplossen; oranje status "alleen op dit toestel bewaard" + lokaal bewaren + opnieuw proberen bij verbinding
+- [ ] Ontwerpdocument: cryptografisch datamodel, dreigingsmodel (servercompromis, quantum, XSS, dwang), mappenstructuur Rust/WASM; decoy/hidden vault, PRF+OPAQUE, time-lock + Merkle eerst als ontwerp, niet zonder akkoord bouwen
