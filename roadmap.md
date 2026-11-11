@@ -39,7 +39,7 @@
 - [x] Workspace QR-code: knop "Profiel-QR-code" hernoemen en bewaarde workspace-QR laden
 - [x] Studio onthoudt laatst gekozen privé/geverifieerd
 - [x] ROUT-badge: "badge verbergen" respecteren op externe sites en deelafbeelding
-- [ ] Doneerpagina en etalage: badge-regel nalopen tegen badge-rules.ts
+- [x] Doneerpagina en etalage: zelfde badge-regel; doneerpagina toont geen wettelijke naam bij privacy-schild en niets bij privé-profiel
 - [x] Kleine Studio-labels ("Verborgen") binnen hun kader houden
 - [ ] Glasstijl verbeteren
 - [x] Kaartteksten EN/FR/DE (beveiligingsvak, kaartvenster, scanpagina, bevestigvenster, Steam/Last.fm, Studio)
