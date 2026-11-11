@@ -653,6 +653,14 @@ export interface PublicContactSubmissionsRow {
   "sender_hash": string | null;
   "created_at": string | Date;
   "updated_at": string | Date;
+  "portal_category": string | null;
+  "category": string | null;
+  "priority": string | null;
+  "meta": JsonValue | null;
+  "attachment_key": string | null;
+  "attachment_name": string | null;
+  "attachment_size": string | null;
+  "attachment_mime": string | null;
 }
 
 export interface PublicCreatorDonationsRow {

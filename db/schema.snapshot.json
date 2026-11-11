@@ -6826,6 +6826,70 @@
           "default": "now()",
           "identity": null,
           "generated": null
+        },
+        {
+          "name": "portal_category",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "priority",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "meta",
+          "type": "jsonb",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "attachment_key",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "attachment_name",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "attachment_size",
+          "type": "bigint",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "attachment_mime",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
         }
       ],
       "constraints": [
@@ -6836,7 +6900,9 @@
         }
       ],
       "indexes": [
+        "CREATE INDEX contact_submissions_category_idx ON public.contact_submissions USING btree (category)",
         "CREATE INDEX contact_submissions_created_at_idx ON public.contact_submissions USING btree (created_at DESC)",
+        "CREATE INDEX contact_submissions_priority_idx ON public.contact_submissions USING btree (priority)",
         "CREATE INDEX contact_submissions_sender_hash_idx ON public.contact_submissions USING btree (sender_hash, created_at DESC)"
       ],
       "triggers": [
