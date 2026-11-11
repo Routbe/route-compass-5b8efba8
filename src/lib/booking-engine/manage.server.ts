@@ -195,30 +195,31 @@ export async function syncNow(userId: string, id: string) {
 }
 
 /**
- * Owner actions on a booking. Only the host can act; transitions are guarded in SQL.
- * Workspace bookings additionally require that the host is still a member of
- * that workspace at the moment of the action, so removing a member revokes
- * their ability to confirm/decline/cancel (and to trigger guest e-mails) at once.
+ * Owner actions on a booking. Only a host of the booking can act; transitions
+ * are guarded in SQL. Collective bookings move as one group: every host's row
+ * changes together, never just the actor's. Workspace bookings additionally
+ * require that the actor is still a member of that workspace at that moment.
  */
 export async function bookingAction(userId: string, id: string, action: "confirm" | "decline" | "cancel") {
-  const rows = (action === "confirm"
-    ? await sql`update public.bookings b set status = 'confirmed', updated_at = now()
-        where b.id = ${id}::uuid and b.host_user_id = ${userId}::uuid and b.status = 'requested'
+  const from = action === "cancel" ? ["confirmed", "requested"] : ["requested"];
+  const to = action === "confirm" ? "confirmed" : action === "decline" ? "declined" : "cancelled";
+  const rows = (await sql`with target as (
+        select b.id, b.group_id from public.bookings b
+        where b.id = ${id}::uuid and b.host_user_id = ${userId}::uuid and b.status = any(${from}::text[])
           and (b.workspace_id is null or exists (select 1 from public.workspace_members m where m.workspace_id = b.workspace_id and m.user_id = ${userId}::uuid))
-        returning b.id`
-    : action === "decline"
-      ? await sql`update public.bookings b set status = 'declined', updated_at = now()
-          where b.id = ${id}::uuid and b.host_user_id = ${userId}::uuid and b.status = 'requested'
-            and (b.workspace_id is null or exists (select 1 from public.workspace_members m where m.workspace_id = b.workspace_id and m.user_id = ${userId}::uuid))
-          returning b.id`
-      : await sql`update public.bookings b set status = 'cancelled', sequence = b.sequence + 1, updated_at = now()
-          where b.id = ${id}::uuid and b.host_user_id = ${userId}::uuid and b.status in ('confirmed','requested')
-            and (b.workspace_id is null or exists (select 1 from public.workspace_members m where m.workspace_id = b.workspace_id and m.user_id = ${userId}::uuid))
-          returning b.id`) as { id: string }[];
-  if (!rows.length) return { ok: false as const };
+      )
+      update public.bookings b set status = ${to}, sequence = b.sequence + ${action === "cancel" ? 1 : 0}, updated_at = now()
+      from target
+      where (b.id = target.id or (target.group_id is not null and b.group_id = target.group_id)) and b.status = any(${from}::text[])
+      returning b.id, b.host_user_id`) as { id: string; host_user_id: string }[];
+  if (!rows.some((r) => r.id === id)) return { ok: false as const };
   const { sendBookingInvite } = await import("./invite.server");
   if (action === "confirm") void sendBookingInvite(id, "REQUEST");
   if (action === "cancel") void sendBookingInvite(id, "CANCEL");
-  await recomputeUser(userId);
+  for (const host of new Set(rows.map((r) => r.host_user_id))) {
+    if (host === userId) await recomputeUser(userId);
+    else await sql`insert into public.availability_jobs (user_id, reason) values (${host}::uuid, 'booking_action')
+      on conflict (user_id) do update set run_after = least(public.availability_jobs.run_after, now())`;
+  }
   return { ok: true as const };
 }
