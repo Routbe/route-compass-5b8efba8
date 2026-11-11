@@ -67,3 +67,11 @@
 - [x] Menu (drie streepjes): uitgelogd → uitlegpagina's, ingelogd → werkende tools
 - [ ] Plan boekingssysteem (fases 1–7): wacht op akkoord eigenaar
 - [ ] Eigen Ontdek-pagina voor afspraken (/discover/bookings) — onderdeel van het plan
+
+## Nieuwe vraag (11-11, 18:47): wallet, deelafbeeldingen, voorbeelden
+- [ ] ROUT-kaart toevoegen aan Google Wallet zegt "nog niet ingesteld door de beheerder" (profielkaarten werken wel)
+- [ ] Deelafbeeldingen voor status/anonieme vraag (NGL-stijl) echt opslaan (code + Scaleway), opnieuw maken indien nodig
+- [ ] Alle afbeeldingen nakijken op ontbrekend/niet opgeslagen
+- [ ] Elke pagina + hoofdpagina: juiste voorbeeldtekst, kleur, afbeelding (og/twitter)
+- [ ] Overal juiste schuifbalk-stijl en tekstselectiekleur
+- [ ] Alles opslaan in de code (GitHub) en/of Scaleway, niets enkel bij Lovable; Scaleway-sleutels vragen indien nodig
