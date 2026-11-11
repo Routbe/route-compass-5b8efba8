@@ -3,6 +3,7 @@ import { z } from "zod";
 import sources from "virtual:rout-docs";
 import { canonicalLink, SITE_ORIGIN } from "@/lib/site";
 import type { Locale } from "@/lib/i18n";
+import { pageCardImage, type PageKey } from "@/lib/page-cards";
 
 export const DOC_CATEGORIES = ["about", "info", "dev", "safety", "qr-code-generator", "product", "features", "solutions", "compare", "guide", "support"] as const;
 export type DocCategory = typeof DOC_CATEGORIES[number];
