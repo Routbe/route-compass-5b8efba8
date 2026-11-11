@@ -31,15 +31,20 @@ export function offsetMinutes(utc: Date, tz: string): number {
 }
 
 /**
- * Wall time (y-m-d + minute of day) in `tz` → UTC instant. Times that don't
- * exist (spring-forward gap) shift forward; ambiguous ones take the first.
+ * Wall time (y-m-d + minute of day) in `tz` → UTC instant, RFC 5545 §3.3.5:
+ * a time inside a spring-forward gap moves forward by the gap length
+ * (02:30 → 03:30), an ambiguous fall-back time takes the FIRST occurrence.
  */
 export function zonedToUtc(year: number, month: number, day: number, minuteOfDay: number, tz: string): Date {
   const naive = Date.UTC(year, month - 1, day, 0, minuteOfDay);
-  let guess = naive - offsetMinutes(new Date(naive), tz) * 60000;
-  const second = naive - offsetMinutes(new Date(guess), tz) * 60000;
-  if (second !== guess) guess = Math.min(guess, second);
-  return new Date(guess);
+  const before = offsetMinutes(new Date(naive - 86400000), tz);
+  const after = offsetMinutes(new Date(naive + 86400000), tz);
+  const candidates = new Set<number>([before, after, offsetMinutes(new Date(naive), tz)].map((o) => naive - o * 60000));
+  // A candidate is real when its own offset maps it back to the requested wall time.
+  const real = [...candidates].filter((c) => c + offsetMinutes(new Date(c), tz) * 60000 === naive);
+  if (real.length) return new Date(Math.min(...real));
+  // Gap: the wall clock skipped this time; keep the offset from before the jump.
+  return new Date(naive - before * 60000);
 }
 
 export const startOfUtcDay = (d: Date) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
