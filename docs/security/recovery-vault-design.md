@@ -18,7 +18,7 @@ daarvan komen er rate limits, meldingen naar de eigenaar en (voorstel §5) een w
 
 ## 2. Waarom geen Rust/WASM nodig is
 
-`@noble/hashes` (Argon2id, HKDF, SHA-2/3), `@noble/ciphers` en `@scure/bip39` zijn geaudit, zonder afhankelijkheden
+`@noble/hashes` (Argon2id, HKDF, SHA-2/3), WebCrypto AES-GCM en `@scure/bip39` zijn geaudit of standaard, zonder afhankelijkheden
 en draaien al in de worker. Een WASM-module voegt een tweede build-toolchain (cargo + wasm-pack) toe die de
 Lovable-build niet uitvoert, dus het `.wasm`-bestand zou als vooraf gebouwd binair bestand in de repo moeten staan.
 Dat is moeilijker te controleren dan TypeScript-broncode. Aanbeveling: **pure TypeScript in de worker**. Alleen als
@@ -101,7 +101,7 @@ dat trekken we in dezelfde migratie recht).
 | Dreiging | Wat de aanvaller krijgt | Waarom het houdt / wat niet |
 |---|---|---|
 | **Volledig servercompromis** (DB + code) | Ciphertext, salts, wraps, auditlog | Geen woorden, E of VK: 256-bit zin + Argon2id. **Niet beschermd**: een aanvaller die de *code* aanpast, kan kwaadaardige JS serveren die de zin bij de volgende invoer steelt. Tegenmaatregel: SRI, ondertekende builds, Merkle-kop vergelijken, op termijn een aparte `vault.rout.be`-oorsprong met strikte CSP. |
-| **Kwantumcomputer** | — | AES-256-GCM en SHA-256/Argon2id houden ~128 bit tegen Grover. Shamir is informatietheoretisch veilig. Kwetsbaar: ECDSA/P-256 van passkeys (authenticatie, niet vertrouwelijkheid) en elke toekomstige ECDH-sleuteluitwisseling; daar hybride X25519 + ML-KEM (`@noble/post-quantum`, zie `db/0204` featurebranch). |
+| **Kwantumcomputer** | — | AES-256-GCM en SHA-256/Argon2id houden ~128 bit tegen Grover. Shamir is informatietheoretisch veilig. Kwetsbaar: ECDSA/P-256 van passkeys (authenticatie, niet vertrouwelijkheid) en elke toekomstige ECDH-sleuteluitwisseling; daar hybride X25519 + ML-KEM (`@noble/post-quantum`, nog niet geïnstalleerd; zie `db/0204` featurebranch). |
 | **XSS** | Alles wat de pagina ziet | De worker is geen XSS-grens (zie `crypto-enclave/SECURITY.md`): ingespoten script kan de zin lezen terwijl hij op het scherm staat, of de worker zelf aanroepen. Beperking: strikte CSP + Trusted Types, zin kort tonen, invoer op aparte oorsprong (voorstel). |
 | **Fysieke dwang** | Wat het slachtoffer afgeeft | Dwangzin opent de decoy-kluis; wachttijd + meldingen geven tijd om te annuleren of het account te bevriezen. Geen bescherming als beide zinnen worden afgedwongen. |
 | **Gestolen toestel** | Toestelsleutel achter OS-vergrendeling | Nieuwe zin/herstel vraagt step-up; herstel heeft wachttijd en meldingen. |
