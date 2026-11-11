@@ -53,8 +53,10 @@
 - [ ] Detailpagina's (docs): knop "Open ROUT Studio" is vervangen door link naar het onderdeel (klaar); vaste Nederlandse teksten ("Zo werkt het", "Veelgestelde vragen", "Verder met ROUT") nog vertalen
 
 ## Nieuwe vraag (11-11): 2FA, herstelsleutel, verificatieknop, Studio-concept
-- [ ] ROUT-kaart: gebruiker met actieve tweestapsverificatie krijgt toch "zet eerst 2FA aan"
-- [ ] Herstelsleutel (2FA): automatisch 24-woorden herstelzin maken in de enclave, kopiëren, downloaden, lokale PDF-noodkit; alleen ciphertext + salt op server; step-up + audit bij aanmaken/gebruiken
-- [ ] Verificatieknop verbergen zodra iemand geverifieerd is (tot het opnieuw nodig is)
-- [ ] Studio: "Concept kon niet worden opgeslagen / failed to fetch" oplossen; oranje status "alleen op dit toestel bewaard" + lokaal bewaren + opnieuw proberen bij verbinding
-- [ ] Ontwerpdocument: cryptografisch datamodel, dreigingsmodel (servercompromis, quantum, XSS, dwang), mappenstructuur Rust/WASM; decoy/hidden vault, PRF+OPAQUE, time-lock + Merkle eerst als ontwerp, niet zonder akkoord bouwen
+- [x] ROUT-kaart: gebruiker met actieve tweestapsverificatie krijgt toch "zet eerst 2FA aan"
+- [x] Herstelsleutel (2FA): automatisch 24-woorden herstelzin maken in de enclave, kopiëren, downloaden, lokale PDF-noodkit; step-up (bestond) + audit bij aanmaken/gebruiken
+- [ ] Herstelkluis v2 (Argon2id-wrap, vaste container, decoy/verborgen kluis, wachttijd, Merkle): ontwerp in docs/security/recovery-vault-design.md, wacht op akkoord eigenaar (§7)
+- [x] Verificatieknop verbergen zodra iemand geverifieerd is (tot het opnieuw nodig is)
+- [x] Studio: oranje status "alleen op dit toestel bewaard" + lokaal bewaren + opnieuw proberen bij verbinding; echte foutmelding blijft nu zichtbaar
+- [ ] Studio "failed to fetch": oorzaak nog niet gereproduceerd; volgende melding toont de echte browserfout in het detailvenster
+- [x] Ontwerpdocument: cryptografisch datamodel, dreigingsmodel, mappenstructuur Rust/WASM
