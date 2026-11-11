@@ -8,7 +8,7 @@ export const Route = createFileRoute("/discover/")({
   loader: async () => getRequestLocale().catch(() => ({ locale: "en" as const })),
   head: ({ loaderData }) => {
     const { ui } = discoverCopy(loaderData?.locale);
-    const title = `${ui.indexTitle} | ROUT`;
+    const title = `${ui.indexTitle}`;
     return {
       meta: [
         { title },

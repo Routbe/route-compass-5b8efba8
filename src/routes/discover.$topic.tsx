@@ -14,7 +14,7 @@ export const Route = createFileRoute("/discover/$topic")({
   head: ({ loaderData, params }) => {
     if (!loaderData) return { meta: [{ title: "ROUT" }, { name: "robots", content: "noindex" }] };
     const c = discoverCopy(loaderData.locale).topics[loaderData.slug];
-    const title = `${c.brand}: ${c.title} | ROUT`;
+    const title = `${c.brand}: ${c.title}`;
     return {
       meta: [
         { title },
