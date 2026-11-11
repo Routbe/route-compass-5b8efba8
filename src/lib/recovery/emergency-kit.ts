@@ -16,7 +16,7 @@ export type KitInput = {
 async function qrPng(data: string): Promise<string | null> {
   try {
     const { default: QRCodeStyling } = await import("qr-code-styling");
-    const qr = new QRCodeStyling({ width: 480, height: 480, type: "canvas", data, margin: 8, qrOptions: { errorCorrectionLevel: "M" }, dotsOptions: { type: "square", color: "#111111" }, backgroundOptions: { color: "#ffffff" } });
+    const qr = new QRCodeStyling({ width: 360, height: 360, type: "canvas", data, margin: 8, qrOptions: { errorCorrectionLevel: "M" }, dotsOptions: { type: "square", color: "#111111" }, backgroundOptions: { color: "#ffffff" } });
     const blob = (await qr.getRawData("png")) as Blob | null;
     if (!blob) return null;
     return await new Promise<string>((resolve, reject) => {
