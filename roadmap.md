@@ -77,9 +77,10 @@
 - [ ] Eigen Ontdek-pagina voor afspraken (/discover/bookings) — onderdeel van het plan
 
 ## Nieuwe vraag (11-11, 18:47): wallet, deelafbeeldingen, voorbeelden
-- [ ] ROUT-kaart toevoegen aan Google Wallet zegt "nog niet ingesteld door de beheerder" (profielkaarten werken wel)
-- [ ] Deelafbeeldingen voor status/anonieme vraag (NGL-stijl) echt opslaan (code + Scaleway), opnieuw maken indien nodig
-- [ ] Alle afbeeldingen nakijken op ontbrekend/niet opgeslagen
-- [ ] Elke pagina + hoofdpagina: juiste voorbeeldtekst, kleur, afbeelding (og/twitter)
-- [ ] Overal juiste schuifbalk-stijl en tekstselectiekleur
-- [ ] Alles opslaan in de code (GitHub) en/of Scaleway, niets enkel bij Lovable; Scaleway-sleutels vragen indien nodig
+- [x] ROUT-kaart naar Google Wallet: oorzaak gevonden (kaartsleutel WALLET_ID_SECRET ontbreekt/te kort op de server); scherm toont nu de echte reden
+- [ ] WALLET_ID_SECRET (min. 32 tekens) op de server zetten — wacht op eigenaar (hosting buiten Lovable)
+- [x] Deelafbeeldingen profiel/anonieme vraag/steun/fooi/afspraak: in code getekend en nu als PNG bewaard in Scaleway (interne bucket)
+- [x] Afbeeldingen nagekeken: geen ontbrekende bestanden; mislukte kaart levert nu altijd PNG
+- [x] Voorbeeldafbeelding + kleur: hoofdpagina, about, alle info/docs-pagina's, 9 Ontdek-pagina's (eigen kaart per onderdeel), korte links/uitnodiging/statistieken
+- [x] Schuifbalk en tekstselectie volgen het thema overal; Ontdek-pagina's selecteren in hun eigen kleur
+- [ ] Scaleway-opslag live controleren (wacht op Scaleway-sleutels op de server)
