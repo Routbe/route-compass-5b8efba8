@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { useReducedMotion } from "motion/react";
 import { AtSign, BadgeCheck, CalendarDays, Check, Fingerprint, Github, Globe, Heart, KeyRound, Lock, Mail, Music2, Nfc, QrCode, Snowflake, Users, X } from "lucide-react";
 import type { TopicSlug } from "@/lib/discover/topics";
@@ -166,7 +166,7 @@ function WorkspacesScene() {
         <div className="dv-ring dv-ring-1">{[0, 1, 2].map((i) => <span key={i} className="dv-node" style={{ transform: `rotate(${i * 120}deg) translateX(var(--r)) rotate(${-i * 120}deg)` }} />)}</div>
         <div className="dv-ring dv-ring-2">{[0, 1, 2, 3].map((i) => <span key={i} className="dv-node dv-node-sm" style={{ transform: `rotate(${45 + i * 90}deg) translateX(var(--r)) rotate(${-45 - i * 90}deg)` }} />)}</div>
       </div>
-      <div className="dv-float dv-float-a"><Globe className="h-3.5 w-3.5" /><span className="dv-mono">jouwmerk.be</span></div>
+      <div className="dv-float dv-float-a"><Globe className="h-3.5 w-3.5" /><span className="dv-mono">rout.be/w/…</span></div>
       <div className="dv-float dv-float-b"><QrCode className="h-3.5 w-3.5" /><span className="dv-line dv-line-xs" /></div>
     </div>
   );
@@ -192,7 +192,7 @@ function DevelopersScene() {
   );
 }
 
-const SCENES: Record<TopicSlug, () => JSX.Element> = {
+const SCENES: Record<TopicSlug, ComponentType> = {
   profiles: ProfilesScene,
   "qr-studio": QrScene,
   links: LinksScene,
