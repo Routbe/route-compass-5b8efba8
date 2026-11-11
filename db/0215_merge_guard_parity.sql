@@ -38,6 +38,11 @@ begin
     ) v(tbl)
   loop
     continue when to_regclass('public.' || t.tbl) is null;
+    -- The merge runs as the non-bypass executor: it may only test whether the
+    -- secondary owns a row (column-level read of user_id under an executor-only policy).
+    execute format('grant select (user_id) on public.%I to rout_merge_executor', t.tbl);
+    execute format('drop policy if exists atomic_merge_guard on public.%I', t.tbl);
+    execute format('create policy atomic_merge_guard on public.%I for select to rout_merge_executor using (true)', t.tbl);
     continue when position('merge_blocked:' || t.tbl || '''' in v_def) > 0;
     select data_type into v_type from information_schema.columns
      where table_schema = 'public' and table_name = t.tbl and column_name = 'user_id';

@@ -3529,6 +3529,16 @@
       "forceRls": false,
       "policies": [
         {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
+        {
           "name": "credential_recipient_accept",
           "permissive": true,
           "roles": [
@@ -6249,6 +6259,16 @@
       "forceRls": false,
       "policies": [
         {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
+        {
           "name": "card_designs_own",
           "permissive": true,
           "roles": [
@@ -6335,6 +6355,16 @@
       "rls": true,
       "forceRls": false,
       "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
         {
           "name": "card_freezes_delete_own",
           "permissive": true,
@@ -7847,7 +7877,18 @@
       "triggers": [],
       "rls": false,
       "forceRls": false,
-      "policies": [],
+      "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        }
+      ],
       "grants": {}
     },
     {
@@ -8170,6 +8211,16 @@
       "forceRls": true,
       "policies": [
         {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
+        {
           "name": "presence_owner",
           "permissive": true,
           "roles": [
@@ -8397,7 +8448,18 @@
       "triggers": [],
       "rls": true,
       "forceRls": false,
-      "policies": [],
+      "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        }
+      ],
       "grants": {}
     },
     {
@@ -13342,6 +13404,16 @@
       "forceRls": false,
       "policies": [
         {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
+        {
           "name": "oidc_subjects_insert_own",
           "permissive": true,
           "roles": [
@@ -13425,6 +13497,16 @@
       "rls": true,
       "forceRls": true,
       "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
         {
           "name": "omni_token_owner",
           "permissive": true,
@@ -13676,6 +13758,16 @@
       "forceRls": true,
       "policies": [
         {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
+        {
           "name": "omni_daemon_jobs",
           "permissive": true,
           "roles": [
@@ -13873,6 +13965,16 @@
       "rls": true,
       "forceRls": true,
       "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
         {
           "name": "omni_catalog_owner",
           "permissive": true,
@@ -14114,6 +14216,16 @@
       "rls": true,
       "forceRls": false,
       "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
         {
           "name": "rout_owner_read",
           "permissive": true,
@@ -14478,6 +14590,16 @@
       "rls": true,
       "forceRls": false,
       "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
         {
           "name": "physical_keys_insert_own",
           "permissive": true,
@@ -14987,6 +15109,16 @@
       "rls": true,
       "forceRls": true,
       "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
         {
           "name": "broadcast_owner",
           "permissive": true,
@@ -18403,7 +18535,18 @@
       "triggers": [],
       "rls": true,
       "forceRls": false,
-      "policies": [],
+      "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        }
+      ],
       "grants": {}
     },
     {
@@ -18597,7 +18740,18 @@
       "triggers": [],
       "rls": true,
       "forceRls": false,
-      "policies": [],
+      "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        }
+      ],
       "grants": {}
     },
     {
@@ -19154,6 +19308,16 @@
       "rls": true,
       "forceRls": false,
       "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
         {
           "name": "rout_card_generations_insert_own",
           "permissive": true,
@@ -20700,6 +20864,16 @@
       "forceRls": true,
       "policies": [
         {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
+        {
           "name": "social_grid_owner",
           "permissive": true,
           "roles": [
@@ -21995,6 +22169,16 @@
       "rls": true,
       "forceRls": false,
       "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
         {
           "name": "credential_visibility_owner",
           "permissive": true,
@@ -24859,6 +25043,16 @@
       "rls": true,
       "forceRls": false,
       "policies": [
+        {
+          "name": "atomic_merge_guard",
+          "permissive": true,
+          "roles": [
+            "rout_merge_executor"
+          ],
+          "cmd": "SELECT",
+          "using": "true",
+          "check": null
+        },
         {
           "name": "wallet_passes_read_own",
           "permissive": true,
