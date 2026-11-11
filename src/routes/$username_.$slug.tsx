@@ -34,12 +34,14 @@ export const Route = createFileRoute("/$username_/$slug")({
       },
     },
   },
-  head: () => ({
+  head: ({ params }) => ({
     meta: [
-      { title: "ROUT" },
-      { name: "description", content: "ROUT — QR-codes en korte links met karakter." },
-      { property: "og:title", content: "ROUT" },
-      { property: "og:description", content: "ROUT — QR-codes en korte links met karakter." },
+      { title: `Link van @${params.username} | ROUT` },
+      { name: "description", content: "Een korte link of QR-code van een ROUT-profiel." },
+      { property: "og:title", content: `Link van @${params.username} | ROUT` },
+      { property: "og:description", content: "Een korte link of QR-code van een ROUT-profiel." },
+      { property: "og:image", content: "https://rout.be/brand/og/home-nl.png" },
+      { name: "twitter:image", content: "https://rout.be/brand/og/home-nl.png" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, nofollow" },

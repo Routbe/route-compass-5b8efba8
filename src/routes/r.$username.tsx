@@ -34,12 +34,14 @@ function ReferralLanding() {
 }
 
 export const Route = createFileRoute("/r/$username")({
-  head: () => ({
+  head: ({ params }) => ({
     meta: [
-      { title: "ROUT" },
-      { name: "description", content: "ROUT — QR-codes en korte links met karakter." },
-      { property: "og:title", content: "ROUT" },
-      { property: "og:description", content: "ROUT — QR-codes en korte links met karakter." },
+      { title: `@${params.username} nodigt je uit op ROUT` },
+      { name: "description", content: "Maak je eigen soevereine profiel, QR-codes en korte links op ROUT — Europees en open source." },
+      { property: "og:title", content: `@${params.username} nodigt je uit op ROUT` },
+      { property: "og:description", content: "Maak je eigen soevereine profiel, QR-codes en korte links op ROUT — Europees en open source." },
+      { property: "og:image", content: "https://rout.be/brand/og/home-nl.png" },
+      { name: "twitter:image", content: "https://rout.be/brand/og/home-nl.png" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

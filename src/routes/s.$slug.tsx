@@ -38,10 +38,12 @@ export const Route = createFileRoute("/s/$slug")({
   },
   head: () => ({
     meta: [
-      { title: "ROUT" },
-      { name: "description", content: "ROUT — QR-codes en korte links met karakter." },
-      { property: "og:title", content: "ROUT" },
-      { property: "og:description", content: "ROUT — QR-codes en korte links met karakter." },
+      { title: "Gedeelde link | ROUT" },
+      { name: "description", content: "Een gedeelde korte link op ROUT." },
+      { property: "og:title", content: "Gedeelde link | ROUT" },
+      { property: "og:description", content: "Een gedeelde korte link op ROUT." },
+      { property: "og:image", content: "https://rout.be/brand/og/home-nl.png" },
+      { name: "twitter:image", content: "https://rout.be/brand/og/home-nl.png" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, nofollow" },
