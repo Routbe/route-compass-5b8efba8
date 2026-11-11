@@ -93,7 +93,7 @@ export function CardSecurityPanel({ onChange }: { onChange?: () => void }) {
         await refresh(); onChange?.();
         r = await issue({ data: { passType: "SMART_TAP_KEY" } });
       }
-      if (!r.ok) throw new Error(r.error === "wallet_not_configured" || r.error === "key_not_configured" ? t("cardSec.walletNotConfigured") : t("cardSec.walletFailed"));
+      if (!r.ok) throw new Error(r.error === "wallet_not_configured" ? t("cardSec.walletNotConfigured") : r.error === "key_not_configured" ? t("cardSec.keyNotConfigured") : t("cardSec.walletFailed"));
       if (tab) tab.location.href = r.saveUrl; else window.location.href = r.saveUrl;
     } catch (e) { tab?.close(); throw e; }
   });
@@ -130,11 +130,11 @@ export function CardSecurityPanel({ onChange }: { onChange?: () => void }) {
         </Button>
       ))}
       {state === "active" && (
-        <Button className="h-11 gap-2 rounded-full" disabled={busy !== null || !sec.wallet.google} onClick={() => void addGoogle()}>
+        <Button className="h-11 gap-2 rounded-full" disabled={busy !== null || !sec.wallet.key} onClick={() => void addGoogle()}>
           {busy === "google" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Wallet className="h-4 w-4" aria-hidden />} {t("cardSec.addGoogle")}
         </Button>
       )}
-      {state === "active" && !sec.wallet.google && <p className="text-[11px] text-muted-foreground">{t("cardSec.walletNotConfigured")}</p>}
+      {state === "active" && !sec.wallet.key && <p className="text-[11px] text-muted-foreground">{t(sec.wallet.google ? "cardSec.keyNotConfigured" : "cardSec.walletNotConfigured")}</p>}
       <div className="grid grid-cols-3 gap-2">
         <Button variant="outline" size="sm" className="gap-1.5" disabled={busy !== null || state === "blocked" || state === "unavailable"} onClick={() => setConfirm(state === "frozen" ? "thaw" : "freeze")}>{state === "frozen" ? <Sun className="h-3.5 w-3.5" aria-hidden /> : <Snowflake className="h-3.5 w-3.5" aria-hidden />} {state === "frozen" ? t("cardSec.thaw") : t("cardSec.freeze")}</Button>
         <Button variant="destructive" size="sm" className="gap-1.5" disabled={busy !== null || state === "blocked"} onClick={() => setConfirm("block")}><Ban className="h-3.5 w-3.5" aria-hidden /> {t("cardSec.block")}</Button>

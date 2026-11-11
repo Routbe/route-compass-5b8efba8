@@ -1893,6 +1893,7 @@
   "cardSec.reveal": "Bevestig wie je bent om je kaart te tonen",
   "cardSec.addGoogle": "ROUT-kaart toevoegen aan Google Wallet",
   "cardSec.walletNotConfigured": "Google Wallet is nog niet ingesteld door de beheerder.",
+  "cardSec.keyNotConfigured": "Profielkaarten werken al, maar je privé ROUT-kaart heeft nog een eigen beveiligingssleutel op de server nodig. De beheerder moet die eerst instellen.",
   "cardSec.walletFailed": "Toevoegen aan Google Wallet lukte niet.",
   "cardSec.freeze": "Bevriezen",
   "cardSec.thaw": "Ontdooien",

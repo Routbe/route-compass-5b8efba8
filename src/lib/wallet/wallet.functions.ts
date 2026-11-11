@@ -339,7 +339,9 @@ export const getMyCardSecurity = createServerFn({ method: "GET" })
     const [mine, twoFactor, unlockedUntil] = await Promise.all([myRootCard(context.userId), memberHasTwoFactor(context.userId), cardUnlockedUntil(context.userId)]);
     const { walletStatus } = await import("./wallet-pass");
     const { isPlatformFeatureEnabled } = await import("@/lib/platform-features.server");
-    const wallet = (await isPlatformFeatureEnabled("wallet")) ? walletStatus(process.env as Record<string, string | undefined>) : { apple: false, google: false };
+    const status = (await isPlatformFeatureEnabled("wallet")) ? walletStatus(process.env as Record<string, string | undefined>) : { apple: false, google: false };
+    // The private card needs its own server key on top of the Google issuer; profile cards do not.
+    const wallet = { ...status, key: status.google && (process.env["WALLET_ID_SECRET"]?.length ?? 0) >= 32 };
     return {
       hasCard: !!mine,
       handle: mine?.card.handle ?? null,
