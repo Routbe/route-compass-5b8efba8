@@ -64,10 +64,13 @@ export async function enrolledFactors(userId: string): Promise<EnrolledFactors &
   const { sql } = await import("@/lib/neon");
   const rows = (await sql`
     select bu.id::text as auth_id,
-           coalesce(bu."twoFactorEnabled", false) as totp,
-           exists (select 1 from neon_auth.passkey p where p."userId" = bu.id) as passkey,
-           exists (select 1 from neon_auth."twoFactor" t where t."userId" = bu.id and t."backupCodes" is not null and t."backupCodes" <> '[]') as backup,
-           exists (select 1 from neon_auth.account a where a."userId" = bu.id and a."providerId" = 'credential' and a.password is not null) as password
+           -- neon_auth.passkey/"twoFactor"."userId" are text while "user".id is uuid: compare as text,
+           -- otherwise the whole lookup errors and every member looks like they have no second step.
+           (coalesce(bu."twoFactorEnabled", false) or exists (select 1 from neon_auth."twoFactor" t
+              where t."userId"::text = bu.id::text and t.secret is not null and coalesce(t.verified, true))) as totp,
+           exists (select 1 from neon_auth.passkey p where p."userId"::text = bu.id::text) as passkey,
+           exists (select 1 from neon_auth."twoFactor" t where t."userId"::text = bu.id::text and t."backupCodes" is not null and t."backupCodes" <> '[]') as backup,
+           exists (select 1 from neon_auth.account a where a."userId"::text = bu.id::text and a."providerId" = 'credential' and a.password is not null) as password
     from public.users u
     left join neon_auth."user" bu on bu.id::text = coalesce(u.auth_user_id::text, u.user_metadata->>'neon_auth_id')
     where u.id = ${userId} limit 1`) as { auth_id: string | null; totp: boolean | null; passkey: boolean | null; backup: boolean | null; password: boolean | null }[];
