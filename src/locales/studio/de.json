@@ -919,5 +919,16 @@
   "studio.logoBar.choose": "{{count}} Logos unter deiner Bio. Wähle unter Design → Ebenen-Studio: in Reihen umbrechen oder horizontale Scrollleiste.",
   "booking.done.masked": "Öffne den Link aus deiner Bestätigungs-E-Mail, um Uhrzeit und Details zu sehen.",
   "studio.editor.qrWorkspace": "Workspace-QR-Code",
-  "studio.editor.qrWorkspaceDownload": "Workspace-QR-Code gestalten und herunterladen"
+  "studio.editor.qrWorkspaceDownload": "Workspace-QR-Code gestalten und herunterladen",
+  "studio.effects.title": "Karteneffekte",
+  "studio.effects.help": "Ein sanfter Glanz auf deinen Blöcken und ein Leuchten um Live-Blöcke (Steam, Musik), solange du aktiv bist.",
+  "studio.guestbook.counts": "{{total}} Nachrichten · {{pinned}}/{{limit}} angeheftet",
+  "socialBlock.failed": "Verbinden fehlgeschlagen. Bitte versuche es erneut.",
+  "socialBlock.verified": "Verifiziert",
+  "socialBlock.settings": "Verbindung und Follower",
+  "socialBlock.bioHint": "Füge deinen ROUT-Link in die Bio dieses Kontos ein und klicke auf Verbinden. So beweisen wir, dass das Konto dir gehört.",
+  "socialBlock.snapHint": "Du meldest dich bei Snapchat an. ROUT speichert kein Passwort und keinen Standort, nur deinen Namen und dein Bitmoji.",
+  "socialBlock.connect": "Verbinden",
+  "socialBlock.unavailable": "Diese Plattform kann noch nicht verbunden werden.",
+  "socialBlock.followers": "Follower-Zahl anzeigen"
 }

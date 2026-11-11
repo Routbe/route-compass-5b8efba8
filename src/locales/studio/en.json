@@ -919,5 +919,16 @@
   "studio.logoBar.choose": "{{count}} logos under your bio. Choose in Design → Layer studio: wrap onto rows or a horizontal scroll bar.",
   "booking.done.masked": "Open the link from your confirmation email to see the time and details.",
   "studio.editor.qrWorkspace": "Workspace QR code",
-  "studio.editor.qrWorkspaceDownload": "Design and download the workspace QR code"
+  "studio.editor.qrWorkspaceDownload": "Design and download the workspace QR code",
+  "studio.effects.title": "Card effects",
+  "studio.effects.help": "A soft sheen on your blocks and a glow around live blocks (Steam, music) while you're active.",
+  "studio.guestbook.counts": "{{total}} messages · {{pinned}}/{{limit}} pinned",
+  "socialBlock.failed": "Connecting failed. Please try again.",
+  "socialBlock.verified": "Verified",
+  "socialBlock.settings": "Connection and followers",
+  "socialBlock.bioHint": "Put your ROUT link in this account's bio and click Connect. That's how we prove the account is yours.",
+  "socialBlock.snapHint": "You sign in with Snapchat. ROUT keeps no password and no location, only your name and Bitmoji.",
+  "socialBlock.connect": "Connect",
+  "socialBlock.unavailable": "This platform can't be connected yet.",
+  "socialBlock.followers": "Show follower count"
 }
