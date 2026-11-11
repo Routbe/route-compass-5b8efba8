@@ -56,6 +56,31 @@
   --m-cap-wall: hsl(var(--foreground) / 0.3);
 }
 
+/* Dark islands (Developer Console, its menu sheet) inside a light root: custom
+   properties resolve where they are declared, so the colour tokens must be
+   re-declared on the island or header/footer keep the light page colour. */
+:root[data-workspace-ui="internal"][data-theme="mechanical"] .dark {
+  --m-surface: hsl(var(--card));
+  --m-overlay: hsl(var(--popover));
+  --m-page: hsl(var(--background));
+  --m-control: hsl(var(--secondary));
+  --m-hover: hsl(var(--foreground) / 0.08);
+  --m-hairline: hsl(var(--foreground) / 0.11);
+  --m-edge: hsl(var(--foreground) / 0.2);
+  --m-action-edge: hsl(var(--foreground) / 0.55);
+  --m-action-shadow: var(--m-press) var(--m-press) 0 0 hsl(var(--foreground) / 0.32);
+  --m-selected: hsl(var(--foreground));
+  --m-selected-ink: hsl(var(--background));
+  --m-key-wall: color-mix(in oklab, hsl(var(--primary)) 45%, oklch(0 0 0));
+  --m-key-shadow: 0 var(--m-key-travel) 0 0 var(--m-key-wall);
+  --m-key-shadow-down: 0 0 0 0 var(--m-key-wall);
+  --m-cap-wall: hsl(var(--foreground) / 0.3);
+  --m-cap-shadow: 0 var(--m-cap-travel) 0 0 var(--m-cap-wall);
+  --m-cap-shadow-down: 0 0 0 0 var(--m-cap-wall);
+  --m-inset-key: inset 0 -2px 0 0 var(--m-cap-wall);
+  --m-inset-key-down: inset 0 0 0 0 var(--m-cap-wall);
+}
+
 /* The wallet vault draws its own hardware keys in every material, so it is a scope limit too. */
 @scope (:root[data-workspace-ui="internal"][data-theme="mechanical"]) to ([data-profile-theme], [data-interface-artwork], .preview-sheet, .wallet-vault) {
   /* 1 — No diffusion anywhere: blur, glow and soft shadows are not part of this material. */
