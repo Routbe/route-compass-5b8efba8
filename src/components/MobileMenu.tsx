@@ -19,33 +19,30 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { HeaderControl } from "@/components/layout/HeaderControls";
 import { spatialHaptic } from "@/lib/spatial-haptics";
+import { useAuth } from "@/hooks/useAuth";
+import { menuTarget, type MenuKey } from "@/lib/discover/menu-targets";
 
 const itemClass =
   "flex items-start gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground hover:bg-muted/60 transition-colors";
 
-// Directe routing naar de werkende tools — de informatieve SEO-landingspagina's
-// (/qr-code-generator, /product/*) blijven via sitemap en footer bereikbaar.
+// Ingelogd: direct naar de werkende tool. Uitgelogd: naar de uitlegpagina van
+// dat onderdeel, nooit naar een inlogscherm (zie menu-targets.ts).
 const TOOLS = [
-  { to: "/qr", label: "menu.generator.label", hint: "menu.generator.hint", icon: QrCode },
-  { to: "/studio", label: "menu.studio.label", hint: "menu.studio.hint", icon: Palette },
-  { to: "/agenda", label: "menu.agenda.label", hint: "menu.agenda.hint", icon: CalendarDays },
-  { to: "/batch", label: "menu.batch.label", hint: "menu.batch.hint", icon: Layers },
-  {
-    to: "/dashboard/routes",
-    label: "menu.links.label",
-    hint: "menu.links.hint",
-    icon: Link2,
-  },
+  { key: "generator", label: "menu.generator.label", hint: "menu.generator.hint", icon: QrCode },
+  { key: "studio", label: "menu.studio.label", hint: "menu.studio.hint", icon: Palette },
+  { key: "agenda", label: "menu.agenda.label", hint: "menu.agenda.hint", icon: CalendarDays },
+  { key: "batch", label: "menu.batch.label", hint: "menu.batch.hint", icon: Layers },
+  { key: "links", label: "menu.links.label", hint: "menu.links.hint", icon: Link2 },
 ] as const;
 
 const INFRASTRUCTURE = [
-  { to: "/product/custom-domains", label: "menu.domains.label", hint: "menu.domains.hint", icon: Globe },
-  { to: "/console", label: "menu.api.label", hint: "menu.api.hint", icon: PanelsTopLeft },
-  { to: "/self-hosting", label: "menu.docs.label", hint: "menu.docs.hint", icon: BookOpen },
+  { key: "domains", label: "menu.domains.label", hint: "menu.domains.hint", icon: Globe },
+  { key: "api", label: "menu.api.label", hint: "menu.api.hint", icon: PanelsTopLeft },
+  { key: "docs", label: "menu.docs.label", hint: "menu.docs.hint", icon: BookOpen },
 ] as const;
 
 interface NavItem {
-  to: string;
+  key: MenuKey;
   label: string;
   hint: string;
   icon: LucideIcon;
@@ -53,11 +50,12 @@ interface NavItem {
 
 function Section({ title, items, onNavigate }: { title: string; items: readonly NavItem[]; onNavigate: () => void }) {
   const { t } = useI18n();
+  const { user } = useAuth();
   return (
     <nav className="border-t border-border pt-3">
       <p className="eyebrow px-3 pb-1 pt-1">{title}</p>
-      {items.map(({ to, label, hint, icon: Icon }) => (
-        <Link key={to} to={to} className={itemClass} onClick={onNavigate}>
+      {items.map(({ key, label, hint, icon: Icon }) => (
+        <Link key={key} to={menuTarget(key, Boolean(user))} className={itemClass} onClick={onNavigate}>
           <Icon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
           <span className="min-w-0">
             {t(label)}
