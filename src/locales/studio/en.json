@@ -930,5 +930,10 @@
   "socialBlock.snapHint": "You sign in with Snapchat. ROUT keeps no password and no location, only your name and Bitmoji.",
   "socialBlock.connect": "Connect",
   "socialBlock.unavailable": "This platform can't be connected yet.",
-  "socialBlock.followers": "Show follower count"
+  "socialBlock.followers": "Show follower count",
+  "studio.editor.deviceOnly": "Stored on this device only — sent as soon as ROUT is reachable",
+  "studio.editor.deviceOnlyShort": "Stored on this device only",
+  "studio.editor.localFound": "This device holds changes from {time} that never reached ROUT.",
+  "studio.editor.localRestore": "Restore",
+  "studio.editor.localDiscard": "Discard"
 }

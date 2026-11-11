@@ -72,7 +72,7 @@ import { FileUploadInput } from "@/components/FileUploadInput";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useEditorHistory } from "@/hooks/useEditorHistory";
-import { Undo2, Redo2, Trash2, Save } from "lucide-react";
+import { Undo2, Redo2, Trash2, Save, CloudOff } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { useUrlStyle } from "@/hooks/useUrlStyle";
@@ -1023,6 +1023,7 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
   };
 
   const showSaveBar = tab !== "analytics";
+  const indicator = saveIndicator({ saving, dirty, failed: Boolean(saveError), localSavedRev, editRev: editRev.current, savedAt });
 
   return (
     <div className={cn("flex flex-1 flex-col space-y-4", showSaveBar && "pb-16 lg:pb-4")}>

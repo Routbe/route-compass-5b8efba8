@@ -930,5 +930,10 @@
   "socialBlock.snapHint": "Du meldest dich bei Snapchat an. ROUT speichert kein Passwort und keinen Standort, nur deinen Namen und dein Bitmoji.",
   "socialBlock.connect": "Verbinden",
   "socialBlock.unavailable": "Diese Plattform kann noch nicht verbunden werden.",
-  "socialBlock.followers": "Follower-Zahl anzeigen"
+  "socialBlock.followers": "Follower-Zahl anzeigen",
+  "studio.editor.deviceOnly": "Nur auf diesem Gerät gespeichert — wird gesendet, sobald ROUT erreichbar ist",
+  "studio.editor.deviceOnlyShort": "Nur auf diesem Gerät gespeichert",
+  "studio.editor.localFound": "Auf diesem Gerät liegen Änderungen vom {time}, die ROUT nie erreicht haben.",
+  "studio.editor.localRestore": "Wiederherstellen",
+  "studio.editor.localDiscard": "Verwerfen"
 }
