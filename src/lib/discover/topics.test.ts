@@ -35,7 +35,7 @@ describe("discover topics", () => {
     expect(CHAPTER_TOPIC.wallet).toBe("rout-card");
   });
 
-  it("describes the private card code as six digits that expire after a minute", () => {
+  it("says the private card code expires after a minute and needs two-step verification first", () => {
     expect(copyNl.topics["rout-card"].features.map((f) => f.text).join(" ")).toMatch(/minuut/);
     expect(copyNl.topics["rout-card"].steps[0]!.title).toMatch(/tweestapsverificatie/i);
   });
