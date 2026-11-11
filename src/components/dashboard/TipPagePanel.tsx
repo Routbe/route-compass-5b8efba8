@@ -86,8 +86,9 @@ export function TipPagePanel({ onEnabledChange }: { onEnabledChange?: (enabled: 
           Geldfuncties vereisen een geverifieerde identiteit en een eigen naam op rout.be/naam. Dat beschermt supporters tegen fraude en
           is nodig voor compliance. Gratis aliassen (rout.be/u/…) kunnen geen steunpagina maken.
         </p>
+        {/* Already verified but no own name yet: the next step is the name, not verifying again. */}
         <Button asChild size="sm" className="mt-3">
-          <a href="/verify">Identiteit verifiëren</a>
+          {setup.eligibility.reason === "no_root_handle" ? <a href="/studio">Kies je eigen naam</a> : <a href="/verify">Identiteit verifiëren</a>}
         </Button>
       </div>
     );
