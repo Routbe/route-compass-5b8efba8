@@ -65,5 +65,21 @@
 - [x] Fase 0: audit van bestaande boekingsmotor (bevindingen in het plan)
 - [x] Developer Console: kop en voet bleven wit bij licht thema
 - [x] Menu (drie streepjes): uitgelogd → uitlegpagina's, ingelogd → werkende tools
-- [ ] Plan boekingssysteem (fases 1–7): wacht op akkoord eigenaar
+- [x] Plan boekingssysteem goedgekeurd
+- [x] Fase 1 (code): veilige publieke databasefuncties (db/0216), boeken controleert werkuren, locks over middernacht, groepsacties, per-host slots, DST-correct, volledige herhaalregels (rrule), cache volgt boekingsvenster
+- [ ] Fase 1 (live): db/0216 op Neon zetten + schema-snapshot vernieuwen — wacht op akkoord eigenaar
+- [ ] Fase 2: soft-lock 5 min + aftelklok, limieten dag/week/maand, werkdagenvenster, aansluitende slots
+- [ ] Fase 3: Google / Microsoft / CalDAV tweeweg (wacht op Google- en Microsoft-sleutels)
+- [ ] Fase 4: gewogen round-robin, routing-formulier, Meet/Teams/Jitsi, locaties
+- [ ] Fase 5: betalen + annuleringsbeleid + gastportaal met ondertekende links + e-mails NL/EN/FR/DE
+- [ ] Fase 6: E2E-intake, Boek met ROUT, afspraakpas in wallet, agenda-overlay
+- [ ] Fase 7: UI (prefetch, 12/24u, tijdzone), weekplanner, MCP-tools, /discover/bookings
 - [ ] Eigen Ontdek-pagina voor afspraken (/discover/bookings) — onderdeel van het plan
+
+## Nieuwe vraag (11-11, 18:47): wallet, deelafbeeldingen, voorbeelden
+- [ ] ROUT-kaart toevoegen aan Google Wallet zegt "nog niet ingesteld door de beheerder" (profielkaarten werken wel)
+- [ ] Deelafbeeldingen voor status/anonieme vraag (NGL-stijl) echt opslaan (code + Scaleway), opnieuw maken indien nodig
+- [ ] Alle afbeeldingen nakijken op ontbrekend/niet opgeslagen
+- [ ] Elke pagina + hoofdpagina: juiste voorbeeldtekst, kleur, afbeelding (og/twitter)
+- [ ] Overal juiste schuifbalk-stijl en tekstselectiekleur
+- [ ] Alles opslaan in de code (GitHub) en/of Scaleway, niets enkel bij Lovable; Scaleway-sleutels vragen indien nodig

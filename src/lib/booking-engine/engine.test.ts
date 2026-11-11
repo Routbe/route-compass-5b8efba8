@@ -4,7 +4,7 @@ import { roundRobinOrder, collectiveDay } from "./routing";
 import { buildIcs } from "./ics";
 import { parseIcsBusy } from "./adapters/ics-parse";
 import { toBusyBlocks } from "./adapters/zero-knowledge";
-import { isSlotTakenError, lockKey } from "./book.server";
+import { isSlotTakenError } from "./book.server";
 import { zonedToUtc } from "./time";
 import type { EventTypeRules } from "./types";
 
@@ -109,8 +109,5 @@ describe("concurrency mapping", () => {
     expect(isSlotTakenError({ code: "23P01" })).toBe(true);
     expect(isSlotTakenError(new Error("Neon 400 P0001: slot_taken"))).toBe(true);
     expect(isSlotTakenError(new Error("syntax error"))).toBe(false);
-  });
-  it("locks per host per UTC day", () => {
-    expect(lockKey("h", new Date("2026-11-02T23:59:00Z"))).toBe("booking:h:2026-11-02");
   });
 });
