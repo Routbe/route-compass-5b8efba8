@@ -5,6 +5,16 @@ export type SitemapEntry = { path: string; lastmod?: string; changefreq: "daily"
 /** Public, indexable app pages that are not MDX docs. Signed-in pages (dashboard, admin) never belong here. */
 export const STATIC_SITEMAP_ENTRIES: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: 1.0 },
+  { path: "/discover", changefreq: "monthly", priority: 0.9 },
+  { path: "/discover/profiles", changefreq: "monthly", priority: 0.8 },
+  { path: "/discover/qr-studio", changefreq: "monthly", priority: 0.8 },
+  { path: "/discover/links", changefreq: "monthly", priority: 0.8 },
+  { path: "/discover/rout-id", changefreq: "monthly", priority: 0.8 },
+  { path: "/discover/rout-card", changefreq: "monthly", priority: 0.8 },
+  { path: "/discover/creator-support", changefreq: "monthly", priority: 0.8 },
+  { path: "/discover/questions", changefreq: "monthly", priority: 0.8 },
+  { path: "/discover/workspaces", changefreq: "monthly", priority: 0.8 },
+  { path: "/discover/developers", changefreq: "monthly", priority: 0.8 },
   { path: "/studio", changefreq: "monthly", priority: 1.0 },
   { path: "/contact", changefreq: "monthly", priority: 0.7 },
   { path: "/press", changefreq: "monthly", priority: 0.6 },
