@@ -168,6 +168,9 @@ export function renderPageCardSvg(key: PageKey, locale: Locale) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="Inter">${body}</svg>`;
 }
 
+/** Chip label: up to two lines at 18px, three smaller lines when the label is long. */
+const chipLines = (c: string) => (wrap(c, 15, 9).length <= 2 ? wrap(c, 15, 2) : wrap(c, 17, 3));
+
 /** Product-page card: own accent per product line, brand chip, headline, lead and the ROUT footer. */
 export function renderTopicCardSvg(slug: TopicSlug, locale: Locale, copy: { brand: string; title: string; lead: string; chips: readonly string[] }) {
   const [a, b] = TOPIC_CARD_ACCENT[slug];
@@ -175,7 +178,7 @@ export function renderTopicCardSvg(slug: TopicSlug, locale: Locale, copy: { bran
   const chipW = Math.min(520, 120 + copy.brand.length * 14);
   const chips = copy.chips.slice(0, 4).map((c, i) => {
     const x = 740 + (i % 2) * 210, y = 170 + Math.floor(i / 2) * 150 + (i % 2) * 40;
-    return `<g transform="rotate(${i % 2 ? 4 : -4} ${x + 100} ${y + 40})"><rect x="${x}" y="${y}" width="200" height="84" rx="22" fill="#151413" stroke="${i % 2 ? b : a}" stroke-opacity=".55"/><circle cx="${x + 30}" cy="${y + 42}" r="9" fill="${i % 2 ? b : a}"/>${textBlock(wrap(c, 15, 2), x + 50, wrap(c, 15, 2).length > 1 ? y + 38 : y + 48, 18, "#EDEAE3", 600, 1.2)}</g>`;
+    return `<g transform="rotate(${i % 2 ? 4 : -4} ${x + 100} ${y + 40})"><rect x="${x}" y="${y}" width="200" height="84" rx="22" fill="#151413" stroke="${i % 2 ? b : a}" stroke-opacity=".55"/><circle cx="${x + 30}" cy="${y + 42}" r="9" fill="${i % 2 ? b : a}"/>${textBlock(chipLines(c), x + 50, y + [48, 38, 28][chipLines(c).length - 1]!, chipLines(c).length > 2 ? 15 : 18, "#EDEAE3", 600, 1.2)}</g>`;
   }).join("");
   const body = `<rect width="${W}" height="${H}" fill="#0E0D0C"/>
 <radialGradient id="ga" cx="78%" cy="40%" r="50%"><stop offset="0" stop-color="${a}" stop-opacity=".30"/><stop offset="1" stop-color="${a}" stop-opacity="0"/></radialGradient><rect width="${W}" height="${H}" fill="url(#ga)"/>
