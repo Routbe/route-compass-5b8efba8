@@ -165,7 +165,7 @@ import { DesignTemplatesPanel } from "@/components/settings/DesignTemplatesPanel
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { SaveErrorDialog } from "@/components/dashboard/SaveErrorDialog";
 import { classifySaveError, type SaveErrorInfo } from "@/lib/save-errors";
-import { draftFingerprint, localDraftOffer, saveIndicator, studioDraftKey } from "@/lib/local-first/studio-draft-rules";
+import { draftFingerprint, isUnreachableSaveError, localDraftOffer, saveIndicator, studioDraftKey } from "@/lib/local-first/studio-draft-rules";
 import { deleteStudioDraft, getStudioDraft, putStudioDraft } from "@/lib/local-first/studio-draft-store";
 
 export type ProfileVariant = "verified" | "alias" | "workspace";
@@ -1023,7 +1023,7 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
   };
 
   const showSaveBar = tab !== "analytics";
-  const indicator = saveIndicator({ saving, dirty, failed: Boolean(saveError), localSavedRev, editRev: editRev.current, savedAt });
+  const indicator = saveIndicator({ saving, dirty, failed: Boolean(saveError), unreachable: isUnreachableSaveError(saveError?.code), localSavedRev, editRev: editRev.current, savedAt });
 
   return (
     <div className={cn("flex flex-1 flex-col space-y-4", showSaveBar && "pb-16 lg:pb-4")}>

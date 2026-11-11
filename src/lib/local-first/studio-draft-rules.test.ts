@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { draftFingerprint, localDraftOffer, saveIndicator, studioDraftKey, STUDIO_DRAFT_MAX_AGE_MS } from "./studio-draft-rules";
+import { draftFingerprint, isUnreachableSaveError, localDraftOffer, saveIndicator, studioDraftKey, STUDIO_DRAFT_MAX_AGE_MS } from "./studio-draft-rules";
 
 describe("studio on-device drafts", () => {
   it("keeps personal, alias and each workspace draft apart", () => {
@@ -10,11 +10,17 @@ describe("studio on-device drafts", () => {
   });
 
   it("shows orange 'only on this device' when ROUT is unreachable but the latest edit is stored locally", () => {
-    expect(saveIndicator({ saving: false, dirty: true, failed: true, localSavedRev: 4, editRev: 4, savedAt: null })).toBe("device-only");
+    expect(saveIndicator({ saving: false, dirty: true, failed: true, unreachable: true, localSavedRev: 4, editRev: 4, savedAt: null })).toBe("device-only");
+  });
+
+  it("keeps a rejected edit red even when it is stored locally", () => {
+    expect(saveIndicator({ saving: false, dirty: true, failed: true, unreachable: false, localSavedRev: 4, editRev: 4, savedAt: null })).toBe("not-saved");
+    expect(isUnreachableSaveError("network")).toBe(true);
+    expect(isUnreachableSaveError("validation_failed")).toBe(false);
   });
 
   it("shows red 'not saved' when the latest edit is not yet stored on the device either", () => {
-    expect(saveIndicator({ saving: false, dirty: true, failed: true, localSavedRev: 3, editRev: 4, savedAt: null })).toBe("not-saved");
+    expect(saveIndicator({ saving: false, dirty: true, failed: true, unreachable: true, localSavedRev: 3, editRev: 4, savedAt: null })).toBe("not-saved");
   });
 
   it("offers to restore a recent local copy that differs from ROUT", () => {

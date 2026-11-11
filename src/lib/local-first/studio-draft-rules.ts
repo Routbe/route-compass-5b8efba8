@@ -33,9 +33,10 @@ export type SaveIndicator = "saving" | "saved" | "device-only" | "not-saved" | "
  * Status shown in the Studio: orange "device-only" only when ROUT could not be
  * reached and the latest edit is safely stored on this device.
  */
-export function saveIndicator(s: { saving: boolean; dirty: boolean; failed: boolean; localSavedRev: number; editRev: number; savedAt: number | null }): SaveIndicator {
+export function saveIndicator(s: { saving: boolean; dirty: boolean; failed: boolean; unreachable?: boolean; localSavedRev: number; editRev: number; savedAt: number | null }): SaveIndicator {
   if (s.saving) return "saving";
-  if (s.failed) return s.localSavedRev >= s.editRev && s.editRev > 0 ? "device-only" : "not-saved";
+  // Only a connection problem resolves itself; a rejected edit stays red so the member acts on it.
+  if (s.failed) return s.unreachable && s.localSavedRev >= s.editRev && s.editRev > 0 ? "device-only" : "not-saved";
   if (s.dirty) return "saving";
   return s.savedAt ? "saved" : "idle";
 }
@@ -50,4 +51,9 @@ export function draftFingerprint(value: unknown): string {
     return v;
   };
   return JSON.stringify(seen(value));
+}
+
+/** Save failures that a later retry can fix without the member changing anything. */
+export function isUnreachableSaveError(code: string | undefined): boolean {
+  return code === "network" || code === "db_unavailable" || code === "db_timeout";
 }
