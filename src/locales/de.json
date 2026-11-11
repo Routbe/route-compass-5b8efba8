@@ -1772,7 +1772,7 @@
   "walletPage.tabProfile": "Profilkarten",
   "walletPage.profileLead": "Die Karten deines Profil-Hubs: nur ein QR zu deinem Profil, ohne NFC und ohne Zahlungsfunktion. Sicher zum Zeigen.",
   "card.loading": "Karte wird geladen",
-  "card.frontQrNote": "Großer QR vorne: Jeder darf ihn scannen und landet auf deinem Profil. Die letzten 4 Ziffern wechseln alle 10 Minuten, ein geleaktes Foto ist also schnell wertlos.",
+  "card.frontQrNote": "Großer QR vorne: Jeder darf ihn scannen und landet auf deinem Profil. Die letzten 6 Ziffern wechseln alle 10 Minuten, ein geleaktes Foto ist also schnell wertlos.",
   "card.backQrNote": "Kleiner QR und NFC hinten: ein langer, einmaliger sicherer Link, der jede Minute abläuft. Nur diese Seite ist für Zahlungen und Zutritt gedacht.",
   "card.orderPhysical": "Physische Karte bestellen · bald",
   "walletPage.openMenu": "Meine Karte verwalten",

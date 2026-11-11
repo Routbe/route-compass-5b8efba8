@@ -7,7 +7,7 @@ const t0 = 1_800_000_000_000;
 
 describe("ROUT Card front code", () => {
   it("is exactly four digits", async () => {
-    expect(await frontCode(key, serial, frontWindow(t0))).toMatch(/^\d{4}$/);
+    expect(await frontCode(key, serial, frontWindow(t0))).toMatch(/^\d{6}$/);
   });
 
   it("changes every 10 minutes", async () => {
@@ -33,7 +33,8 @@ describe("ROUT Card front code", () => {
     const a = await Promise.all([0, 1, 2, 3].map((i) => frontCode(key, serial, w + i)));
     const b = await Promise.all([0, 1, 2, 3].map((i) => frontCode(key, "RC-OTHER-0002", w + i)));
     expect(a).not.toEqual(b);
-    expect(await isFreshFrontCode(key, serial, "12a4", t0)).toBe(false);
+    expect(await isFreshFrontCode(key, serial, "12a456", t0)).toBe(false);
+    expect(await isFreshFrontCode(key, serial, "1234", t0)).toBe(false);
     expect(await isFreshFrontCode(key, serial, "123", t0)).toBe(false);
   });
 
@@ -42,6 +43,6 @@ describe("ROUT Card front code", () => {
   });
 
   it("builds rout.be/<handle>/<code>", () => {
-    expect(frontCardUrl("https://rout.be/", "@Jona.Zeno", "0427")).toBe("https://rout.be/jona.zeno/0427");
+    expect(frontCardUrl("https://rout.be/", "@Jona.Zeno", "004271")).toBe("https://rout.be/jona.zeno/004271");
   });
 });
