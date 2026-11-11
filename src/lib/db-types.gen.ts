@@ -98,7 +98,6 @@ export interface NeonAuthProjectConfigRow {
   "allow_localhost": boolean;
   "plugin_configs": JsonValue | null;
   "webhook_config": JsonValue | null;
-  "auth_logs_export_enabled": boolean | null;
 }
 
 export interface NeonAuthSessionRow {
@@ -743,6 +742,13 @@ export interface PublicDomainClaimsRow {
   "verified_at": string | Date | null;
   "last_checked_at": string | Date | null;
   "failing_since": string | Date | null;
+  "created_at": string | Date;
+}
+
+export interface PublicE2eeKeyWrapsRow {
+  "user_id": string;
+  "wrap_id": string;
+  "wrapped_dek": string;
   "created_at": string | Date;
 }
 
@@ -1626,6 +1632,10 @@ export interface PublicProfilesRow {
   "workspace_id": string | null;
   "is_early_verified": boolean;
   "early_believer_at": string | Date | null;
+  "did_jwk": string | null;
+  "public_profile_jws": string | null;
+  "encrypted_blob": string | null;
+  "e2ee_migrated_at": string | Date | null;
 }
 
 export interface PublicPromoCodeEventsRow {
@@ -2495,9 +2505,9 @@ export interface PublicWorkspacesRow {
   "description": string | null;
   "category": string | null;
   "public_profile": JsonValue;
-  "icon": string | null;
   "bluesky_did": string | null;
   "bluesky_handle": string | null;
+  "icon": string | null;
   "encrypted_config": string | null;
   "encrypted_config_key_id": string | null;
 }
@@ -2583,6 +2593,7 @@ export interface DbTables {
   "public.custom_domains": PublicCustomDomainsRow;
   "public.didit_monthly_usage": PublicDiditMonthlyUsageRow;
   "public.domain_claims": PublicDomainClaimsRow;
+  "public.e2ee_key_wraps": PublicE2eeKeyWrapsRow;
   "public.email_aliases": PublicEmailAliasesRow;
   "public.entitlement_overrides": PublicEntitlementOverridesRow;
   "public.ephemeral_statuses": PublicEphemeralStatusesRow;
