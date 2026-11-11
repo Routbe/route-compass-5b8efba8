@@ -6,7 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
  *   gerenderd, daarna bewaard in de interne Scaleway-bucket en van daar geleverd.
  * - `/brand/press/<bestand>`: perskit, via Scaleway met lokale terugval.
  */
-const OG_RE = /^og\/([a-z]+)-(nl|en|fr|de)\.png$/;
+const OG_RE = /^og\/([a-z]+(?:-[a-z]+)*)-(nl|en|fr|de)\.png$/;
 const PRESS_RE = /^press\/[a-z0-9-]+\.(png|svg|zip)$/;
 /** Versie in de opslagsleutel: verhogen wanneer het ontwerp verandert. */
 const OG_VERSION = "v1";
@@ -37,8 +37,10 @@ export const Route = createFileRoute("/brand/$")({
 });
 
 async function serveOg(page: string, locale: "nl" | "en" | "fr" | "de", origin: string) {
-  const { isPageKey, renderPageCardSvg } = await import("@/lib/page-og.server");
-  if (!isPageKey(page)) return new Response("Not found", { status: 404 });
+  const { isPageKey, renderPageCardSvg, renderTopicCardSvg } = await import("@/lib/page-og.server");
+  const topic = page.startsWith("discover-") ? page.slice("discover-".length) : null;
+  const { isTopicSlug } = await import("@/lib/discover/topics");
+  if (topic !== null ? !isTopicSlug(topic) : !isPageKey(page)) return new Response("Not found", { status: 404 });
   const key = `brand/og/${OG_VERSION}/${page}-${locale}.png`;
   const s3 = await import("@/lib/storage/s3.server");
   const stored = s3.storageConfigured("internal");
@@ -53,7 +55,11 @@ async function serveOg(page: string, locale: "nl" | "en" | "fr" | "de", origin: 
     }
   }
 
-  const svg = renderPageCardSvg(page, locale);
+  let svg: string;
+  if (topic !== null && isTopicSlug(topic)) {
+    const { discoverCopy } = await import("@/lib/discover/copy");
+    svg = renderTopicCardSvg(topic, locale, discoverCopy(locale).topics[topic]);
+  } else svg = renderPageCardSvg(page as Parameters<typeof renderPageCardSvg>[0], locale);
   try {
     const { svgToPng } = await import("@/lib/og-render.server");
     const png = await svgToPng(svg, origin);
@@ -63,6 +69,8 @@ async function serveOg(page: string, locale: "nl" | "en" | "fr" | "de", origin: 
     return new Response(new Uint8Array(png), { headers: { "content-type": "image/png", "cache-control": LONG_CACHE } });
   } catch (error) {
     console.error("[brand/og] render failed", error);
-    return new Response(svg, { headers: { "content-type": "image/svg+xml", "cache-control": "public, max-age=300" } });
+    // A .png URL must stay a PNG for crawlers: fall back to the home card (or SVG as last resort), uncached.
+    if (page !== "home") return new Response(null, { status: 302, headers: { location: `${origin}/brand/og/home-${locale}.png`, "cache-control": "no-store" } });
+    return new Response(svg, { headers: { "content-type": "image/svg+xml", "cache-control": "no-store" } });
   }
 }

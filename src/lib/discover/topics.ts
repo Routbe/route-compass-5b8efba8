@@ -32,6 +32,24 @@ export const CHAPTER_TOPIC = {
   developer: "developers",
 } as const satisfies Record<string, TopicSlug>;
 
+/** Share-card accents: sRGB of the --tp/--tp2 pair in styles/discover.css (resvg has no oklch). */
+export const TOPIC_CARD_ACCENT: Record<TopicSlug, readonly [string, string]> = {
+  profiles: ["#5CE4B1", "#4FCDCD"],
+  "qr-studio": ["#C0EF5C", "#75DF8F"],
+  links: ["#58DBF8", "#40D9C1"],
+  "rout-id": ["#92C9FF", "#A3DCE7"],
+  "rout-card": ["#E9CA89", "#BD9F7C"],
+  "creator-support": ["#FF976A", "#FFBB65"],
+  questions: ["#FF719E", "#FF9F4C"],
+  workspaces: ["#CBAAFF", "#92C1FD"],
+  developers: ["#6EF593", "#59D7B9"],
+};
+
+/** One fixed code-drawn preview card per product page and locale. */
+export function topicCardImage(slug: TopicSlug, locale: string, origin = "https://rout.be") {
+  return `${origin}/brand/og/discover-${slug}-${locale}.png`;
+}
+
 export type TopicMeta = {
   /** Where the main button goes: a page that works without signing in where one exists. */
   primary: string;
