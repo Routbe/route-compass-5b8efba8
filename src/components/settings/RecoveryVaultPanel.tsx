@@ -16,7 +16,8 @@ import type { RecoveryVault, ShardCheck } from "@/lib/recovery/vault";
 import {
   beginRecovery, deleteRecoveryVault, finishRecovery, getRecoveryStatus, saveRecoveryVault, saveSealedShard,
 } from "@/lib/recovery/recovery.functions";
-import { MAX_SERVER_SHARDS, missingShards, slotsReady, type SlotKind } from "@/lib/recovery/vault-rules";
+import { MAX_SERVER_SHARDS, canGeneratePhrase, missingShards, slotsReady, type SlotKind } from "@/lib/recovery/vault-rules";
+import { RecoveryPhraseKit } from "./RecoveryPhraseKit";
 
 type Status = Awaited<ReturnType<typeof getRecoveryStatus>>;
 type Slot = { index: number; shard: string; kind: SlotKind; done: boolean; sealed?: { credential: string; ciphertext: string } };
@@ -91,7 +92,7 @@ function Overview({ state, onCreate, onRestore, onChanged }: { state: Status; on
   if (!state.vault) {
     return (
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm">Nog geen herstelkluis. Je hebt je 24 herstelwoorden nodig om er een te maken.</p>
+        <p className="text-sm">Nog geen herstelkluis. Heb je nog geen herstelwoorden, dan maken we ze hier automatisch voor je.</p>
         <Button onClick={onCreate} className="w-full sm:w-auto"><KeyRound /> Herstelkluis maken</Button>
       </div>
     );
@@ -158,6 +159,48 @@ function CreateVault({ userId, rotating, onDone }: { userId: string; rotating: b
   const [printing, setPrinting] = useState<Slot | null>(null);
   const [ack, setAck] = useState(false);
   const serverCount = slots.filter((s) => s.kind === "passkey").length;
+  // Automatic 24-word phrase: only on a device without a Master Key (see canGeneratePhrase).
+  const [deviceHasKey, setDeviceHasKey] = useState<boolean | null>(null);
+  const [manual, setManual] = useState(false);
+  const [generated, setGenerated] = useState<{ handle: string; mnemonic: string } | null>(null);
+  const [phraseOk, setPhraseOk] = useState(false);
+  const pending = useRef<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    enclave.deviceKey.status(userId).then((k) => { if (live) setDeviceHasKey(Boolean(k)); }).catch(() => { if (live) setDeviceHasKey(null); });
+    return () => {
+      live = false;
+      // A phrase that was shown but never confirmed must not linger in the worker.
+      if (pending.current) void enclave.masterKey.discardPending(pending.current).catch(() => undefined);
+    };
+  }, [userId]);
+  const mayGenerate = canGeneratePhrase({ deviceHasKey, hasVault: rotating });
+
+  async function generate() {
+    const scope = capture();
+    setBusy(true); setError(null);
+    try {
+      const r = await enclave.masterKey.generate();
+      scope.assertCurrent();
+      pending.current = r.handle;
+      setGenerated(r);
+    } catch (e) { if (scope.isUiCurrent()) setError(message(e)); } finally { if (scope.isUiCurrent()) setBusy(false); }
+  }
+
+  async function continueWithGenerated() {
+    if (!generated) return;
+    const scope = capture();
+    setBusy(true); setError(null);
+    try {
+      await enclave.masterKey.commitPending(generated.handle, userId);
+      pending.current = null;
+      const r = await enclave.recovery.create(generated.mnemonic);
+      scope.assertCurrent();
+      setGenerated(null); setPhraseOk(false); setDeviceHasKey(true);
+      setVault(r.vault);
+      setSlots(r.shards.map((shard, i) => ({ index: i + 1, shard, kind: DEFAULT_KINDS[i] ?? "paper", done: false })));
+    } catch (e) { if (scope.isUiCurrent()) setError(message(e)); } finally { if (scope.isUiCurrent()) setBusy(false); }
+  }
 
   async function split() {
     const scope = capture();
@@ -215,6 +258,36 @@ function CreateVault({ userId, rotating, onDone }: { userId: string; rotating: b
       toast.success(rotating ? "Nieuwe scherven actief. Alle oude scherven werken niet meer." : "Herstelkluis actief.");
       onDone();
     } catch (e) { if (scope.isUiCurrent()) setError(message(e)); } finally { if (scope.isUiCurrent()) setBusy(false); }
+  }
+
+  if (!vault && generated) {
+    return (
+      <div className="space-y-3">
+        <RecoveryPhraseKit mnemonic={generated.mnemonic} onConfirmed={setPhraseOk} />
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button disabled={busy || !phraseOk} onClick={() => void continueWithGenerated()}><KeyRound /> Verder: in 5 scherven verdelen</Button>
+          <Button variant="ghost" onClick={() => { if (pending.current) void enclave.masterKey.discardPending(pending.current); pending.current = null; setGenerated(null); onDone(); }}>Annuleren</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!vault && mayGenerate && !manual) {
+    return (
+      <div className="space-y-3">
+        <div className="rounded-xl border border-border bg-background p-3 text-sm">
+          <p className="font-medium">Nog geen herstelwoorden op dit toestel</p>
+          <p className="mt-1 text-muted-foreground">ROUT maakt nu 24 willekeurige woorden in de beveiligde rekenmodule op dit toestel. Ze worden nooit verstuurd. Daarna kopieer, download of print je ze, en verdelen we je hoofdsleutel in 5 scherven.</p>
+        </div>
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Button disabled={busy} onClick={() => void generate()}><KeyRound /> Maak mijn 24 herstelwoorden</Button>
+          <Button variant="soft" onClick={() => setManual(true)}>Ik heb al herstelwoorden</Button>
+          <Button variant="ghost" onClick={onDone}>Annuleren</Button>
+        </div>
+      </div>
+    );
   }
 
   if (!vault) {
