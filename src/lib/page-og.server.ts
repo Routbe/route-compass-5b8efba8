@@ -169,7 +169,7 @@ export function renderPageCardSvg(key: PageKey, locale: Locale) {
 }
 
 /** Chip label: up to two lines at 18px, three smaller lines when the label is long. */
-const chipLines = (c: string) => (wrap(c, 15, 9).length <= 2 ? wrap(c, 15, 2) : wrap(c, 17, 3));
+const chipLines = (c: string) => (wrap(c, 13, 9).length <= 2 ? wrap(c, 13, 2) : wrap(c, 16, 3));
 
 /** Product-page card: own accent per product line, brand chip, headline, lead and the ROUT footer. */
 export function renderTopicCardSvg(slug: TopicSlug, locale: Locale, copy: { brand: string; title: string; lead: string; chips: readonly string[] }) {
