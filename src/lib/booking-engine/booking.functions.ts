@@ -17,7 +17,7 @@ export const getPublicEventType = createServerFn({ method: "GET" })
     const s = await import("./public.server");
     const et = await s.publicEventType(data.id);
     if (!et) return null;
-    const { rules: _rules, ...pub } = et;
+    const { rules: _rules, hostCount: _hosts, ...pub } = et;
     return pub;
   });
 
@@ -49,9 +49,7 @@ export const createBooking = createServerFn({ method: "POST" })
       if (!r.ok) return r;
       const bookingId = r.bookingIds[0];
       if (!bookingId) return { ok: false as const, reason: "error" as const };
-      const s = await import("./public.server");
-      const bookingToken = await s.bookingTokenFor(bookingId);
-      return { ok: true as const, bookingId, bookingToken, status: r.status, checkoutUrl: r.checkoutUrl };
+      return { ok: true as const, bookingId, bookingToken: r.bookingToken, status: r.status, checkoutUrl: r.checkoutUrl };
     } catch (e) {
       console.error("[booking] create", e instanceof Error ? e.message : "error");
       return { ok: false as const, reason: "error" as const };
