@@ -61,6 +61,11 @@ export const MERGE_TABLES: Readonly<Record<string, MergeTableRule>> = {
   physical_keys: r("skip"),
   wallet_passes: r("skip"),
   oidc_subjects: r("skip"),
+  // Recovery vault (0209) seals the secondary's own master key; card generations
+  // (0212) are the card replacement counter. Never moved or silently dropped.
+  recovery_vaults: r("skip"),
+  recovery_attempts: r("skip"),
+  rout_card_generations: r("skip"),
 
   // Append-only audit trails without FK: history stays as written.
   security_audit_logs: r("retain"),
