@@ -171,6 +171,9 @@ export function renderPageCardSvg(key: PageKey, locale: Locale) {
 /** Chip label: up to two lines at 18px, three smaller lines when the label is long. */
 const chipLines = (c: string) => (wrap(c, 13, 9).length <= 2 ? wrap(c, 13, 2) : wrap(c, 16, 3));
 
+/** Font size so the longest chip line fits the 136px text column (Inter ≈ 0.56em per character). */
+const chipSize = (c: string) => Math.min(chipLines(c).length > 2 ? 15 : 18, Math.floor(136 / (Math.max(...chipLines(c).map((l) => l.length)) * 0.56)));
+
 /** Product-page card: own accent per product line, brand chip, headline, lead and the ROUT footer. */
 export function renderTopicCardSvg(slug: TopicSlug, locale: Locale, copy: { brand: string; title: string; lead: string; chips: readonly string[] }) {
   const [a, b] = TOPIC_CARD_ACCENT[slug];
@@ -178,7 +181,7 @@ export function renderTopicCardSvg(slug: TopicSlug, locale: Locale, copy: { bran
   const chipW = Math.min(520, 120 + copy.brand.length * 14);
   const chips = copy.chips.slice(0, 4).map((c, i) => {
     const x = 740 + (i % 2) * 210, y = 170 + Math.floor(i / 2) * 150 + (i % 2) * 40;
-    return `<g transform="rotate(${i % 2 ? 4 : -4} ${x + 100} ${y + 40})"><rect x="${x}" y="${y}" width="200" height="84" rx="22" fill="#151413" stroke="${i % 2 ? b : a}" stroke-opacity=".55"/><circle cx="${x + 30}" cy="${y + 42}" r="9" fill="${i % 2 ? b : a}"/>${textBlock(chipLines(c), x + 50, y + [48, 38, 28][chipLines(c).length - 1]!, chipLines(c).length > 2 ? 15 : 18, "#EDEAE3", 600, 1.2)}</g>`;
+    return `<g transform="rotate(${i % 2 ? 4 : -4} ${x + 100} ${y + 40})"><rect x="${x}" y="${y}" width="200" height="84" rx="22" fill="#151413" stroke="${i % 2 ? b : a}" stroke-opacity=".55"/><circle cx="${x + 30}" cy="${y + 42}" r="9" fill="${i % 2 ? b : a}"/>${textBlock(chipLines(c), x + 50, y + [48, 38, 28][chipLines(c).length - 1]!, chipSize(c), "#EDEAE3", 600, 1.2)}</g>`;
   }).join("");
   // Headline never ends in an ellipsis: step the size down until it fits in three lines.
   const head = [{ size: 58, max: 20 }, { size: 50, max: 23 }, { size: 44, max: 27 }]
