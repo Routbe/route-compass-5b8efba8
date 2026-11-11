@@ -50,4 +50,4 @@
 - [ ] Overige wachtende migraties (0204 E2EE = alleen feature-branch, 0205–0207, 0213): eerst nakijken, dan akkoord vragen
 - [x] Ontdek-pagina's: per onderdeel een eigen landingspagina (Profielen, QR Studio, Links & statistieken, ROUT ID, ROUT-kaart, Steun voor makers, Vragen & stories, Workspaces, Developers) met illustraties, effecten en links naar de detailpagina's, in NL/EN/FR/DE
 - [x] Hoofdpagina na de kop: meer visuele effecten (Neon-stijl met eigen zwier), onderdelen-overzicht als beeldtegels, knoppen naar de nieuwe Ontdek-pagina's i.p.v. inlogscherm
-- [ ] Detailpagina's (docs): knop "Open ROUT Studio" vervangen door uitleg-link; Nederlandse vaste tekst vertalen
+- [ ] Detailpagina's (docs): knop "Open ROUT Studio" is vervangen door link naar het onderdeel (klaar); vaste Nederlandse teksten ("Zo werkt het", "Veelgestelde vragen", "Verder met ROUT") nog vertalen
