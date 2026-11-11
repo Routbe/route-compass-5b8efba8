@@ -877,6 +877,14 @@
           "default": null,
           "identity": null,
           "generated": null
+        },
+        {
+          "name": "auth_logs_export_enabled",
+          "type": "boolean",
+          "notNull": false,
+          "default": "false",
+          "identity": null,
+          "generated": null
         }
       ],
       "constraints": [
@@ -1751,6 +1759,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -2025,6 +2043,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -2161,7 +2189,10 @@
       ],
       "grants": {
         "rout_app": [
-          "SELECT"
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
         ]
       }
     },
@@ -2803,6 +2834,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -3116,6 +3157,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -3268,6 +3319,16 @@
           "permissive": true,
           "roles": [
             "rout_merge_executor"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
           ],
           "cmd": "ALL",
           "using": "true",
@@ -3572,6 +3633,7 @@
       "grants": {
         "rout_app": [
           "DELETE",
+          "INSERT",
           "SELECT"
         ]
       }
@@ -3896,6 +3958,7 @@
       "policies": [],
       "grants": {
         "rout_app": [
+          "DELETE",
           "INSERT",
           "SELECT",
           "UPDATE"
@@ -4005,6 +4068,16 @@
           "permissive": true,
           "roles": [
             "rout_merge_executor"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
           ],
           "cmd": "ALL",
           "using": "true",
@@ -4173,6 +4246,16 @@
           "permissive": true,
           "roles": [
             "rout_merge_executor"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
           ],
           "cmd": "ALL",
           "using": "true",
@@ -5274,7 +5357,7 @@
         {
           "name": "booking_event_types_duration_minutes_check",
           "kind": "c",
-          "def": "CHECK (((duration_minutes >= 5) AND (duration_minutes <= 480) AND ((duration_minutes % 5) = 0)))"
+          "def": "CHECK ((((duration_minutes >= 5) AND (duration_minutes <= 480)) AND ((duration_minutes % 5) = 0)))"
         },
         {
           "name": "booking_event_types_location_kind_check",
@@ -5515,6 +5598,16 @@
           "permissive": true,
           "roles": [
             "rout_merge_executor"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
           ],
           "cmd": "ALL",
           "using": "true",
@@ -7831,68 +7924,6 @@
     },
     {
       "schema": "public",
-      "name": "e2ee_key_wraps",
-      "columns": [
-        {
-          "name": "user_id",
-          "type": "text",
-          "notNull": true,
-          "default": null,
-          "identity": null,
-          "generated": null
-        },
-        {
-          "name": "wrap_id",
-          "type": "text",
-          "notNull": true,
-          "default": null,
-          "identity": null,
-          "generated": null
-        },
-        {
-          "name": "wrapped_dek",
-          "type": "text",
-          "notNull": true,
-          "default": null,
-          "identity": null,
-          "generated": null
-        },
-        {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "notNull": true,
-          "default": "now()",
-          "identity": null,
-          "generated": null
-        }
-      ],
-      "constraints": [
-        {
-          "name": "e2ee_key_wraps_pkey",
-          "kind": "p",
-          "def": "PRIMARY KEY (user_id, wrap_id)"
-        }
-      ],
-      "indexes": [],
-      "triggers": [],
-      "rls": false,
-      "forceRls": false,
-      "policies": [
-        {
-          "name": "atomic_merge_guard",
-          "permissive": true,
-          "roles": [
-            "rout_merge_executor"
-          ],
-          "cmd": "SELECT",
-          "using": "true",
-          "check": null
-        }
-      ],
-      "grants": {}
-    },
-    {
-      "schema": "public",
       "name": "email_aliases",
       "columns": [
         {
@@ -8919,6 +8950,16 @@
           "permissive": true,
           "roles": [
             "rout_merge_executor"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
           ],
           "cmd": "ALL",
           "using": "true",
@@ -10133,7 +10174,10 @@
       ],
       "grants": {
         "rout_app": [
-          "SELECT"
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
         ]
       }
     },
@@ -10980,6 +11024,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -11744,6 +11798,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -12392,6 +12456,16 @@
           "permissive": true,
           "roles": [
             "rout_merge_executor"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
           ],
           "cmd": "ALL",
           "using": "true",
@@ -13159,6 +13233,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -13288,6 +13372,16 @@
           "permissive": true,
           "roles": [
             "rout_merge_executor"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
           ],
           "cmd": "ALL",
           "using": "true",
@@ -14351,6 +14445,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -14437,7 +14541,10 @@
       ],
       "grants": {
         "rout_app": [
-          "SELECT"
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
         ]
       }
     },
@@ -14633,7 +14740,9 @@
       ],
       "grants": {
         "rout_app": [
-          "SELECT"
+          "DELETE",
+          "SELECT",
+          "UPDATE"
         ]
       }
     },
@@ -14742,6 +14851,7 @@
       ],
       "grants": {
         "rout_app": [
+          "DELETE",
           "INSERT",
           "SELECT",
           "UPDATE"
@@ -15813,6 +15923,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -16410,7 +16530,9 @@
       "grants": {
         "rout_app": [
           "DELETE",
-          "SELECT"
+          "INSERT",
+          "SELECT",
+          "UPDATE"
         ]
       }
     },
@@ -17177,51 +17299,9 @@
           "default": null,
           "identity": null,
           "generated": null
-        },
-        {
-          "name": "did_jwk",
-          "type": "text",
-          "notNull": false,
-          "default": null,
-          "identity": null,
-          "generated": null
-        },
-        {
-          "name": "public_profile_jws",
-          "type": "text",
-          "notNull": false,
-          "default": null,
-          "identity": null,
-          "generated": null
-        },
-        {
-          "name": "encrypted_blob",
-          "type": "text",
-          "notNull": false,
-          "default": null,
-          "identity": null,
-          "generated": null
-        },
-        {
-          "name": "e2ee_migrated_at",
-          "type": "timestamp with time zone",
-          "notNull": false,
-          "default": null,
-          "identity": null,
-          "generated": null
         }
       ],
       "constraints": [
-        {
-          "name": "profiles_did_jwk_key",
-          "kind": "u",
-          "def": "UNIQUE (did_jwk)"
-        },
-        {
-          "name": "profiles_encrypted_blob_check",
-          "kind": "c",
-          "def": "CHECK (((encrypted_blob IS NULL) OR (encrypted_blob ~ '^v1\\.[A-Za-z0-9_-]{16}\\.[A-Za-z0-9_-]{22,}$'::text)))"
-        },
         {
           "name": "profiles_id_fkey",
           "kind": "f",
@@ -17895,6 +17975,16 @@
           "cmd": "SELECT",
           "using": "true",
           "check": null
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -18141,7 +18231,14 @@
       "rls": true,
       "forceRls": false,
       "policies": [],
-      "grants": {}
+      "grants": {
+        "rout_app": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
     },
     {
       "schema": "public",
@@ -19351,6 +19448,7 @@
       ],
       "grants": {
         "rout_app": [
+          "DELETE",
           "INSERT",
           "SELECT",
           "UPDATE"
@@ -19773,6 +19871,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -19869,6 +19977,16 @@
           "permissive": true,
           "roles": [
             "rout_merge_executor"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
           ],
           "cmd": "ALL",
           "using": "true",
@@ -20049,6 +20167,16 @@
           "cmd": "SELECT",
           "using": "true",
           "check": null
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -23972,6 +24100,16 @@
           "cmd": "ALL",
           "using": "true",
           "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -24090,6 +24228,16 @@
           "permissive": true,
           "roles": [
             "rout_merge_executor"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
           ],
           "cmd": "ALL",
           "using": "true",
@@ -24780,6 +24928,16 @@
           "cmd": "SELECT",
           "using": "true",
           "check": null
+        },
+        {
+          "name": "rout_server",
+          "permissive": true,
+          "roles": [
+            "rout_app"
+          ],
+          "cmd": "ALL",
+          "using": "true",
+          "check": "true"
         }
       ],
       "grants": {
@@ -25066,7 +25224,10 @@
       ],
       "grants": {
         "rout_app": [
-          "SELECT"
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
         ]
       }
     },
@@ -26662,6 +26823,14 @@
           "generated": null
         },
         {
+          "name": "icon",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
           "name": "bluesky_did",
           "type": "text",
           "notNull": false,
@@ -26671,14 +26840,6 @@
         },
         {
           "name": "bluesky_handle",
-          "type": "text",
-          "notNull": false,
-          "default": null,
-          "identity": null,
-          "generated": null
-        },
-        {
-          "name": "icon",
           "type": "text",
           "notNull": false,
           "default": null,
@@ -26751,7 +26912,7 @@
         {
           "name": "workspaces_slug_check",
           "kind": "c",
-          "def": "CHECK (((char_length(slug) >= 3) AND (char_length(slug) <= 40) AND (slug ~ '^[a-z0-9-]+$'::text) AND (slug <> ALL (ARRAY['admin'::text, 'api'::text, 'auth'::text, 'u'::text, 'w'::text, 'studio'::text, 'settings'::text, 'rout'::text])))) NOT VALID"
+          "def": "CHECK ((((char_length(slug) >= 3) AND (char_length(slug) <= 40)) AND (slug ~ '^[a-z0-9-]+$'::text) AND (slug <> ALL (ARRAY['admin'::text, 'api'::text, 'auth'::text, 'u'::text, 'w'::text, 'studio'::text, 'settings'::text, 'rout'::text])))) NOT VALID"
         },
         {
           "name": "workspaces_slug_key",
@@ -26971,7 +27132,10 @@
       "def": "SELECT id,\n    user_id,\n    image_path,\n    target_url,\n    title,\n    created_at\n   FROM omni_matrix_items;",
       "grants": {
         "rout_app": [
-          "SELECT"
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
         ]
       }
     },
@@ -26981,7 +27145,10 @@
       "def": "SELECT user_id,\n    token_hash,\n    created_at\n   FROM omni_ingest_tokens;",
       "grants": {
         "rout_app": [
-          "SELECT"
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
         ]
       }
     }
@@ -27111,7 +27278,7 @@
       "schema": "public",
       "name": "execute_account_merge",
       "args": "p_ticket_digest text, p_code_digest text, p_keep_handle text, p_keep_design text",
-      "def": "CREATE OR REPLACE FUNCTION public.execute_account_merge(p_ticket_digest text, p_code_digest text, p_keep_handle text, p_keep_design text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog'\nAS $function$\ndeclare\n v_secondary uuid := public.rout_current_user_id();\n v_primary uuid;\n v_ticket public.account_merge_tickets%rowtype;\n v_code public.security_codes%rowtype;\n v_p public.profiles%rowtype;\n v_s public.profiles%rowtype;\n v_p_auth uuid;\n v_s_auth uuid;\n v_p_design jsonb;\n v_s_design jsonb;\n v_relays_archived integer := 0;\nbegin\n if (session_user <> 'rout_app' and current_setting('role',true) <> 'rout_app') or v_secondary is null then\n   raise exception 'merge_caller_forbidden' using errcode='42501';\n end if;\n if p_keep_handle is null or p_keep_design is null or p_keep_handle not in ('primary','secondary') or p_keep_design not in ('primary','secondary') then\n   raise exception 'invalid_merge_choice';\n end if;\n select * into v_ticket from public.account_merge_tickets\n where (pin_hash=p_ticket_digest or token_hash=p_ticket_digest) and used_at is null and expires_at>clock_timestamp()\n order by created_at desc limit 1;\n if not found or v_ticket.preview_user_id is distinct from v_secondary or v_ticket.primary_user_id=v_secondary then\n   raise exception 'merge_ticket_not_claimable';\n end if;\n v_primary:=v_ticket.primary_user_id;\n -- Deterministic locking serializes overlapping/reversed merges.\n perform 1 from public.users where id in (v_primary,v_secondary) order by id for update;\n if (select count(*) from public.users where id in (v_primary,v_secondary) and not is_disabled and account_status='active')<>2 then\n   raise exception 'merge_ticket_not_claimable';\n end if;\n perform 1 from public.profiles where id in (v_primary,v_secondary) order by id for update;\n select * into v_ticket from public.account_merge_tickets where id=v_ticket.id for update;\n if not found or v_ticket.used_at is not null or v_ticket.expires_at<=clock_timestamp() or v_ticket.preview_user_id is distinct from v_secondary then\n   raise exception 'merge_ticket_not_claimable';\n end if;\n select * into v_code from public.security_codes where user_id=v_secondary and purpose='merge' and consumed_at is null\n order by created_at desc limit 1 for update;\n if not found or v_code.attempts>=5 or v_code.expires_at<=clock_timestamp() then\n   return jsonb_build_object('ok',false,'reason','bad_code');\n end if;\n if v_code.code_hash is distinct from p_code_digest then\n   update public.security_codes set attempts=attempts+1 where id=v_code.id;\n   return jsonb_build_object('ok',false,'reason','bad_code');\n end if;\n select * into v_p from public.profiles where id=v_primary;\n if not found then raise exception 'merge_profile_missing'; end if;\n select * into v_s from public.profiles where id=v_secondary;\n if not found then raise exception 'merge_profile_missing'; end if;\n v_p_design:=jsonb_build_object('theme',v_p.theme,'card_style',v_p.card_style,'blocks',v_p.blocks,'display_prefs',v_p.display_prefs,'url_style',v_p.url_style,'bio',v_p.bio,'tagline',v_p.tagline,'avatar_url',v_p.avatar_url);\n v_s_design:=jsonb_build_object('theme',v_s.theme,'card_style',v_s.card_style,'blocks',v_s.blocks,'display_prefs',v_s.display_prefs,'url_style',v_s.url_style,'bio',v_s.bio,'tagline',v_s.tagline,'avatar_url',v_s.avatar_url);\n update public.account_merge_tickets set used_at=transaction_timestamp(),secondary_user_id=v_secondary where id=v_ticket.id;\n update public.security_codes set consumed_at=transaction_timestamp() where id=v_code.id;\n perform public.rout_merge_assert((not exists (select 1 from public.\"account_deletions\" where \"user_id\" = v_secondary)), 'merge_blocked:account_deletions');\n perform public.rout_merge_assert((not exists (select 1 from public.\"account_email_changes\" where \"user_id\" = v_secondary)), 'merge_blocked:account_email_changes');\n perform public.rout_merge_assert((not exists (select 1 from public.\"business_verifications\" where \"user_id\" = v_secondary)), 'merge_blocked:business_verifications');\n perform public.rout_merge_assert((not exists (select 1 from public.\"identity_disclosure_logs\" where \"user_id\" = v_secondary)), 'merge_blocked:identity_disclosure_logs');\n perform public.rout_merge_assert((not exists (select 1 from public.\"identity_links\" where \"user_id\" = v_secondary)), 'merge_blocked:identity_links');\n perform public.rout_merge_assert((not exists (select 1 from public.\"identity_verifications\" where \"user_id\" = v_secondary)), 'merge_blocked:identity_verifications');\n perform public.rout_merge_assert((not exists (select 1 from public.\"psp_credentials\" where \"user_id\" = v_secondary)), 'merge_blocked:psp_credentials');\n perform public.rout_merge_assert((not exists (select 1 from public.\"sepa_review_queue\" where \"user_id\" = v_secondary)), 'merge_blocked:sepa_review_queue');\n perform public.rout_merge_assert((not exists (select 1 from public.\"user_encrypted_audit_logs\" where \"user_id\" = v_secondary)), 'merge_blocked:user_encrypted_audit_logs');\n perform public.rout_merge_assert((not exists (select 1 from public.\"user_ledger_keys\" where \"user_id\" = v_secondary)), 'merge_blocked:user_ledger_keys');\n perform public.rout_merge_assert((not exists (select 1 from public.\"verification_payments\" where \"user_id\" = v_secondary)), 'merge_blocked:verification_payments');\n perform public.rout_merge_assert((not exists (select 1 from public.\"verified_identities\" where \"user_id\" = v_secondary)), 'merge_blocked:verified_identities');\n perform public.rout_merge_assert((not exists (select 1 from public.\"wallet_transactions\" where \"user_id\" = v_secondary)), 'merge_blocked:wallet_transactions');\n perform public.rout_merge_assert((not exists (select 1 from public.\"wallets\" where \"user_id\" = v_secondary)), 'merge_blocked:wallets');\n perform public.rout_merge_assert((not exists (select 1 from public.parent_authorizations where user_id = v_secondary)), 'merge_blocked:parent_authorizations');\n perform public.rout_merge_assert((not exists (select 1 from public.ephemeral_statuses where user_id = v_secondary)), 'merge_blocked:ephemeral_statuses');\n perform public.rout_merge_assert((not exists (select 1 from public.presence_broadcast_jobs where user_id = v_secondary)), 'merge_blocked:presence_broadcast_jobs');\n perform public.rout_merge_assert((not exists (select 1 from public.omni_ingest_tokens where user_id = v_secondary)), 'merge_blocked:omni_ingest_tokens');\n perform public.rout_merge_assert((not exists (select 1 from public.omni_jobs where user_id = v_secondary)), 'merge_blocked:omni_jobs');\n perform public.rout_merge_assert((not exists (select 1 from public.omni_matrix_items where user_id = v_secondary)), 'merge_blocked:omni_matrix_items');\n perform public.rout_merge_assert((not exists (select 1 from public.social_grid_items where user_id = v_secondary)), 'merge_blocked:social_grid_items');\n perform public.rout_merge_assert((not exists (select 1 from public.e2ee_key_wraps where user_id = v_secondary::text)), 'merge_blocked:e2ee_key_wraps');\n perform public.rout_merge_assert((not exists (select 1 from public.card_designs where user_id = v_secondary)), 'merge_blocked:card_designs');\n perform public.rout_merge_assert((not exists (select 1 from public.card_freezes where user_id = v_secondary)), 'merge_blocked:card_freezes');\n perform public.rout_merge_assert((not exists (select 1 from public.factory_card_inventory where user_id = v_secondary)), 'merge_blocked:factory_card_inventory');\n perform public.rout_merge_assert((not exists (select 1 from public.physical_keys where user_id = v_secondary)), 'merge_blocked:physical_keys');\n perform public.rout_merge_assert((not exists (select 1 from public.wallet_passes where user_id = v_secondary)), 'merge_blocked:wallet_passes');\n perform public.rout_merge_assert((not exists (select 1 from public.oidc_subjects where user_id = v_secondary)), 'merge_blocked:oidc_subjects');\n perform public.rout_merge_assert((not exists (select 1 from public.app_issued_credentials where user_id = v_secondary)), 'merge_blocked:app_issued_credentials');\n perform public.rout_merge_assert((not exists (select 1 from public.user_connected_apps_visibility where user_id = v_secondary)), 'merge_blocked:user_connected_apps_visibility');\n perform public.rout_merge_assert((not exists (select 1 from public.recovery_vaults where user_id = v_secondary)), 'merge_blocked:recovery_vaults');\n perform public.rout_merge_assert((not exists (select 1 from public.recovery_attempts where user_id = v_secondary)), 'merge_blocked:recovery_attempts');\n perform public.rout_merge_assert((not exists (select 1 from public.rout_card_generations where user_id = v_secondary)), 'merge_blocked:rout_card_generations');\n delete from public.\"alias_sync_jobs\" where \"user_id\" = v_secondary;\n delete from public.\"auth_tokens\" where \"user_id\" = v_secondary;\n delete from public.\"availability_cache\" where \"user_id\" = v_secondary;\n delete from public.\"availability_jobs\" where \"user_id\" = v_secondary;\n delete from public.\"forwarding_confirmation_sends\" where \"user_id\" = v_secondary;\n delete from public.\"identity_verification_sessions\" where \"user_id\" = v_secondary;\n delete from public.\"oauth_access_tokens\" where \"user_id\" = v_secondary;\n delete from public.\"oauth_auth_codes\" where \"user_id\" = v_secondary;\n delete from public.\"oauth_refresh_tokens\" where \"user_id\" = v_secondary;\n delete from public.\"oauth_step_up_challenges\" where \"user_id\" = v_secondary;\n delete from public.\"oauth_step_up_codes\" where \"user_id\" = v_secondary;\n delete from public.\"phone_otp_codes\" where \"user_id\" = v_secondary;\n delete from public.\"profile_drafts\" where \"user_id\" = v_secondary;\n delete from public.\"security_codes\" where \"user_id\" = v_secondary;\n delete from public.\"user_sessions\" where \"user_id\" = v_secondary;\n delete from public.\"admin_permissions\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"admin_permissions\" p where p.\"user_id\" = v_primary and p.permission = s.permission);\n update public.\"admin_permissions\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"alias_profiles\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"alias_profiles\" p where p.\"user_id\" = v_primary);\n update public.\"alias_profiles\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"ambient_weather_locations\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"ambient_weather_locations\" p where p.\"user_id\" = v_primary);\n update public.\"ambient_weather_locations\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"app_email_assignments\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"app_email_assignments\" p where p.\"user_id\" = v_primary and p.client_id = s.client_id);\n update public.\"app_email_assignments\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"approved_handles\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"approved_handles\" p where p.\"user_id\" = v_primary and lower(p.handle) = lower(s.handle));\n update public.\"approved_handles\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"badge_claim_redemptions\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"badge_claim_redemptions\" p where p.\"user_id\" = v_primary and p.link_id = s.link_id);\n update public.\"badge_claim_redemptions\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"booking_event_type_hosts\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"booking_event_type_hosts\" p where p.\"user_id\" = v_primary and p.event_type_id = s.event_type_id);\n update public.\"booking_event_type_hosts\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"booking_event_types\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"booking_event_types\" p where p.\"user_id\" = v_primary and p.slug = s.slug);\n update public.\"booking_event_types\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"bunq_oauth_tokens\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"bunq_oauth_tokens\" p where p.\"user_id\" = v_primary and p.environment = s.environment);\n update public.\"bunq_oauth_tokens\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"nfc_waitlist\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"nfc_waitlist\" p where p.\"user_id\" = v_primary);\n update public.\"nfc_waitlist\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"oauth_consents\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"oauth_consents\" p where p.\"user_id\" = v_primary and p.client_id = s.client_id);\n update public.\"oauth_consents\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"oauth_email_forwarding_rules\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"oauth_email_forwarding_rules\" p where p.\"user_id\" = v_primary and p.client_id = s.client_id);\n update public.\"oauth_email_forwarding_rules\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n -- Identity relays (0157/0158): the primary's relay wins per connected app. A secondary\n -- duplicate is archived for the primary, then removed; its forwarding rule was\n -- deduplicated above, so the archived proxy no longer forwards. Moved relays follow\n -- the primary address. Late-bound: tables come from 0157/0158.\n insert into public.identity_relay_merge_archive(user_id,merged_from_user_id,connected_app_id,proxy_email,target_email,status,relay_created_at)\n select v_primary,s.user_id,s.connected_app_id,s.proxy_email,s.target_email,s.status,s.created_at\n from public.identity_relays s where s.user_id = v_secondary and exists (select 1 from public.identity_relays p where p.user_id = v_primary and p.connected_app_id = s.connected_app_id);\n get diagnostics v_relays_archived = row_count;\n delete from public.identity_relays s where s.user_id = v_secondary and exists (select 1 from public.identity_relays p where p.user_id = v_primary and p.connected_app_id = s.connected_app_id);\n update public.identity_relays set user_id = v_primary,\n   target_email = coalesce((select lower(u.email) from public.users u where u.id = v_primary and position('@' in coalesce(u.email,'')) > 1), target_email),\n   updated_at = now()\n where user_id = v_secondary;\n update public.identity_relay_merge_archive set user_id = v_primary where user_id = v_secondary;\n if v_relays_archived > 0 then\n   insert into public.notifications(user_id,kind,title,body,severity,details)\n   values(v_primary,'account.merge.relays_archived','Dubbele relays gearchiveerd',\n     format('%s privé-relay(s) van je samengevoegde account bestonden al voor dezelfde app. Je bestaande relay blijft actief; de dubbele is gearchiveerd en stuurt geen mail meer door.', v_relays_archived),\n     'warning',jsonb_build_object('count',v_relays_archived));\n end if;\n delete from public.\"pro_waitlist\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"pro_waitlist\" p where p.\"user_id\" = v_primary);\n update public.\"pro_waitlist\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"profile_ingest_tokens\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"profile_ingest_tokens\" p where p.\"user_id\" = v_primary);\n update public.\"profile_ingest_tokens\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"reserved_brand_releases\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"reserved_brand_releases\" p where p.\"user_id\" = v_primary and p.term = s.term);\n update public.\"reserved_brand_releases\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"social_block_settings\" s where s.\"profile_id\" = v_secondary and exists (select 1 from public.\"social_block_settings\" p where p.\"profile_id\" = v_primary and p.platform = s.platform and lower(p.handle) = lower(s.handle));\n update public.\"social_block_settings\" set \"profile_id\" = v_primary where \"profile_id\" = v_secondary;\n delete from public.\"social_follow_links\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"social_follow_links\" p where p.\"user_id\" = v_primary and p.network = s.network and p.remote_actor = s.remote_actor and p.direction = s.direction);\n update public.\"social_follow_links\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"social_links\" s where s.\"profile_id\" = v_secondary and exists (select 1 from public.\"social_links\" p where p.\"profile_id\" = v_primary and p.platform = s.platform);\n update public.\"social_links\" set \"profile_id\" = v_primary where \"profile_id\" = v_secondary;\n delete from public.\"tip_settings\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"tip_settings\" p where p.\"user_id\" = v_primary);\n update public.\"tip_settings\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_badges\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_badges\" p where p.\"user_id\" = v_primary and p.badge_id = s.badge_id);\n update public.\"user_badges\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_calendar_feeds\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_calendar_feeds\" p where p.\"user_id\" = v_primary);\n update public.\"user_calendar_feeds\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_custom_badges\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_custom_badges\" p where p.\"user_id\" = v_primary and p.badge_id = s.badge_id);\n update public.\"user_custom_badges\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_custom_presence\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_custom_presence\" p where p.\"user_id\" = v_primary);\n update public.\"user_custom_presence\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_feature_blocks\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_feature_blocks\" p where p.\"user_id\" = v_primary and p.feature = s.feature);\n update public.\"user_feature_blocks\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_integration_links\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_integration_links\" p where p.\"user_id\" = v_primary and p.provider = s.provider);\n update public.\"user_integration_links\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_integrations\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_integrations\" p where p.\"user_id\" = v_primary and p.provider = s.provider);\n update public.\"user_integrations\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_music_status\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_music_status\" p where p.\"user_id\" = v_primary);\n update public.\"user_music_status\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_phone_numbers\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_phone_numbers\" p where p.\"user_id\" = v_primary);\n update public.\"user_phone_numbers\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_presence_connections\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_presence_connections\" p where p.\"user_id\" = v_primary and p.provider = s.provider);\n update public.\"user_presence_connections\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_roles\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_roles\" p where p.\"user_id\" = v_primary and p.role = s.role);\n update public.\"user_roles\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_snapchat\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_snapchat\" p where p.\"user_id\" = v_primary);\n update public.\"user_snapchat\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"workspace_members\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"workspace_members\" p where p.\"user_id\" = v_primary and p.workspace_id = s.workspace_id);\n update public.\"workspace_members\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"analytics_events\" set \"profile_id\" = v_primary where \"profile_id\" = v_secondary;\n update public.\"api_keys\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"availability_overrides\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"availability_rules\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"avatar_objects\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"badge_events\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"booking_requests\" set \"profile_id\" = v_primary where \"profile_id\" = v_secondary;\n update public.\"community_reviews\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"connected_calendars\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"custom_domains\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"domain_claims\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"email_aliases\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"feedback_forms\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"gallery_objects\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"influencer_requests\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"invoice_deliveries\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"links\" set \"profile_id\" = v_primary where \"profile_id\" = v_secondary;\n update public.\"notifications\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"oauth_email_deliveries\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"profile_design_templates\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"profile_events\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"public_activity\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"saved_qrs\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"security_events\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"shared_files\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"subdomain_root_claims\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"tracked_qrs\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"user_assets\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"user_identities\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"user_linked_accounts\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n\n select coalesce(auth_user_id,nullif(user_metadata->>'neon_auth_id','')::uuid) into v_p_auth from public.users where id=v_primary;\n select coalesce(auth_user_id,nullif(user_metadata->>'neon_auth_id','')::uuid) into v_s_auth from public.users where id=v_secondary;\n -- Release canonical FK before native deletion/adoption (ON DELETE CASCADE).\n update public.users set auth_user_id=null,user_metadata=user_metadata-'neon_auth_id' where id=v_secondary;\n if v_s_auth is not null and v_s_auth is distinct from v_p_auth then\n   delete from neon_auth.session where \"userId\"=v_s_auth;\n   if v_p_auth is null then\n     update public.users set auth_user_id=v_s_auth,user_metadata=coalesce(user_metadata,'{}'::jsonb)||jsonb_build_object('neon_auth_id',v_s_auth::text) where id=v_primary;\n   else\n     insert into public.merged_auth_account_archive(primary_user_id,secondary_auth_user_id,provider_id,provider_account_id,original_created_at)\n     select v_primary,v_s_auth::text,s.\"providerId\",s.\"accountId\",s.\"createdAt\" from neon_auth.account s where s.\"userId\"=v_s_auth and exists(select 1 from neon_auth.account p where p.\"userId\"=v_p_auth and p.\"providerId\"=s.\"providerId\");\n     delete from neon_auth.account s where s.\"userId\"=v_s_auth and exists(select 1 from neon_auth.account p where p.\"userId\"=v_p_auth and p.\"providerId\"=s.\"providerId\");\n     update neon_auth.account set \"userId\"=v_p_auth,\"updatedAt\"=now() where \"userId\"=v_s_auth;\n     update neon_auth.passkey set \"userId\"=v_p_auth::text where \"userId\"=v_s_auth::text;\n     delete from neon_auth.\"twoFactor\" where \"userId\"=v_s_auth::text;\n     delete from neon_auth.\"user\" where id=v_s_auth;\n   end if;\n end if;\n update public.profiles p set verified=p.verified or v_s.verified, verified_at=coalesce(p.verified_at,v_s.verified_at),verified_legal_name=coalesce(p.verified_legal_name,v_s.verified_legal_name),tier=case when v_s.tier='verified' or p.tier='verified' then 'verified' else p.tier end,is_paid=p.is_paid or v_s.is_paid,is_early_believer=p.is_early_believer or v_s.is_early_believer,is_business=p.is_business or v_s.is_business,is_influencer=p.is_influencer or v_s.is_influencer,updated_at=now() where p.id=v_primary;\n if p_keep_design='secondary' then\n   insert into public.profile_design_templates(user_id,name,payload)\n   select v_primary,left('Ontwerp van @'||coalesce(v_p.username,'hoofdaccount'),60),v_p_design\n   where (select count(*) from public.profile_design_templates where user_id=v_primary)<30 and not exists(select 1 from public.profile_design_templates where user_id=v_primary and payload=v_p_design);\n   update public.profiles set theme=v_s.theme,card_style=v_s.card_style,blocks=v_s.blocks,display_prefs=v_s.display_prefs,url_style=v_s.url_style,bio=v_s.bio,tagline=v_s.tagline,avatar_url=v_s.avatar_url,updated_at=now() where id=v_primary;\n   delete from public.profile_drafts where user_id=v_primary and space='verified';\n end if;\n insert into public.profile_design_templates(user_id,name,payload)\n select v_primary,left('Ontwerp van @'||coalesce(v_s.username,'tweede account'),60),v_s_design\n where (select count(*) from public.profile_design_templates where user_id=v_primary)<30 and not exists(select 1 from public.profile_design_templates where user_id=v_primary and payload=v_s_design);\n delete from public.profiles where id=v_secondary;\n delete from public.users where id=v_secondary;\n if p_keep_handle='secondary' and v_s.username is not null then\n   update public.profiles set username=v_s.username,updated_at=now() where id=v_primary;\n end if;\n insert into public.security_events(user_id,kind,message,severity,details)\n values(v_primary,'account.merged','Account merged','info',jsonb_build_object('ticket_id',v_ticket.id));\n return jsonb_build_object('ok',true,'primaryUserId',v_primary);\nend $function$"
+      "def": "CREATE OR REPLACE FUNCTION public.execute_account_merge(p_ticket_digest text, p_code_digest text, p_keep_handle text, p_keep_design text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog'\nAS $function$\ndeclare\n v_secondary uuid := public.rout_current_user_id();\n v_primary uuid;\n v_ticket public.account_merge_tickets%rowtype;\n v_code public.security_codes%rowtype;\n v_p public.profiles%rowtype;\n v_s public.profiles%rowtype;\n v_p_auth uuid;\n v_s_auth uuid;\n v_p_design jsonb;\n v_s_design jsonb;\n v_relays_archived integer := 0;\nbegin\n if (session_user <> 'rout_app' and current_setting('role',true) <> 'rout_app') or v_secondary is null then\n   raise exception 'merge_caller_forbidden' using errcode='42501';\n end if;\n if p_keep_handle is null or p_keep_design is null or p_keep_handle not in ('primary','secondary') or p_keep_design not in ('primary','secondary') then\n   raise exception 'invalid_merge_choice';\n end if;\n select * into v_ticket from public.account_merge_tickets\n where (pin_hash=p_ticket_digest or token_hash=p_ticket_digest) and used_at is null and expires_at>clock_timestamp()\n order by created_at desc limit 1;\n if not found or v_ticket.preview_user_id is distinct from v_secondary or v_ticket.primary_user_id=v_secondary then\n   raise exception 'merge_ticket_not_claimable';\n end if;\n v_primary:=v_ticket.primary_user_id;\n -- Deterministic locking serializes overlapping/reversed merges.\n perform 1 from public.users where id in (v_primary,v_secondary) order by id for update;\n if (select count(*) from public.users where id in (v_primary,v_secondary) and not is_disabled and account_status='active')<>2 then\n   raise exception 'merge_ticket_not_claimable';\n end if;\n perform 1 from public.profiles where id in (v_primary,v_secondary) order by id for update;\n select * into v_ticket from public.account_merge_tickets where id=v_ticket.id for update;\n if not found or v_ticket.used_at is not null or v_ticket.expires_at<=clock_timestamp() or v_ticket.preview_user_id is distinct from v_secondary then\n   raise exception 'merge_ticket_not_claimable';\n end if;\n select * into v_code from public.security_codes where user_id=v_secondary and purpose='merge' and consumed_at is null\n order by created_at desc limit 1 for update;\n if not found or v_code.attempts>=5 or v_code.expires_at<=clock_timestamp() then\n   return jsonb_build_object('ok',false,'reason','bad_code');\n end if;\n if v_code.code_hash is distinct from p_code_digest then\n   update public.security_codes set attempts=attempts+1 where id=v_code.id;\n   return jsonb_build_object('ok',false,'reason','bad_code');\n end if;\n select * into v_p from public.profiles where id=v_primary;\n if not found then raise exception 'merge_profile_missing'; end if;\n select * into v_s from public.profiles where id=v_secondary;\n if not found then raise exception 'merge_profile_missing'; end if;\n v_p_design:=jsonb_build_object('theme',v_p.theme,'card_style',v_p.card_style,'blocks',v_p.blocks,'display_prefs',v_p.display_prefs,'url_style',v_p.url_style,'bio',v_p.bio,'tagline',v_p.tagline,'avatar_url',v_p.avatar_url);\n v_s_design:=jsonb_build_object('theme',v_s.theme,'card_style',v_s.card_style,'blocks',v_s.blocks,'display_prefs',v_s.display_prefs,'url_style',v_s.url_style,'bio',v_s.bio,'tagline',v_s.tagline,'avatar_url',v_s.avatar_url);\n update public.account_merge_tickets set used_at=transaction_timestamp(),secondary_user_id=v_secondary where id=v_ticket.id;\n update public.security_codes set consumed_at=transaction_timestamp() where id=v_code.id;\n perform public.rout_merge_assert((not exists (select 1 from public.\"account_deletions\" where \"user_id\" = v_secondary)), 'merge_blocked:account_deletions');\n perform public.rout_merge_assert((not exists (select 1 from public.\"account_email_changes\" where \"user_id\" = v_secondary)), 'merge_blocked:account_email_changes');\n perform public.rout_merge_assert((not exists (select 1 from public.\"business_verifications\" where \"user_id\" = v_secondary)), 'merge_blocked:business_verifications');\n perform public.rout_merge_assert((not exists (select 1 from public.\"identity_disclosure_logs\" where \"user_id\" = v_secondary)), 'merge_blocked:identity_disclosure_logs');\n perform public.rout_merge_assert((not exists (select 1 from public.\"identity_links\" where \"user_id\" = v_secondary)), 'merge_blocked:identity_links');\n perform public.rout_merge_assert((not exists (select 1 from public.\"identity_verifications\" where \"user_id\" = v_secondary)), 'merge_blocked:identity_verifications');\n perform public.rout_merge_assert((not exists (select 1 from public.\"psp_credentials\" where \"user_id\" = v_secondary)), 'merge_blocked:psp_credentials');\n perform public.rout_merge_assert((not exists (select 1 from public.\"sepa_review_queue\" where \"user_id\" = v_secondary)), 'merge_blocked:sepa_review_queue');\n perform public.rout_merge_assert((not exists (select 1 from public.\"user_encrypted_audit_logs\" where \"user_id\" = v_secondary)), 'merge_blocked:user_encrypted_audit_logs');\n perform public.rout_merge_assert((not exists (select 1 from public.\"user_ledger_keys\" where \"user_id\" = v_secondary)), 'merge_blocked:user_ledger_keys');\n perform public.rout_merge_assert((not exists (select 1 from public.\"verification_payments\" where \"user_id\" = v_secondary)), 'merge_blocked:verification_payments');\n perform public.rout_merge_assert((not exists (select 1 from public.\"verified_identities\" where \"user_id\" = v_secondary)), 'merge_blocked:verified_identities');\n perform public.rout_merge_assert((not exists (select 1 from public.\"wallet_transactions\" where \"user_id\" = v_secondary)), 'merge_blocked:wallet_transactions');\n perform public.rout_merge_assert((not exists (select 1 from public.\"wallets\" where \"user_id\" = v_secondary)), 'merge_blocked:wallets');\n perform public.rout_merge_assert((not exists (select 1 from public.parent_authorizations where user_id = v_secondary)), 'merge_blocked:parent_authorizations');\n perform public.rout_merge_assert((not exists (select 1 from public.ephemeral_statuses where user_id = v_secondary)), 'merge_blocked:ephemeral_statuses');\n perform public.rout_merge_assert((not exists (select 1 from public.presence_broadcast_jobs where user_id = v_secondary)), 'merge_blocked:presence_broadcast_jobs');\n perform public.rout_merge_assert((not exists (select 1 from public.omni_ingest_tokens where user_id = v_secondary)), 'merge_blocked:omni_ingest_tokens');\n perform public.rout_merge_assert((not exists (select 1 from public.omni_jobs where user_id = v_secondary)), 'merge_blocked:omni_jobs');\n perform public.rout_merge_assert((not exists (select 1 from public.omni_matrix_items where user_id = v_secondary)), 'merge_blocked:omni_matrix_items');\n perform public.rout_merge_assert((not exists (select 1 from public.social_grid_items where user_id = v_secondary)), 'merge_blocked:social_grid_items');\n perform public.rout_merge_assert((not exists (select 1 from public.card_designs where user_id = v_secondary)), 'merge_blocked:card_designs');\n perform public.rout_merge_assert((not exists (select 1 from public.card_freezes where user_id = v_secondary)), 'merge_blocked:card_freezes');\n perform public.rout_merge_assert((not exists (select 1 from public.factory_card_inventory where user_id = v_secondary)), 'merge_blocked:factory_card_inventory');\n perform public.rout_merge_assert((not exists (select 1 from public.physical_keys where user_id = v_secondary)), 'merge_blocked:physical_keys');\n perform public.rout_merge_assert((not exists (select 1 from public.wallet_passes where user_id = v_secondary)), 'merge_blocked:wallet_passes');\n perform public.rout_merge_assert((not exists (select 1 from public.oidc_subjects where user_id = v_secondary)), 'merge_blocked:oidc_subjects');\n perform public.rout_merge_assert((not exists (select 1 from public.app_issued_credentials where user_id = v_secondary)), 'merge_blocked:app_issued_credentials');\n perform public.rout_merge_assert((not exists (select 1 from public.user_connected_apps_visibility where user_id = v_secondary)), 'merge_blocked:user_connected_apps_visibility');\n perform public.rout_merge_assert((not exists (select 1 from public.recovery_vaults where user_id = v_secondary)), 'merge_blocked:recovery_vaults');\n perform public.rout_merge_assert((not exists (select 1 from public.recovery_attempts where user_id = v_secondary)), 'merge_blocked:recovery_attempts');\n perform public.rout_merge_assert((not exists (select 1 from public.rout_card_generations where user_id = v_secondary)), 'merge_blocked:rout_card_generations');\n delete from public.\"alias_sync_jobs\" where \"user_id\" = v_secondary;\n delete from public.\"auth_tokens\" where \"user_id\" = v_secondary;\n delete from public.\"availability_cache\" where \"user_id\" = v_secondary;\n delete from public.\"availability_jobs\" where \"user_id\" = v_secondary;\n delete from public.\"forwarding_confirmation_sends\" where \"user_id\" = v_secondary;\n delete from public.\"identity_verification_sessions\" where \"user_id\" = v_secondary;\n delete from public.\"oauth_access_tokens\" where \"user_id\" = v_secondary;\n delete from public.\"oauth_auth_codes\" where \"user_id\" = v_secondary;\n delete from public.\"oauth_refresh_tokens\" where \"user_id\" = v_secondary;\n delete from public.\"oauth_step_up_challenges\" where \"user_id\" = v_secondary;\n delete from public.\"oauth_step_up_codes\" where \"user_id\" = v_secondary;\n delete from public.\"phone_otp_codes\" where \"user_id\" = v_secondary;\n delete from public.\"profile_drafts\" where \"user_id\" = v_secondary;\n delete from public.\"security_codes\" where \"user_id\" = v_secondary;\n delete from public.\"user_sessions\" where \"user_id\" = v_secondary;\n delete from public.\"admin_permissions\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"admin_permissions\" p where p.\"user_id\" = v_primary and p.permission = s.permission);\n update public.\"admin_permissions\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"alias_profiles\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"alias_profiles\" p where p.\"user_id\" = v_primary);\n update public.\"alias_profiles\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"ambient_weather_locations\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"ambient_weather_locations\" p where p.\"user_id\" = v_primary);\n update public.\"ambient_weather_locations\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"app_email_assignments\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"app_email_assignments\" p where p.\"user_id\" = v_primary and p.client_id = s.client_id);\n update public.\"app_email_assignments\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"approved_handles\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"approved_handles\" p where p.\"user_id\" = v_primary and lower(p.handle) = lower(s.handle));\n update public.\"approved_handles\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"badge_claim_redemptions\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"badge_claim_redemptions\" p where p.\"user_id\" = v_primary and p.link_id = s.link_id);\n update public.\"badge_claim_redemptions\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"booking_event_type_hosts\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"booking_event_type_hosts\" p where p.\"user_id\" = v_primary and p.event_type_id = s.event_type_id);\n update public.\"booking_event_type_hosts\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"booking_event_types\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"booking_event_types\" p where p.\"user_id\" = v_primary and p.slug = s.slug);\n update public.\"booking_event_types\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"bunq_oauth_tokens\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"bunq_oauth_tokens\" p where p.\"user_id\" = v_primary and p.environment = s.environment);\n update public.\"bunq_oauth_tokens\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"nfc_waitlist\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"nfc_waitlist\" p where p.\"user_id\" = v_primary);\n update public.\"nfc_waitlist\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"oauth_consents\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"oauth_consents\" p where p.\"user_id\" = v_primary and p.client_id = s.client_id);\n update public.\"oauth_consents\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"oauth_email_forwarding_rules\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"oauth_email_forwarding_rules\" p where p.\"user_id\" = v_primary and p.client_id = s.client_id);\n update public.\"oauth_email_forwarding_rules\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n -- Identity relays (0157/0158): the primary's relay wins per connected app. A secondary\n -- duplicate is archived for the primary, then removed; its forwarding rule was\n -- deduplicated above, so the archived proxy no longer forwards. Moved relays follow\n -- the primary address. Late-bound: tables come from 0157/0158.\n insert into public.identity_relay_merge_archive(user_id,merged_from_user_id,connected_app_id,proxy_email,target_email,status,relay_created_at)\n select v_primary,s.user_id,s.connected_app_id,s.proxy_email,s.target_email,s.status,s.created_at\n from public.identity_relays s where s.user_id = v_secondary and exists (select 1 from public.identity_relays p where p.user_id = v_primary and p.connected_app_id = s.connected_app_id);\n get diagnostics v_relays_archived = row_count;\n delete from public.identity_relays s where s.user_id = v_secondary and exists (select 1 from public.identity_relays p where p.user_id = v_primary and p.connected_app_id = s.connected_app_id);\n update public.identity_relays set user_id = v_primary,\n   target_email = coalesce((select lower(u.email) from public.users u where u.id = v_primary and position('@' in coalesce(u.email,'')) > 1), target_email),\n   updated_at = now()\n where user_id = v_secondary;\n update public.identity_relay_merge_archive set user_id = v_primary where user_id = v_secondary;\n if v_relays_archived > 0 then\n   insert into public.notifications(user_id,kind,title,body,severity,details)\n   values(v_primary,'account.merge.relays_archived','Dubbele relays gearchiveerd',\n     format('%s privé-relay(s) van je samengevoegde account bestonden al voor dezelfde app. Je bestaande relay blijft actief; de dubbele is gearchiveerd en stuurt geen mail meer door.', v_relays_archived),\n     'warning',jsonb_build_object('count',v_relays_archived));\n end if;\n delete from public.\"pro_waitlist\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"pro_waitlist\" p where p.\"user_id\" = v_primary);\n update public.\"pro_waitlist\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"profile_ingest_tokens\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"profile_ingest_tokens\" p where p.\"user_id\" = v_primary);\n update public.\"profile_ingest_tokens\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"reserved_brand_releases\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"reserved_brand_releases\" p where p.\"user_id\" = v_primary and p.term = s.term);\n update public.\"reserved_brand_releases\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"social_block_settings\" s where s.\"profile_id\" = v_secondary and exists (select 1 from public.\"social_block_settings\" p where p.\"profile_id\" = v_primary and p.platform = s.platform and lower(p.handle) = lower(s.handle));\n update public.\"social_block_settings\" set \"profile_id\" = v_primary where \"profile_id\" = v_secondary;\n delete from public.\"social_follow_links\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"social_follow_links\" p where p.\"user_id\" = v_primary and p.network = s.network and p.remote_actor = s.remote_actor and p.direction = s.direction);\n update public.\"social_follow_links\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"social_links\" s where s.\"profile_id\" = v_secondary and exists (select 1 from public.\"social_links\" p where p.\"profile_id\" = v_primary and p.platform = s.platform);\n update public.\"social_links\" set \"profile_id\" = v_primary where \"profile_id\" = v_secondary;\n delete from public.\"tip_settings\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"tip_settings\" p where p.\"user_id\" = v_primary);\n update public.\"tip_settings\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_badges\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_badges\" p where p.\"user_id\" = v_primary and p.badge_id = s.badge_id);\n update public.\"user_badges\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_calendar_feeds\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_calendar_feeds\" p where p.\"user_id\" = v_primary);\n update public.\"user_calendar_feeds\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_custom_badges\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_custom_badges\" p where p.\"user_id\" = v_primary and p.badge_id = s.badge_id);\n update public.\"user_custom_badges\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_custom_presence\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_custom_presence\" p where p.\"user_id\" = v_primary);\n update public.\"user_custom_presence\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_feature_blocks\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_feature_blocks\" p where p.\"user_id\" = v_primary and p.feature = s.feature);\n update public.\"user_feature_blocks\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_integration_links\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_integration_links\" p where p.\"user_id\" = v_primary and p.provider = s.provider);\n update public.\"user_integration_links\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_integrations\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_integrations\" p where p.\"user_id\" = v_primary and p.provider = s.provider);\n update public.\"user_integrations\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_music_status\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_music_status\" p where p.\"user_id\" = v_primary);\n update public.\"user_music_status\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_phone_numbers\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_phone_numbers\" p where p.\"user_id\" = v_primary);\n update public.\"user_phone_numbers\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_presence_connections\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_presence_connections\" p where p.\"user_id\" = v_primary and p.provider = s.provider);\n update public.\"user_presence_connections\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_roles\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_roles\" p where p.\"user_id\" = v_primary and p.role = s.role);\n update public.\"user_roles\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"user_snapchat\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"user_snapchat\" p where p.\"user_id\" = v_primary);\n update public.\"user_snapchat\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n delete from public.\"workspace_members\" s where s.\"user_id\" = v_secondary and exists (select 1 from public.\"workspace_members\" p where p.\"user_id\" = v_primary and p.workspace_id = s.workspace_id);\n update public.\"workspace_members\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"analytics_events\" set \"profile_id\" = v_primary where \"profile_id\" = v_secondary;\n update public.\"api_keys\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"availability_overrides\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"availability_rules\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"avatar_objects\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"badge_events\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"booking_requests\" set \"profile_id\" = v_primary where \"profile_id\" = v_secondary;\n update public.\"community_reviews\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"connected_calendars\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"custom_domains\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"domain_claims\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"email_aliases\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"feedback_forms\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"gallery_objects\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"influencer_requests\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"invoice_deliveries\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"links\" set \"profile_id\" = v_primary where \"profile_id\" = v_secondary;\n update public.\"notifications\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"oauth_email_deliveries\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"profile_design_templates\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"profile_events\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"public_activity\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"saved_qrs\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"security_events\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"shared_files\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"subdomain_root_claims\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"tracked_qrs\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"user_assets\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"user_identities\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n update public.\"user_linked_accounts\" set \"user_id\" = v_primary where \"user_id\" = v_secondary;\n\n select coalesce(auth_user_id,nullif(user_metadata->>'neon_auth_id','')::uuid) into v_p_auth from public.users where id=v_primary;\n select coalesce(auth_user_id,nullif(user_metadata->>'neon_auth_id','')::uuid) into v_s_auth from public.users where id=v_secondary;\n -- Release canonical FK before native deletion/adoption (ON DELETE CASCADE).\n update public.users set auth_user_id=null,user_metadata=user_metadata-'neon_auth_id' where id=v_secondary;\n if v_s_auth is not null and v_s_auth is distinct from v_p_auth then\n   delete from neon_auth.session where \"userId\"=v_s_auth;\n   if v_p_auth is null then\n     update public.users set auth_user_id=v_s_auth,user_metadata=coalesce(user_metadata,'{}'::jsonb)||jsonb_build_object('neon_auth_id',v_s_auth::text) where id=v_primary;\n   else\n     insert into public.merged_auth_account_archive(primary_user_id,secondary_auth_user_id,provider_id,provider_account_id,original_created_at)\n     select v_primary,v_s_auth::text,s.\"providerId\",s.\"accountId\",s.\"createdAt\" from neon_auth.account s where s.\"userId\"=v_s_auth and exists(select 1 from neon_auth.account p where p.\"userId\"=v_p_auth and p.\"providerId\"=s.\"providerId\");\n     delete from neon_auth.account s where s.\"userId\"=v_s_auth and exists(select 1 from neon_auth.account p where p.\"userId\"=v_p_auth and p.\"providerId\"=s.\"providerId\");\n     update neon_auth.account set \"userId\"=v_p_auth,\"updatedAt\"=now() where \"userId\"=v_s_auth;\n     update neon_auth.passkey set \"userId\"=v_p_auth::text where \"userId\"=v_s_auth::text;\n     delete from neon_auth.\"twoFactor\" where \"userId\"=v_s_auth::text;\n     delete from neon_auth.\"user\" where id=v_s_auth;\n   end if;\n end if;\n update public.profiles p set verified=p.verified or v_s.verified, verified_at=coalesce(p.verified_at,v_s.verified_at),verified_legal_name=coalesce(p.verified_legal_name,v_s.verified_legal_name),tier=case when v_s.tier='verified' or p.tier='verified' then 'verified' else p.tier end,is_paid=p.is_paid or v_s.is_paid,is_early_believer=p.is_early_believer or v_s.is_early_believer,is_business=p.is_business or v_s.is_business,is_influencer=p.is_influencer or v_s.is_influencer,updated_at=now() where p.id=v_primary;\n if p_keep_design='secondary' then\n   insert into public.profile_design_templates(user_id,name,payload)\n   select v_primary,left('Ontwerp van @'||coalesce(v_p.username,'hoofdaccount'),60),v_p_design\n   where (select count(*) from public.profile_design_templates where user_id=v_primary)<30 and not exists(select 1 from public.profile_design_templates where user_id=v_primary and payload=v_p_design);\n   update public.profiles set theme=v_s.theme,card_style=v_s.card_style,blocks=v_s.blocks,display_prefs=v_s.display_prefs,url_style=v_s.url_style,bio=v_s.bio,tagline=v_s.tagline,avatar_url=v_s.avatar_url,updated_at=now() where id=v_primary;\n   delete from public.profile_drafts where user_id=v_primary and space='verified';\n end if;\n insert into public.profile_design_templates(user_id,name,payload)\n select v_primary,left('Ontwerp van @'||coalesce(v_s.username,'tweede account'),60),v_s_design\n where (select count(*) from public.profile_design_templates where user_id=v_primary)<30 and not exists(select 1 from public.profile_design_templates where user_id=v_primary and payload=v_s_design);\n delete from public.profiles where id=v_secondary;\n delete from public.users where id=v_secondary;\n if p_keep_handle='secondary' and v_s.username is not null then\n   update public.profiles set username=v_s.username,updated_at=now() where id=v_primary;\n end if;\n insert into public.security_events(user_id,kind,message,severity,details)\n values(v_primary,'account.merged','Account merged','info',jsonb_build_object('ticket_id',v_ticket.id));\n return jsonb_build_object('ok',true,'primaryUserId',v_primary);\nend $function$"
     },
     {
       "schema": "public",
@@ -27355,6 +27522,102 @@
     },
     {
       "schema": "public",
+      "name": "rout_booking_cache_free",
+      "args": "p_host uuid, p_from timestamp with time zone, p_to timestamp with time zone",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_cache_free(p_host uuid, p_from timestamp with time zone, p_to timestamp with time zone)\n RETURNS boolean\n LANGUAGE plpgsql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  first_slot bigint := floor(extract(epoch from p_from) / 900);\n  last_slot bigint := ceil(extract(epoch from p_to) / 900);\n  s bigint; day_start bigint; bits text; cur date; want date;\nbegin\n  if p_to <= p_from then return false; end if;\n  cur := null;\n  for s in first_slot .. last_slot - 1 loop\n    want := (to_timestamp(s * 900) at time zone 'utc')::date;\n    if cur is distinct from want then\n      select c.free_bits::text into bits from public.availability_cache c where c.user_id = p_host and c.day = want;\n      if bits is null then return false; end if;\n      cur := want;\n      day_start := floor(extract(epoch from (want::timestamp at time zone 'utc')) / 900);\n    end if;\n    if substr(bits, (s - day_start + 1)::int, 1) <> '1' then return false; end if;\n  end loop;\n  return true;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_confirm_paid",
+      "args": "p_booking uuid, p_session text",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_confirm_paid(p_booking uuid, p_session text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare ids uuid[] := public.rout_booking_group_ids(p_booking); st text; hs uuid[];\nbegin\n  with u as (\n    update public.bookings b set\n      status = case when t.confirmation_mode = 'request' then 'requested' else 'confirmed' end,\n      hold_expires_at = null, updated_at = now()\n    from public.booking_event_types t\n    where b.id = any(ids) and t.id = b.event_type_id and b.status = 'pending_payment'\n      and exists (select 1 from public.bookings s where s.id = p_booking and s.stripe_checkout_session_id = p_session)\n    returning b.status, b.host_user_id)\n  select max(status), array_agg(host_user_id) into st, hs from u;\n  return jsonb_build_object('status', coalesce(st, 'noop'), 'hostIds', coalesce(to_jsonb(hs), '[]'::jsonb), 'bookingId', p_booking);\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_create",
+      "args": "p_event_type uuid, p_start timestamp with time zone, p_guest_name text, p_guest_email text, p_guest_timezone text, p_guest_note text, p_intake jsonb",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_create(p_event_type uuid, p_start timestamp with time zone, p_guest_name text, p_guest_email text, p_guest_timezone text, p_guest_note text, p_intake jsonb)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  t public.booking_event_types%rowtype;\n  hosts uuid[]; candidates uuid[]; chosen uuid[];\n  bs timestamptz; be timestamptz; e timestamptz;\n  cap integer; shared boolean; st text; hold timestamptz;\n  grp uuid; ids uuid[] := '{}'; tok text; h uuid; i integer; new_id uuid;\nbegin\n  if not public.rout_booking_type_public(p_event_type) then return jsonb_build_object('ok', false, 'reason', 'inactive'); end if;\n  select * into t from public.booking_event_types where id = p_event_type;\n  if p_guest_name is null or char_length(btrim(p_guest_name)) not between 1 and 120\n     or p_guest_email is null or char_length(p_guest_email) not between 3 and 254 or position('@' in p_guest_email) < 2\n     or p_guest_timezone is null or char_length(p_guest_timezone) not between 1 and 64\n     or char_length(coalesce(p_guest_note, '')) > 2000\n     or (p_intake is not null and (jsonb_typeof(p_intake) <> 'object' or octet_length(p_intake::text) > 65536)) then\n    return jsonb_build_object('ok', false, 'reason', 'invalid_input');\n  end if;\n  if extract(epoch from p_start) % (t.slot_step_minutes * 60) <> 0 then\n    return jsonb_build_object('ok', false, 'reason', 'outside_availability');\n  end if;\n  if p_start < now() + make_interval(hours => t.minimum_notice_hours) then return jsonb_build_object('ok', false, 'reason', 'too_soon'); end if;\n  if p_start > now() + make_interval(days => t.max_days_ahead) then return jsonb_build_object('ok', false, 'reason', 'too_far'); end if;\n\n  e := p_start + make_interval(mins => t.duration_minutes);\n  bs := p_start - make_interval(mins => t.buffer_before_minutes);\n  be := e + make_interval(mins => t.buffer_after_minutes);\n  cap := greatest(1, t.resource_capacity);\n  shared := cap > 1;\n  st := case when t.price_cents is not null then 'pending_payment' when t.confirmation_mode = 'request' then 'requested' else 'confirmed' end;\n  hold := case when t.price_cents is not null then now() + interval '30 minutes' end;\n\n  select array_agg(user_id order by user_id) into hosts from public.booking_event_type_hosts where event_type_id = t.id;\n  -- Lock every host of the type for every UTC day the block touches, in global (host, day) order.\n  perform public.rout_booking_lock_hosts(hosts, bs, be);\n\n  if t.routing_strategy = 'COLLECTIVE' then\n    foreach h in array hosts loop\n      if not public.rout_booking_host_free(h, t.id, p_start, bs, be, cap) then\n        return jsonb_build_object('ok', false, 'reason', 'slot_taken');\n      end if;\n    end loop;\n    chosen := hosts;\n  else\n    -- STRICT: highest priority host. ROUND_ROBIN: free hosts, fewest booked minutes in the\n    -- 30 days around the slot, then priority, then id (deterministic).\n    select array_agg(x.user_id order by x.load, x.priority desc, x.user_id) into candidates from (\n      select h2.user_id, h2.priority,\n        case when t.routing_strategy = 'ROUND_ROBIN' then coalesce((\n          select sum(extract(epoch from (b.end_utc - b.start_utc)) / 60) from public.bookings b\n          where b.host_user_id = h2.user_id and b.status in ('held','pending_payment','requested','confirmed')\n            and b.start_utc >= p_start - interval '30 days' and b.start_utc < p_start + interval '30 days'), 0) else 0 end as load\n      from public.booking_event_type_hosts h2 where h2.event_type_id = t.id\n    ) x;\n    if t.routing_strategy = 'STRICT' then candidates := candidates[1:1]; end if;\n    chosen := null;\n    foreach h in array candidates loop\n      if public.rout_booking_host_free(h, t.id, p_start, bs, be, cap) then chosen := array[h]; exit; end if;\n    end loop;\n    if chosen is null then return jsonb_build_object('ok', false, 'reason', 'slot_taken'); end if;\n  end if;\n\n  grp := case when array_length(chosen, 1) > 1 then gen_random_uuid() end;\n  begin\n    for i in 1 .. array_length(chosen, 1) loop\n      new_id := gen_random_uuid();\n      insert into public.bookings (id, event_type_id, host_user_id, workspace_id, group_id, start_utc, end_utc,\n        block_start_utc, block_end_utc, status, guest_name, guest_email, guest_timezone, guest_note, hold_expires_at,\n        ics_uid, shared_slot, intake_answers)\n      values (new_id, t.id, chosen[i], t.workspace_id, grp, p_start, e, bs, be, st, btrim(p_guest_name), p_guest_email,\n        p_guest_timezone, nullif(p_guest_note, ''), hold, coalesce(grp, new_id)::text || '@rout.be', shared, p_intake);\n      ids := ids || new_id;\n      insert into public.availability_jobs (user_id, reason, run_after) values (chosen[i], 'booking', now() + interval '20 seconds')\n        on conflict (user_id) do update set reason = 'booking', run_after = least(public.availability_jobs.run_after, excluded.run_after);\n    end loop;\n  exception when exclusion_violation then\n    return jsonb_build_object('ok', false, 'reason', 'slot_taken');\n  end;\n  -- The guest link uses the first row's token; group actions resolve the whole group.\n  select booking_token into tok from public.bookings where id = ids[1];\n  return jsonb_build_object('ok', true, 'bookingIds', to_jsonb(ids), 'hostIds', to_jsonb(chosen), 'token', tok,\n    'status', st, 'holdExpiresAt', hold, 'groupId', grp);\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_due_calendars",
+      "args": "p_limit integer",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_due_calendars(p_limit integer)\n RETURNS TABLE(id uuid, user_id uuid)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  select c.id, c.user_id from public.connected_calendars c\n  where c.adapter in ('ics','caldav') and c.sync_status <> 'disconnected'\n    and (c.last_synced_at is null or c.last_synced_at < now() - interval '10 minutes')\n  order by c.last_synced_at nulls first limit least(greatest(p_limit, 1), 100)\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_group_ids",
+      "args": "p_booking uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_group_ids(p_booking uuid)\n RETURNS uuid[]\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  select coalesce(array_agg(b.id order by b.id), '{}') from public.bookings b\n  where b.id = p_booking or (b.group_id is not null and b.group_id = (select group_id from public.bookings where id = p_booking))\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_guest_view",
+      "args": "p_booking uuid, p_token text",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_guest_view(p_booking uuid, p_token text)\n RETURNS jsonb\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  select case\n    when b.id is null then null\n    when p_token is null or p_token !~ '^[a-f0-9]{64}$' or b.booking_token is null\n      or sha256(convert_to(p_token, 'UTF8')) <> sha256(convert_to(b.booking_token, 'UTF8'))\n      then jsonb_build_object('id', b.id, 'status', b.status, 'masked', true)\n    else jsonb_build_object('id', b.id, 'status', b.status, 'masked', false, 'title', t.title,\n      'startUtc', b.start_utc, 'endUtc', b.end_utc, 'guestName', b.guest_name, 'guestEmail', b.guest_email,\n      'guestTimezone', b.guest_timezone, 'locationKind', t.location_kind,\n      'locationValue', case when b.status = 'confirmed' then t.location_value end,\n      'hostName', coalesce(w.name, p.display_name), 'icsUid', b.ics_uid, 'sequence', b.sequence)\n  end\n  from (select 1) one\n  left join public.bookings b on b.id = p_booking\n  left join public.booking_event_types t on t.id = b.event_type_id\n  left join public.workspaces w on w.id = b.workspace_id\n  left join public.profiles p on p.id = b.host_user_id\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_host_free",
+      "args": "p_host uuid, p_event_type uuid, p_start timestamp with time zone, p_block_start timestamp with time zone, p_block_end timestamp with time zone, p_capacity integer",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_host_free(p_host uuid, p_event_type uuid, p_start timestamp with time zone, p_block_start timestamp with time zone, p_block_end timestamp with time zone, p_capacity integer)\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  select public.rout_booking_cache_free(p_host, p_block_start, p_block_end)\n    and not exists (\n      select 1 from public.bookings b where b.host_user_id = p_host\n        and b.status in ('held','pending_payment','requested','confirmed')\n        and tstzrange(b.block_start_utc, b.block_end_utc, '[)') && tstzrange(p_block_start, p_block_end, '[)')\n        and not (p_capacity > 1 and b.shared_slot and b.event_type_id = p_event_type and b.start_utc = p_start))\n    and (p_capacity <= 1 or (select count(*) from public.bookings b where b.host_user_id = p_host and b.shared_slot\n        and b.event_type_id = p_event_type and b.start_utc = p_start\n        and b.status in ('held','pending_payment','requested','confirmed')) < p_capacity)\n    and not exists (\n      select 1 from public.calendar_events ev join public.connected_calendars c on c.id = ev.calendar_id\n      where c.user_id = p_host and ev.is_blocking and ev.start_utc < p_block_end and ev.end_utc > p_block_start)\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_lock_hosts",
+      "args": "p_hosts uuid[], p_from timestamp with time zone, p_to timestamp with time zone",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_lock_hosts(p_hosts uuid[], p_from timestamp with time zone, p_to timestamp with time zone)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare h uuid; d date;\nbegin\n  for h in select x from unnest(p_hosts) x group by x order by x loop\n    d := (p_from at time zone 'utc')::date;\n    while d <= ((p_to - interval '1 microsecond') at time zone 'utc')::date loop\n      perform pg_advisory_xact_lock(hashtextextended('booking:' || h::text || ':' || d::text, 0));\n      d := d + 1;\n    end loop;\n  end loop;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_public_days",
+      "args": "p_id uuid, p_from date, p_to date",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_public_days(p_id uuid, p_from date, p_to date)\n RETURNS TABLE(host_ordinal integer, day date, bits text, computed_at timestamp with time zone)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  with hosts as (\n    select h.user_id, row_number() over (order by h.user_id)::integer as ord\n    from public.booking_event_type_hosts h where h.event_type_id = p_id\n  )\n  select hosts.ord, c.day, c.free_bits::text, c.computed_at\n  from hosts join public.availability_cache c on c.user_id = hosts.user_id\n  where public.rout_booking_type_public(p_id)\n    and c.day between p_from and least(p_to, p_from + 400)\n  order by c.day, hosts.ord\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_public_event_type",
+      "args": "p_id uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_public_event_type(p_id uuid)\n RETURNS jsonb\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  select case when public.rout_booking_type_public(p_id) then (\n    select jsonb_build_object(\n      'id', t.id, 'title', t.title, 'description', t.description, 'durationMinutes', t.duration_minutes,\n      'priceCents', t.price_cents, 'currency', t.currency, 'locationKind', t.location_kind,\n      'confirmationMode', t.confirmation_mode, 'routingStrategy', t.routing_strategy,\n      'minimumNoticeHours', t.minimum_notice_hours, 'maxDaysAhead', t.max_days_ahead,\n      'slotStepMinutes', t.slot_step_minutes, 'bufferBeforeMinutes', t.buffer_before_minutes,\n      'bufferAfterMinutes', t.buffer_after_minutes, 'workspaceId', t.workspace_id,\n      'customFields', t.custom_fields, 'capacity', t.resource_capacity,\n      'hostName', coalesce(w.name, p.display_name),\n      'hostCount', (select count(*) from public.booking_event_type_hosts h where h.event_type_id = t.id))\n    from public.booking_event_types t\n    left join public.workspaces w on w.id = t.workspace_id\n    left join public.profiles p on p.id = t.user_id\n    where t.id = p_id) end\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_public_type_for_handle",
+      "args": "p_handle text, p_type uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_public_type_for_handle(p_handle text, p_type uuid)\n RETURNS TABLE(id uuid, title text)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  select t.id, t.title from public.booking_event_types t\n  join public.profiles p on p.id = t.user_id\n  where lower(p.username) = lower(p_handle) and (p_type is null or t.id = p_type)\n    and public.rout_booking_type_public(t.id)\n  order by t.created_at, t.id limit 1\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_release_expired",
+      "args": "p_limit integer",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_release_expired(p_limit integer)\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare r record; n integer := 0;\nbegin\n  for r in select id from public.bookings where status in ('held','pending_payment')\n      and hold_expires_at < now() - interval '5 minutes' order by hold_expires_at limit least(greatest(p_limit, 1), 500) loop\n    n := n + public.rout_booking_release_hold(r.id);\n  end loop;\n  return n;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_release_hold",
+      "args": "p_booking uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_release_hold(p_booking uuid)\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare n integer;\nbegin\n  with u as (\n    update public.bookings set status = 'cancelled', hold_expires_at = null, updated_at = now()\n    where id = any(public.rout_booking_group_ids(p_booking)) and status in ('held','pending_payment')\n    returning host_user_id),\n  j as (\n    insert into public.availability_jobs (user_id, reason) select distinct host_user_id, 'hold_released' from u\n    on conflict (user_id) do update set run_after = least(public.availability_jobs.run_after, now())\n    returning 1)\n  select count(*) into n from u;\n  return n;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_set_checkout",
+      "args": "p_booking uuid, p_session text",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_set_checkout(p_booking uuid, p_session text)\n RETURNS boolean\n LANGUAGE sql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  update public.bookings set stripe_checkout_session_id = p_session, updated_at = now()\n  where id = p_booking and status = 'pending_payment' and stripe_checkout_session_id is null\n    and p_session ~ '^cs_[A-Za-z0-9_]{8,250}$'\n  returning true\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_stale_hosts",
+      "args": "p_id uuid, p_max_age interval",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_stale_hosts(p_id uuid, p_max_age interval)\n RETURNS uuid[]\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  select coalesce(array_agg(h.user_id order by h.user_id), '{}')\n  from public.booking_event_type_hosts h\n  where h.event_type_id = p_id and public.rout_booking_type_public(p_id)\n    and coalesce((select max(c.computed_at) from public.availability_cache c where c.user_id = h.user_id), '-infinity') < now() - p_max_age\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_booking_type_public",
+      "args": "p_id uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_booking_type_public(p_id uuid)\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  select exists (\n    select 1 from public.booking_event_types t\n    left join public.profiles p on p.id = t.user_id\n    where t.id = p_id and t.is_active\n      and exists (select 1 from public.booking_event_type_hosts h where h.event_type_id = t.id)\n      and (t.user_id is null or (p.id is not null\n        and coalesce((p.display_prefs ->> 'publicProfile')::boolean, true)\n        and not coalesce(p.is_banned, false) and not coalesce(p.is_suspended, false))))\n$function$"
+    },
+    {
+      "schema": "public",
       "name": "rout_broadcast_event_allowed",
       "args": "p_owner uuid, p_event uuid, p_space text",
       "def": "CREATE OR REPLACE FUNCTION public.rout_broadcast_event_allowed(p_owner uuid, p_event uuid, p_space text)\n RETURNS boolean\n LANGUAGE plpgsql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public'\nAS $function$\ndeclare h text;\nbegin\n if p_owner is distinct from public.rout_current_user_id() then return false;end if;\n if p_space='root' then select username into h from public.profiles where id=p_owner;\n elsif p_space='alias' then select handle into h from public.alias_profiles where user_id=p_owner;\n else return false;end if;\n if h is null or not exists(select 1 from public.rout_qa_owner(h,p_space) where owner_id=p_owner) then return false;end if;\n return exists(select 1 from public.ephemeral_statuses where id=p_event and user_id=p_owner and space=p_space and status_type='micro_text' and expires_at>now())\n or exists(select 1 from public.profile_questions where id=p_event and owner_id=p_owner and space=p_space and published and not is_quarantined and answer is not null and story_until>now());\nend $function$"
@@ -27549,7 +27812,7 @@
       "schema": "public",
       "name": "rout_pow_spend",
       "args": "p_hash text, p_scope text, p_expires_at timestamp with time zone",
-      "def": "CREATE OR REPLACE FUNCTION public.rout_pow_spend(p_hash text, p_scope text, p_expires_at timestamp with time zone)\n RETURNS boolean\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare inserted int;\nbegin\n  delete from public.pow_spent_challenges where expires_at < now() - interval '1 minute';\n  insert into public.pow_spent_challenges (challenge_hash, scope, expires_at)\n  values (p_hash, p_scope, least(p_expires_at, now() + interval '15 minutes'))\n  on conflict (challenge_hash) do nothing;\n  get diagnostics inserted = row_count;\n  return inserted = 1;\nend $function$"
+      "def": "CREATE OR REPLACE FUNCTION public.rout_pow_spend(p_hash text, p_scope text, p_expires_at timestamp with time zone)\n RETURNS boolean\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$ declare inserted int; begin delete from public.pow_spent_challenges where expires_at < now() - interval '1 minute'; insert into public.pow_spent_challenges (challenge_hash, scope, expires_at) values (p_hash, p_scope, least(p_expires_at, now() + interval '15 minutes')) on conflict (challenge_hash) do nothing; get diagnostics inserted = row_count; return inserted = 1; end $function$"
     },
     {
       "schema": "public",
@@ -27909,7 +28172,7 @@
       "schema": "public",
       "name": "sync_social_grid_draft",
       "args": "",
-      "def": "CREATE OR REPLACE FUNCTION public.sync_social_grid_draft()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog', 'public'\nAS $function$\ndeclare\n  b jsonb;\n  config jsonb;\n  item jsonb;\n  ordinal bigint;\n  kept uuid[] := '{}';\n  card_id uuid;\nbegin\n  for b in select value from jsonb_array_elements(coalesce(new.payload->'blocks','[]'::jsonb)) loop\n    if b->>'kind' <> 'social_grid' then continue; end if;\n    begin\n      config := (b->>'value')::jsonb;\n    exception when invalid_text_representation then\n      continue;\n    end;\n    if jsonb_typeof(config->'items') <> 'array' then continue; end if;\n    for item, ordinal in select value, ordinality from jsonb_array_elements(config->'items') with ordinality loop\n      if ordinal > 30 or coalesce(item->>'id','') = '' or coalesce(item->>'mediaUrl','') = '' then continue; end if;\n      insert into public.social_grid_items\n        (user_id, profile_space, block_id, source_item_id, platform, media_url, caption, target_url, is_pinned, is_video, position, created_at)\n      values (new.user_id, new.space, b->>'id', item->>'id',\n        case when item->>'platform' in ('instagram','tiktok','article','custom') then item->>'platform' else 'custom' end,\n        item->>'mediaUrl', coalesce(item->>'caption',''), nullif(item->>'targetUrl',''),\n        coalesce(item->'pinned' = 'true'::jsonb,false), coalesce(item->'isVideo' = 'true'::jsonb,false),\n        ordinal - 1, coalesce(nullif(item->>'createdAt','')::timestamptz, now()))\n      on conflict (user_id, profile_space, block_id, source_item_id) do update set\n        platform=excluded.platform, media_url=excluded.media_url, caption=excluded.caption,\n        target_url=excluded.target_url, is_pinned=excluded.is_pinned, is_video=excluded.is_video,\n        position=excluded.position\n      returning id into card_id;\n      kept := array_append(kept, card_id);\n    end loop;\n  end loop;\n  delete from public.social_grid_items\n    where user_id=new.user_id and profile_space=new.space and not (id = any(kept));\n  return new;\nend $function$"
+      "def": "CREATE OR REPLACE FUNCTION public.sync_social_grid_draft()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog', 'public'\nAS $function$ declare b jsonb; config jsonb; item jsonb; ordinal bigint; kept uuid[] := '{}'; card_id uuid; begin for b in select value from jsonb_array_elements(coalesce(new.payload->'blocks','[]'::jsonb)) loop if b->>'kind'<>'social_grid' then continue; end if; begin config:=(b->>'value')::jsonb; exception when invalid_text_representation then continue; end; if jsonb_typeof(config->'items')<>'array' then continue; end if; for item,ordinal in select value,ordinality from jsonb_array_elements(config->'items') with ordinality loop if ordinal>30 or coalesce(item->>'id','')='' or coalesce(item->>'mediaUrl','')='' then continue; end if; insert into public.social_grid_items(user_id,profile_space,block_id,source_item_id,platform,media_url,caption,target_url,is_pinned,is_video,position,created_at) values(new.user_id,new.space,b->>'id',item->>'id',case when item->>'platform' in ('instagram','tiktok','article','custom') then item->>'platform' else 'custom' end,item->>'mediaUrl',coalesce(item->>'caption',''),nullif(item->>'targetUrl',''),coalesce(item->'pinned'='true'::jsonb,false),coalesce(item->'isVideo'='true'::jsonb,false),ordinal-1,coalesce(nullif(item->>'createdAt','')::timestamptz,now())) on conflict(user_id,profile_space,block_id,source_item_id) do update set platform=excluded.platform,media_url=excluded.media_url,caption=excluded.caption,target_url=excluded.target_url,is_pinned=excluded.is_pinned,is_video=excluded.is_video,position=excluded.position returning id into card_id; kept:=array_append(kept,card_id); end loop; end loop; delete from public.social_grid_items where user_id=new.user_id and profile_space=new.space and not(id=any(kept)); return new; end $function$"
     },
     {
       "schema": "public",
@@ -27961,13 +28224,13 @@
     }
   ],
   "schemaGrants": {
-    "auth:rout_app": [
-      "USAGE"
-    ],
     "neon_auth:rout_app": [
       "USAGE"
     ],
     "public:rout_app": [
+      "USAGE"
+    ],
+    "auth:rout_app": [
       "USAGE"
     ]
   }
