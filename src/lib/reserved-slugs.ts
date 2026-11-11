@@ -28,6 +28,7 @@ export const SYSTEM_SLUGS = [
   "billing",
   "blog",
   "card",
+  "discover",
   "claim",
   "contact",
   "dashboard",
