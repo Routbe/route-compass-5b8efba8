@@ -1,3 +1,5 @@
+import { vi } from "vitest";
+vi.mock("@/lib/neon", () => ({ sql: () => Promise.resolve([]), withDbContext: (_: unknown, fn: () => unknown) => fn() }));
 import { describe, expect, it } from "vitest";
 import { mergeHostStarts, contiguousDays } from "./slot-rules";
 import { zonedToUtc } from "./time";
@@ -108,5 +110,16 @@ describe("external calendar recurrence (RFC 5545)", () => {
       "RRULE:FREQ=DAILY;UNTIL=20260204T090000Z", "END:VEVENT"),
       new Date("2026-02-01T00:00:00Z"), new Date("2026-03-01T00:00:00Z"));
     expect(raw).toHaveLength(3);
+  });
+});
+
+import { horizonFor } from "./recompute.server";
+
+describe("availability cache horizon", () => {
+  it("covers the furthest bookable day of the host's types, between 30 and 366 days", () => {
+    expect(horizonFor([])).toBe(30);
+    expect(horizonFor([14])).toBe(30);
+    expect(horizonFor([90, 30])).toBe(91);
+    expect(horizonFor([365])).toBe(366);
   });
 });
