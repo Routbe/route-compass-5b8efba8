@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Fingerprint, Loader2 } from "lucide-react";
 import { verifySecureCardToken } from "@/lib/wallet/wallet.functions";
 import { requestStepUp } from "@/components/auth/StepUpDialog";
@@ -30,6 +31,7 @@ type Result = Awaited<ReturnType<typeof verifySecureCardToken>>;
  */
 function ScanReceiver() {
   const { token } = Route.useParams();
+  const { t } = useTranslation();
   const verify = useServerFn(verifySecureCardToken);
   const [busy, setBusy] = useState(false);
   const [r, setR] = useState<Result | null>(null);
@@ -64,39 +66,39 @@ function ScanReceiver() {
       <section className="zt-panel w-full max-w-md space-y-4 p-6" aria-live="polite">
         {!r || r.status === "step_up_required" ? (
           <>
-            {line("verificatie vereist", "ok", "Bevestig eerst dat jij het bent", "Deze QR-code is alleen een verwijzing. Er wordt niets gecontroleerd of getoond tot je bevestigt met je passkey, authenticator-app of sms-code.")}
-            {r?.status === "step_up_required" && <p className="zt-prompt text-xs" data-tone="alert">// bevestiging geannuleerd</p>}
+            {line(t("cardScan.pVerify"), "ok", t("cardScan.verifyTitle"), t("cardScan.verifyText"))}
+            {r?.status === "step_up_required" && <p className="zt-prompt text-xs" data-tone="alert">// {t("cardScan.cancelled")}</p>}
             <button type="button" className="zt-button w-full" disabled={busy} onClick={() => void start()}>
               {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Fingerprint className="h-4 w-4" aria-hidden />}
-              Bevestigen en controleren
+              {t("cardScan.confirm")}
             </button>
           </>
         ) : r.status === "sign_in_required" ? (
           <>
-            {line("aanmelden vereist", "alert", "Meld je eerst aan", "Alleen aangemelde leden met tweestapsverificatie kunnen een ROUT-kaart controleren.")}
-            <a className="zt-button w-full" href={`/auth/sign-in?next=${encodeURIComponent(next)}`}>Aanmelden</a>
+            {line(t("cardScan.pSignIn"), "alert", t("cardScan.signInTitle"), t("cardScan.signInText"))}
+            <a className="zt-button w-full" href={`/auth/sign-in?next=${encodeURIComponent(next)}`}>{t("cardScan.signIn")}</a>
           </>
         ) : r.status === "two_factor_required" ? (
           <>
-            {line("tweestapsverificatie vereist", "alert", "Zet eerst tweestapsverificatie aan", "Een kaart controleren kan alleen met een passkey, authenticator-app of bevestigd telefoonnummer.")}
-            <Link className="zt-button w-full" to="/studio/account">Naar beveiliging</Link>
+            {line(t("cardScan.p2fa"), "alert", t("cardScan.twoFaTitle"), t("cardScan.twoFaText"))}
+            <Link className="zt-button w-full" to="/studio/account">{t("cardScan.toSecurity")}</Link>
           </>
         ) : r.status === "valid" ? (
           <>
-            {line("geldig", "ok", "Echte ROUT-kaart", "Deze code is nu geldig en komt van de kaarthouder. Hij werkt maar één keer.")}
+            {line(t("cardScan.pValid"), "ok", t("cardScan.validTitle"), t("cardScan.validText"))}
             <div className="zt-panel flex items-center gap-3 p-4">
               {r.avatar_url && <img src={r.avatar_url} alt="" className="h-12 w-12 rounded-full object-cover" />}
               <p className="text-lg font-semibold">{r.display_name}</p>
             </div>
           </>
         ) : r.status === "expired" || r.status === "replayed" ? (
-          line(r.status === "replayed" ? "al gebruikt" : "verlopen", "alert", r.status === "replayed" ? "Code al gebruikt" : "Code verlopen", "Een beveiligde kaartcode werkt één keer en hooguit één minuut. Vraag de kaarthouder de kaart opnieuw te tonen.")
+          line(r.status === "replayed" ? t("cardScan.pUsed") : t("cardScan.pExpired"), "alert", r.status === "replayed" ? t("cardScan.usedTitle") : t("cardScan.expiredTitle"), t("cardScan.expiredText"))
         ) : r.status === "frozen" ? (
-          line("geblokkeerd", "alert", "Kaart bevroren of geblokkeerd", "De eigenaar heeft deze kaart stopgezet, bijvoorbeeld na verlies of diefstal. Vertrouw hem niet.")
+          line(t("cardScan.pBlocked"), "alert", t("cardScan.frozenTitle"), t("cardScan.frozenText"))
         ) : r.status === "limited" ? (
-          line("even wachten", "alert", "Te veel controles", "Probeer het over enkele minuten opnieuw.")
+          line(t("cardScan.pWait"), "alert", t("cardScan.limitedTitle"), t("cardScan.limitedText"))
         ) : (
-          line("ongeldig", "alert", "Niet echt", "Deze code is ongeldig. De kaart kan nagemaakt of gekopieerd zijn.")
+          line(t("cardScan.pInvalid"), "alert", t("cardScan.invalidTitle"), t("cardScan.invalidText"))
         )}
         <div className="zt-rule pt-3 text-center">
           <Link to="/" className="zt-link text-xs">ROUT</Link>
