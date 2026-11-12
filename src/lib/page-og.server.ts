@@ -221,7 +221,8 @@ function sizeTitle(title: string, opts: { size: number; max: number }[], maxLine
 export function renderPathCardSvg(c: CardFields) {
   const cx = W / 2;
   const head = sizeTitle(c.title, [{ size: 54, max: 20 }, { size: 46, max: 24 }, { size: 40, max: 27 }], 3);
-  const titleY = 230;
+  // Short titles sit lower so the card never looks top-heavy.
+  const titleY = 250 + (3 - head.lines.length) * 34;
   const after = titleY + (head.lines.length - 1) * head.size * 1.12;
   const labelW = Math.min(520, 70 + c.label.length * 13);
   let dots = "";
@@ -232,8 +233,8 @@ export function renderPathCardSvg(c: CardFields) {
   const body = `<rect width="${W}" height="${H}" fill="#0E0D0C"/>
 <radialGradient id="pa" cx="50%" cy="0%" r="60%"><stop offset="0" stop-color="${c.accent}" stop-opacity=".30"/><stop offset="1" stop-color="${c.accent}" stop-opacity="0"/></radialGradient><rect width="${W}" height="${H}" fill="url(#pa)"/>
 <rect x="0" y="0" width="${W}" height="8" fill="${c.accent}"/>${dots}
-<rect x="${cx - labelW / 2}" y="92" width="${labelW}" height="44" rx="22" fill="${c.accent}" fill-opacity=".12" stroke="${c.accent}" stroke-opacity=".5"/>
-<text x="${cx}" y="121" font-size="18" font-weight="700" fill="${c.accent}" text-anchor="middle" letter-spacing="3">${esc(c.label.toUpperCase())}</text>
+<rect x="${cx - labelW / 2}" y="${titleY - 138}" width="${labelW}" height="44" rx="22" fill="${c.accent}" fill-opacity=".12" stroke="${c.accent}" stroke-opacity=".5"/>
+<text x="${cx}" y="${titleY - 109}" font-size="18" font-weight="700" fill="${c.accent}" text-anchor="middle" letter-spacing="3">${esc(c.label.toUpperCase())}</text>
 ${textBlock(head.lines, cx, titleY, head.size, "#F7F3EA", 600, 1.12, "middle")}
 <rect x="${cx - 36}" y="${after + 34}" width="72" height="4" rx="2" fill="${c.accent}"/>
 ${textBlock(wrap(c.desc, 44, after > 300 ? 2 : 3), cx, after + 84, 22, "#A8A196", 400, 1.4, "middle")}
