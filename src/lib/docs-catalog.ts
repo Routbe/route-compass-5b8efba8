@@ -49,12 +49,16 @@ export function docCardKey(path: string): PageKey {
   if (path === "/about" || path.startsWith("/about/")) return "about";
   return "home";
 }
-export function docCardImage(path: string, locale: Locale = "nl") { return pageCardImage(docCardKey(path), locale); }
+/** Fixed page cards for the pages that have their own; every other doc page gets its own section-coloured card. */
+export function docCardImage(path: string, locale: Locale = "nl") {
+  const key = docCardKey(path);
+  return key === "home" || (key === "about" && path !== "/about") ? pathCardImage(path, locale) : pageCardImage(key, locale);
+}
 export function docHead(path: string, locale: Locale = "nl") {
   const doc = getDoc(path, locale);
   const title = doc?.seo_title ?? `${doc?.title ?? "Documentatie"} — ROUT`;
   const description = doc?.seo_description ?? doc?.description ?? "ROUT-documentatie";
-  return { meta: [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "article" }, { property: "og:url", content: `${SITE_ORIGIN}${path}` }, { property: "og:image", content: docCardImage(path, locale) }, { property: "og:image:width", content: "1200" }, { property: "og:image:height", content: "630" }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:image", content: docCardImage(path, locale) }, ...(doc?.seo_keywords ? [{ name: "keywords", content: doc.seo_keywords.join(", ") }] : [])], links: [canonicalLink(path)], scripts: doc ? [{ type: "application/ld+json", children: JSON.stringify(docStructuredData(doc)).replace(/</g, "\\u003c") }] : [] };
+  return { meta: [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "article" }, { property: "og:url", content: `${SITE_ORIGIN}${path}` }, { property: "og:image", content: docCardImage(path, locale) }, { property: "og:image:width", content: "1200" }, { property: "og:image:height", content: "630" }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:image", content: docCardImage(path, locale) }, { name: "theme-color", content: SECTION_ACCENT[doc?.category ?? "info"] ?? "#C9A84C" }, ...(doc?.seo_keywords ? [{ name: "keywords", content: doc.seo_keywords.join(", ") }] : [])], links: [canonicalLink(path)], scripts: doc ? [{ type: "application/ld+json", children: JSON.stringify(docStructuredData(doc)).replace(/</g, "\\u003c") }] : [] };
 }
 
 export function docStructuredData(doc: DocEntry) {
