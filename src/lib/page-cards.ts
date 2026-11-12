@@ -111,7 +111,7 @@ export const PAGE_CARDS: Record<PageKey, PageCard> = {
 
 /** Eén vaste, in code getekende kaart per pagina per taal (geen rotatie). */
 export function pageCardImage(key: PageKey, locale: Locale = "en") {
-  return `${SITE_ORIGIN}/brand/og/${key}-${locale}.png`;
+  return `${SITE_ORIGIN}/brand/og/${key}-${locale}.png?v=3`;
 }
 
 /** Volledige `meta` voor de `head()` van een publieke pagina. */

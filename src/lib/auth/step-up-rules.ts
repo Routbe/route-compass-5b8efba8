@@ -28,7 +28,8 @@ export const isSingleUseStepUpAction = (action: StepUpAction | undefined) => !!a
 
 /** A real second factor: passkey, authenticator app or a verified phone for SMS. */
 export function hasSecondFactor(enrolled: EnrolledFactors): boolean {
-  return enrolled.passkey || enrolled.totp || !!enrolled.sms;
+  // Backup codes only exist once an authenticator app was enrolled, so they prove 2FA is on.
+  return enrolled.passkey || enrolled.totp || !!enrolled.sms || !!enrolled.backup;
 }
 
 export function allowedStepUpMethods(enrolled: EnrolledFactors, action?: StepUpAction): StepUpMethod[] {
