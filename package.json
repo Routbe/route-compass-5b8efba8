@@ -76,7 +76,6 @@
     "@simplewebauthn/server": "13",
     "@stripe/react-stripe-js": "^7.0.0",
     "@stripe/stripe-js": "^10.1.0",
-    "@supabase/supabase-js": "^2.119.0",
     "@tabler/icons-react": "^3.44.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.2.1",
