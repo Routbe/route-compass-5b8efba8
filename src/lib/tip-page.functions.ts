@@ -127,7 +127,7 @@ export const fetchTipSocialImages = createServerFn({ method: "POST" })
     const { readPublicTipPage } = await import("./tip-page.server");
     const page = await readPublicTipPage(data.handle);
     const src = page?.socialSource;
-    if (!page || !src || src.mode !== "latest") return { ok: true as const, images: [], skipped: 0 };
+    if (!page || !src || src.mode !== "latest") return { ok: true as const, images: [] as { url: string; alt: string; postUrl: string }[], skipped: 0 };
     const { enforceRateLimit } = await import("./rate-limit.server");
     enforceRateLimit(`tip-social:page:${page.handle}`, 20, 60_000);
     const { fetchSocialImages } = await import("./tip-social.server");
