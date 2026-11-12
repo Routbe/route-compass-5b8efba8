@@ -313,9 +313,9 @@
 
 /* Mobile: swipe rails instead of tall stacks (home tiles + three cards). */
 @media (max-width: 640px) {
-  .dsc-tiles, .home-swipe { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin-inline: -24px; padding: 4px 24px 12px; scroll-padding-inline: 24px; }
+  .dsc-tiles, .home-grid-3.home-swipe { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin-inline: -24px; padding: 4px 24px 12px; scroll-padding-inline: 24px; }
   .dsc-tiles::-webkit-scrollbar, .home-swipe::-webkit-scrollbar { display: none; }
-  .dsc-tiles > li, .home-swipe > * { flex: 0 0 82%; scroll-snap-align: start; }
+  .dsc-tiles > li, .home-grid-3.home-swipe > * { flex: 0 0 82%; scroll-snap-align: start; }
   .dsc-topic-visual { height: 120px; }
   .dsc-topic-visual .dv-stage[data-compact="true"] { height: 120px; }
   .dsc-topic-visual .dv-stage[data-compact="true"] .dv-scene { transform: scale(0.34); }
