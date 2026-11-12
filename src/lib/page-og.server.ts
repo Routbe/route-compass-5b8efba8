@@ -67,15 +67,19 @@ type Ctx = { title: string; desc: string; path: string };
 const TEMPLATES: Record<PageKey, (c: Ctx) => string> = {
   home: ({ title, desc }) => {
     const gold = "#C9A84C";
-    const qx = 760, qy = 135, qs = 360;
+    // Whole platform, not only QR: profile hub, ROUT card and QR side by side.
+    const px = 690, py = 70;
+    const profile = `<g transform="rotate(-5 ${px + 130} ${py + 230})"><rect x="${px}" y="${py}" width="260" height="440" rx="34" fill="#F7F3EA"/><circle cx="${px + 130}" cy="${py + 78}" r="42" fill="${gold}"/>${bunny(px + 108, py + 54, 44, "#0E0D0C")}<rect x="${px + 70}" y="${py + 140}" width="120" height="14" rx="7" fill="#0E0D0C"/><rect x="${px + 90}" y="${py + 164}" width="80" height="10" rx="5" fill="#A8A196"/>${[0, 1, 2, 3].map((i) => `<rect x="${px + 26}" y="${py + 200 + i * 54}" width="208" height="40" rx="20" fill="${i === 0 ? "#0E0D0C" : "#E9E3D6"}"/>`).join("")}</g>`;
+    const cx = 880, cy = 330;
+    const card = `<g transform="rotate(7 ${cx + 135} ${cy + 85})"><rect x="${cx}" y="${cy}" width="270" height="170" rx="18" fill="#1B1915" stroke="${gold}" stroke-opacity=".6"/><rect x="${cx + 22}" y="${cy + 26}" width="42" height="32" rx="6" fill="${gold}" fill-opacity=".8"/><text x="${cx + 22}" y="${cy + 140}" font-size="18" font-weight="600" fill="#F7F3EA" letter-spacing="3">ROUT CARD</text>${bunny(cx + 222, cy + 22, 28, "#F7F3EA")}</g>`;
+    const qx = 980, qy = 96, qs = 140;
+    const qr = `<rect x="${qx - 14}" y="${qy - 14}" width="${qs + 28}" height="${qs + 28}" rx="20" fill="#F7F3EA"/><path d="${qrPath("https://rout.be", qx, qy, qs)}" fill="#0E0D0C"/>`;
     return `<rect width="${W}" height="${H}" fill="#0E0D0C"/>
 <radialGradient id="g" cx="78%" cy="45%" r="55%"><stop offset="0" stop-color="${gold}" stop-opacity=".22"/><stop offset="1" stop-color="${gold}" stop-opacity="0"/></radialGradient><rect width="${W}" height="${H}" fill="url(#g)"/>
-<rect x="${qx - 28}" y="${qy - 28}" width="${qs + 56}" height="${qs + 56}" rx="36" fill="#F7F3EA"/>
-<path d="${qrPath("https://rout.be", qx, qy, qs)}" fill="#0E0D0C"/>
-<rect x="${qx + qs / 2 - 46}" y="${qy + qs / 2 - 52}" width="92" height="104" rx="18" fill="#F7F3EA"/>${bunny(qx + qs / 2 - 32, qy + qs / 2 - 40, 64, "#0E0D0C")}
-<text x="72" y="118" font-size="20" font-weight="600" fill="${gold}" letter-spacing="4">QR · LINKS · PROFILE</text>
-${textBlock(wrap(tagline(title) || headline(title), 18, 3), 72, 210, 64, "#F7F3EA")}
-${textBlock(wrap(desc, 44, 3), 72, 430, 24, "#A8A196", 400, 1.4)}
+${profile}${qr}${card}
+<text x="72" y="118" font-size="20" font-weight="600" fill="${gold}" letter-spacing="4">PROFIEL · QR · WALLET · ID</text>
+${textBlock(wrap(tagline(title) || headline(title), 18, 3), 72, 210, 60, "#F7F3EA")}
+${textBlock(wrap(desc, 40, 3), 72, 430, 24, "#A8A196", 400, 1.4)}
 ${footer("#F7F3EA", "#7A746B")}`;
   },
   about: ({ title, desc }) => `<rect width="${W}" height="${H}" fill="#F4EFE3"/>

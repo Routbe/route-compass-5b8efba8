@@ -24,10 +24,10 @@ export const PAGE_CARDS: Record<PageKey, PageCard> = {
     image: "home.jpg",
     themeColor: "#C9A84C",
     text: {
-      nl: { title: "ROUT — QR-codes en korte links met karakter", description: "Ontwerp stijlvolle QR-codes, korte links en één soevereine profielpagina. Zonder trackers, op Europese servers.", alt: "Goudkleurige QR-code met het ROUT-konijn" },
-      en: { title: "ROUT — QR codes and short links with character", description: "Design stylish QR codes, short links and one sovereign profile page. No trackers, on European servers.", alt: "Gold QR code with the ROUT rabbit" },
-      fr: { title: "ROUT — QR codes et liens courts avec du caractère", description: "Créez des QR codes élégants, des liens courts et une page de profil souveraine. Sans traqueurs, hébergé en Europe.", alt: "QR code doré avec le lapin ROUT" },
-      de: { title: "ROUT — QR-Codes und Kurzlinks mit Charakter", description: "Gestalte stilvolle QR-Codes, Kurzlinks und eine souveräne Profilseite. Ohne Tracker, auf europäischen Servern.", alt: "Goldener QR-Code mit dem ROUT-Hasen" },
+      nl: { title: "ROUT — Eén identiteit voor alles wat je deelt", description: "Profielhub, QR-codes, korte links, anonieme vragen en je ROUT-kaart in Wallet. Zonder trackers, op Europese servers.", alt: "Goudkleurige QR-code met het ROUT-konijn" },
+      en: { title: "ROUT — One identity for everything you share", description: "Profile hub, QR codes, short links, anonymous questions and your ROUT card in Wallet. No trackers, on European servers.", alt: "Gold QR code with the ROUT rabbit" },
+      fr: { title: "ROUT — Une identité pour tout ce que vous partagez", description: "Profil, QR codes, liens courts, questions anonymes et votre carte ROUT dans Wallet. Sans traqueurs, hébergé en Europe.", alt: "QR code doré avec le lapin ROUT" },
+      de: { title: "ROUT — Eine Identität für alles, was du teilst", description: "Profil-Hub, QR-Codes, Kurzlinks, anonyme Fragen und deine ROUT-Karte im Wallet. Ohne Tracker, auf europäischen Servern.", alt: "Goldener QR-Code mit dem ROUT-Hasen" },
     },
   },
   about: {
