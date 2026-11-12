@@ -310,3 +310,30 @@
 
 /* Selecting text on a product page uses that product's own accent. */
 .dsc ::selection { background-color: color-mix(in oklab, var(--tp) 34%, transparent); }
+
+/* Mobile: swipe rails instead of tall stacks (home tiles + three cards). */
+@media (max-width: 640px) {
+  .dsc-tiles, .home-swipe { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin-inline: -24px; padding: 4px 24px 12px; scroll-padding-inline: 24px; }
+  .dsc-tiles::-webkit-scrollbar, .home-swipe::-webkit-scrollbar { display: none; }
+  .dsc-tiles > li, .home-swipe > * { flex: 0 0 82%; scroll-snap-align: start; }
+  .dsc-topic-visual { height: 120px; }
+  .dsc-topic-visual .dv-stage[data-compact="true"] { height: 120px; }
+  .dsc-topic-visual .dv-stage[data-compact="true"] .dv-scene { transform: scale(0.34); }
+  .dsc-topic-copy { padding: 16px 18px 18px; }
+  .dsc-topic-title { font-size: 20px; }
+  .home-swipe .home-card { transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+}
+.home-dots { display: none; }
+@media (max-width: 640px) {
+  .home-dots { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
+  .home-dots button { width: 7px; height: 7px; border-radius: 999px; background: hsl(var(--muted-foreground) / .35); transition: width .3s, background .3s; }
+  .home-dots button[aria-current="true"] { width: 22px; background: hsl(var(--primary)); }
+}
+
+/* Chapter colour harmony: no ROUT green leaking into blue/gold/violet chapters. */
+.gateway-editorial .story-chapter[data-topic] .text-primary { color: var(--tp); }
+.gateway-editorial .story-chapter[data-topic] .story-product-stage { --primary: var(--tp); }
+
+/* Classic keyboard-key press on the home page buttons. */
+.gateway-editorial :is(.infra-action, .story-chapter-cta, a[data-slot="button"], button[data-slot="button"]) { box-shadow: inset 0 1px 0 oklch(1 0 0 / .12), 0 2px 0 oklch(0 0 0 / .55); transition: transform .08s, box-shadow .08s; }
+.gateway-editorial :is(.infra-action, .story-chapter-cta, a[data-slot="button"], button[data-slot="button"]):active { transform: translateY(1.5px); box-shadow: inset 0 1px 0 oklch(1 0 0 / .08), 0 .5px 0 oklch(0 0 0 / .55); }
