@@ -117,12 +117,30 @@ export const getTipJarQr = createServerFn({ method: "GET" })
     return payload ? { handle: page.handle, accountName: page.accountName, amountCents, payload } : null;
   });
 
-/** Openbare foto's van Bluesky/Mastodon (enkel openbaar, geen gevoelige media), via de beeldproxy. */
+/**
+ * Openbare foto's voor een publieke fooipagina. Bezoekers kiezen geen bron: de
+ * server leest de Bluesky/Mastodon-bron die de maker zelf heeft opgeslagen.
+ */
 export const fetchTipSocialImages = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({ network: z.enum(["bluesky", "mastodon"]), handle: z.string().max(120) }).parse(d))
+  .inputValidator((d: unknown) => z.object({ handle: z.string().max(80) }).parse(d))
   .handler(async ({ data }) => {
+    const { readPublicTipPage } = await import("./tip-page.server");
+    const page = await readPublicTipPage(data.handle);
+    const src = page?.socialSource;
+    if (!page || !src || src.mode !== "latest") return { ok: true as const, images: [], skipped: 0 };
     const { enforceRateLimit } = await import("./rate-limit.server");
-    enforceRateLimit(`tip-social:${data.network}:${data.handle.toLowerCase()}`, 20, 60_000);
+    enforceRateLimit(`tip-social:page:${page.handle}`, 20, 60_000);
+    const { fetchSocialImages } = await import("./tip-social.server");
+    return fetchSocialImages(src.network, src.handle);
+  });
+
+/** Voorvertoning in het dashboard: alleen de ingelogde maker mag een willekeurige bron proberen. */
+export const previewTipSocialImages = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .inputValidator((d: unknown) => z.object({ network: z.enum(["bluesky", "mastodon"]), handle: z.string().max(120) }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { enforceRateLimit } = await import("./rate-limit.server");
+    enforceRateLimit(`tip-social:user:${context.userId}`, 20, 60_000);
     const { fetchSocialImages } = await import("./tip-social.server");
     return fetchSocialImages(data.network, data.handle);
   });

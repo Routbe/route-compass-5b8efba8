@@ -3,15 +3,39 @@
  * Enkel openbare berichten, gevoelige/gemarkeerde media worden overgeslagen, en
  * alleen afbeeldingen die via onze beeldproxy mogen worden teruggegeven.
  */
-import { isPublicHost } from "@/lib/open-web-rules";
+import { normalizeMastodon } from "@/lib/open-web-rules";
 import { isAllowedProxyUrl } from "@/lib/image-proxy-rules";
+import { validateOutboundUrl } from "@/lib/security/ssrf-guard.server";
 
 export type SocialImage = { url: string; alt: string; postUrl: string };
 
+const MAX_JSON_BYTES = 2 * 1024 * 1024;
+
+/**
+ * Every outbound call goes through the shared SSRF guard (https, port 443, public
+ * DNS answers only), refuses redirects and caps the body, so a Mastodon host can
+ * never steer the server to an internal address or stream an unbounded reply.
+ */
 async function getJson(url: string): Promise<unknown> {
-  const res = await fetch(url, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(8000) });
+  const safe = await validateOutboundUrl(url);
+  const res = await fetch(safe.toString(), { headers: { Accept: "application/json" }, redirect: "error", signal: AbortSignal.timeout(8000) });
   if (!res.ok) throw new Error(`http ${res.status}`);
-  return res.json();
+  if (Number(res.headers.get("content-length") ?? 0) > MAX_JSON_BYTES) throw new Error("too_large");
+  const reader = res.body?.getReader();
+  if (!reader) return null;
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > MAX_JSON_BYTES) { await reader.cancel(); throw new Error("too_large"); }
+    chunks.push(value);
+  }
+  const buf = new Uint8Array(total);
+  let o = 0;
+  for (const c of chunks) { buf.set(c, o); o += c.byteLength; }
+  return JSON.parse(new TextDecoder().decode(buf));
 }
 
 async function bluesky(handle: string): Promise<SocialImage[]> {
@@ -31,8 +55,9 @@ async function bluesky(handle: string): Promise<SocialImage[]> {
 }
 
 async function mastodon(full: string): Promise<SocialImage[]> {
-  const [user, host] = full.replace(/^@/, "").split("@");
-  if (!user || !host || !isPublicHost(host)) return [];
+  const normalized = normalizeMastodon(full);
+  if (!normalized) return [];
+  const [user, host] = normalized.split("@") as [string, string];
   const acct = (await getJson(`https://${host}/api/v1/accounts/lookup?acct=${encodeURIComponent(user)}`)) as { id?: string };
   if (!acct.id) return [];
   const statuses = (await getJson(
