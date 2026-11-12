@@ -1,6 +1,6 @@
 import i18next from "i18next";
 import type { QaSpace } from "./useQaPublic";
-import { parseShareCardLang, shareCardMeta } from "@/lib/og-action-card";
+import { parseShareCardLang, shareCardMeta, shareCardUrl } from "@/lib/og-action-card";
 
 /** Head tags for the /ask pages (member page: no ROUT knowledge graph). */
 export function qaAskHead(handle: string, space: QaSpace) {
@@ -25,7 +25,7 @@ export function qaAskHead(handle: string, space: QaSpace) {
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
       // Snapchat Creative Kit: sticker shown on the snap that carries this tappable link.
-      { property: "snapchat:sticker", content: "https://rout.be/icon-512.png" },
+      { property: "snapchat:sticker", content: shareCardUrl(handle, "ask", parseShareCardLang(i18next.isInitialized ? (i18next.resolvedLanguage ?? null) : null), space === "alias" ? "alias" : "root") },
     ],
     links: [{ rel: "canonical", href: `https://rout.be${path}` }],
   };
