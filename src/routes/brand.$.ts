@@ -10,7 +10,7 @@ const OG_RE = /^og\/([a-z]+(?:-[a-z]+)*)-(nl|en|fr|de)\.png$/;
 const PATH_OG_RE = /^og\/p\/([a-z0-9~-]+)-(nl|en|fr|de)\.png$/;
 const PRESS_RE = /^press\/[a-z0-9-]+\.(png|svg|zip)$/;
 /** Versie in de opslagsleutel: verhogen wanneer het ontwerp verandert. */
-const OG_VERSION = "v3";
+const OG_VERSION = "v4";
 
 const LONG_CACHE = "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400";
 
