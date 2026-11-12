@@ -1,3 +1,4 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 import Page from "@/components/imported-pages/Studio";
 import QrGenerator from "@/components/imported-pages/Index";
@@ -15,7 +16,7 @@ export const Route = createFileRoute("/studio")({
     workspace: typeof search["workspace"] === "string" ? (search["workspace"] as string) : undefined,
   }),
   head: () => ({
-    meta: [
+    meta: [...pathCardMeta("/studio", "nl"), 
       { title: "Studio — creatie & profielhub | ROUT" },
       {
         name: "description",

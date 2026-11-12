@@ -1,3 +1,4 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 import Page from "@/components/imported-pages/StatusPage";
 import { canonicalLinks } from "@/lib/social-meta";
@@ -8,7 +9,7 @@ const DESCRIPTION =
 
 export const Route = createFileRoute("/status")({
   head: () => ({
-    meta: [
+    meta: [...pathCardMeta("/status", "nl"), 
       { title: TITLE },
       { name: "description", content: DESCRIPTION },
       { property: "og:title", content: TITLE },

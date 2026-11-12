@@ -1,3 +1,4 @@
+import { pathCardMeta } from "@/lib/path-cards";
 /**
  * Scalable template system for the flat QR tool pages on the root domain
  * (`/iban-qr`, `/wifi-qr`, `/vcard-qr`).
@@ -411,6 +412,7 @@ export function toolHead(tool: QrTool) {
       { property: "og:type", content: "website" },
       { property: "og:url", content: url },
       { name: "twitter:card", content: "summary_large_image" },
+      ...pathCardMeta(`/${tool.slug}`),
     ],
     links: [{ rel: "canonical", href: url }],
     scripts: [

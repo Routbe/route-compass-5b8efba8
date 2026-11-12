@@ -1,3 +1,4 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { LegalActionBar } from "@/components/LegalActionBar";
@@ -83,7 +84,7 @@ function DataDeletionPage() {
 
 export const Route = createFileRoute("/data-deletion")({
   head: () => ({
-    meta: [
+    meta: [...pathCardMeta("/data-deletion", "nl"), 
       { title: "Data deletion instructions — ROUT" },
       {
         name: "description",

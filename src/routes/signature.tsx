@@ -1,3 +1,4 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 import Page from "@/components/imported-pages/Signature";
 
@@ -7,7 +8,7 @@ const description =
 
 export const Route = createFileRoute("/signature")({
   head: () => ({
-    meta: [
+    meta: [...pathCardMeta("/signature", "nl"), 
       { title },
       { name: "description", content: description },
       { property: "og:title", content: title },

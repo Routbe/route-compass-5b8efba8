@@ -1,3 +1,4 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 import { canonicalLink, SITE_ORIGIN } from "@/lib/site";
 import { PressFileGrid, PressSubpage, type PressFile } from "@/components/press/PressSubpage";
@@ -11,7 +12,7 @@ const FILES: PressFile[] = PAGES.map(([key, name]) => ({ name, size: "1200 × 63
 
 export const Route = createFileRoute("/press_/previews")({
   head: () => ({
-    meta: [{ title: TITLE }, { name: "description", content: DESCRIPTION }, { property: "og:title", content: TITLE }, { property: "og:description", content: DESCRIPTION }, { property: "og:type", content: "website" }, { property: "og:url", content: `${SITE_ORIGIN}/press/previews` }, { name: "twitter:card", content: "summary_large_image" }],
+    meta: [...pathCardMeta("/press/previews", "nl"), { title: TITLE }, { name: "description", content: DESCRIPTION }, { property: "og:title", content: TITLE }, { property: "og:description", content: DESCRIPTION }, { property: "og:type", content: "website" }, { property: "og:url", content: `${SITE_ORIGIN}/press/previews` }, { name: "twitter:card", content: "summary_large_image" }],
     links: [canonicalLink("/press/previews")],
   }),
   component: Page,

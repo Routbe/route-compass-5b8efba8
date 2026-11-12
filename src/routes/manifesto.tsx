@@ -1,9 +1,10 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 import Page from "@/components/imported-pages/Manifesto";
 
 export const Route = createFileRoute("/manifesto")({
   head: () => ({
-    meta: [
+    meta: [...pathCardMeta("/manifesto", "nl"), 
       { title: "Manifesto | ROUT" },
       {
         name: "description",

@@ -1,3 +1,4 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -10,7 +11,7 @@ const DESC = "Hoe ROUT gegevens beschermt: lokale versleuteling, standaard OIDC,
 
 export const Route = createFileRoute("/security")({
   head: () => ({
-    meta: [
+    meta: [...pathCardMeta("/security", "nl"), 
       { title: TITLE },
       { name: "description", content: DESC },
       { property: "og:title", content: TITLE },

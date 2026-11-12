@@ -1,9 +1,10 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 import Page from "@/components/imported-pages/Tour";
 
 export const Route = createFileRoute("/tour")({
   head: () => ({
-    meta: [
+    meta: [...pathCardMeta("/tour", "nl"), 
       { title: "Rondleiding — bouw je ROUT-profiel" },
       {
         name: "description",

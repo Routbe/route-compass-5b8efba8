@@ -205,3 +205,68 @@ ${footer("#F7F3EA", "#7A746B", `rout.be/discover/${slug}`)}`;
   void locale;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="Inter">${body}</svg>`;
 }
+
+/** Neutral card fields shared by the wide centre-safe and the square layout. */
+export type CardFields = { label: string; title: string; desc: string; accent: string; url: string };
+
+function sizeTitle(title: string, opts: { size: number; max: number }[], maxLines: number) {
+  return opts.map((o) => ({ size: o.size, lines: wrap(title, o.max, 9) })).find((o) => o.lines.length <= maxLines)
+    ?? { size: opts[opts.length - 1]!.size, lines: wrap(title, opts[opts.length - 1]!.max, maxLines) };
+}
+
+/**
+ * 1200x630, everything important inside the centre 630px so a square crop
+ * (Snapchat, iMessage compact, WhatsApp thumbnail) still shows the whole message.
+ */
+export function renderPathCardSvg(c: CardFields) {
+  const cx = W / 2;
+  const head = sizeTitle(c.title, [{ size: 54, max: 20 }, { size: 46, max: 24 }, { size: 40, max: 27 }], 3);
+  // Short titles sit lower so the card never looks top-heavy.
+  const titleY = 250 + (3 - head.lines.length) * 34;
+  const after = titleY + (head.lines.length - 1) * head.size * 1.12;
+  const labelW = Math.min(520, 70 + c.label.length * 13);
+  let dots = "";
+  for (let i = 0; i < 18; i++) {
+    const side = i % 2 ? W - 90 : 90, y = 90 + Math.floor(i / 2) * 56;
+    dots += `<circle cx="${side + (i % 3) * 14 - 14}" cy="${y}" r="${3 + (i % 3)}" fill="${c.accent}" fill-opacity="${0.15 + (i % 4) * 0.08}"/>`;
+  }
+  const body = `<rect width="${W}" height="${H}" fill="#0E0D0C"/>
+<radialGradient id="pa" cx="50%" cy="0%" r="60%"><stop offset="0" stop-color="${c.accent}" stop-opacity=".30"/><stop offset="1" stop-color="${c.accent}" stop-opacity="0"/></radialGradient><rect width="${W}" height="${H}" fill="url(#pa)"/>
+<rect x="0" y="0" width="${W}" height="8" fill="${c.accent}"/>${dots}
+<rect x="${cx - labelW / 2}" y="${titleY - 138}" width="${labelW}" height="44" rx="22" fill="${c.accent}" fill-opacity=".12" stroke="${c.accent}" stroke-opacity=".5"/>
+<text x="${cx}" y="${titleY - 109}" font-size="18" font-weight="700" fill="${c.accent}" text-anchor="middle" letter-spacing="3">${esc(c.label.toUpperCase())}</text>
+${textBlock(head.lines, cx, titleY, head.size, "#F7F3EA", 600, 1.12, "middle")}
+<rect x="${cx - 36}" y="${after + 34}" width="72" height="4" rx="2" fill="${c.accent}"/>
+${textBlock(wrap(c.desc, 44, after > 300 ? 2 : 3), cx, after + 84, 22, "#A8A196", 400, 1.4, "middle")}
+${bunny(cx - 70, 548, 30, "#F7F3EA")}<text x="${cx - 30}" y="574" font-size="24" font-weight="600" fill="#F7F3EA" letter-spacing="-0.5">ROUT</text><text x="${cx + 40}" y="574" font-size="20" fill="#7A746B">${esc(c.url.length > 22 ? "rout.be" : c.url)}</text>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="Inter">${body}</svg>`;
+}
+
+/** 1080x1080 layout for square previews (Snapchat chat cards). */
+export function renderSquareCardSvg(c: CardFields) {
+  const S = 1080, cx = S / 2;
+  const head = sizeTitle(c.title, [{ size: 80, max: 16 }, { size: 68, max: 19 }, { size: 58, max: 22 }], 4);
+  const titleY = 420;
+  const after = titleY + (head.lines.length - 1) * head.size * 1.12;
+  const labelW = Math.min(800, 100 + c.label.length * 19);
+  const body = `<rect width="${S}" height="${S}" fill="#0E0D0C"/>
+<radialGradient id="sa" cx="50%" cy="10%" r="70%"><stop offset="0" stop-color="${c.accent}" stop-opacity=".34"/><stop offset="1" stop-color="${c.accent}" stop-opacity="0"/></radialGradient><rect width="${S}" height="${S}" fill="url(#sa)"/>
+<rect x="40" y="40" width="${S - 80}" height="${S - 80}" rx="56" fill="none" stroke="${c.accent}" stroke-opacity=".45" stroke-width="3"/>
+${bunny(cx - 50, 120, 100, c.accent)}
+<rect x="${cx - labelW / 2}" y="262" width="${labelW}" height="60" rx="30" fill="${c.accent}" fill-opacity=".12" stroke="${c.accent}" stroke-opacity=".5"/>
+<text x="${cx}" y="302" font-size="26" font-weight="700" fill="${c.accent}" text-anchor="middle" letter-spacing="4">${esc(c.label.toUpperCase())}</text>
+${textBlock(head.lines, cx, titleY, head.size, "#F7F3EA", 600, 1.12, "middle")}
+<rect x="${cx - 50}" y="${after + 46}" width="100" height="6" rx="3" fill="${c.accent}"/>
+${textBlock(wrap(c.desc, 34, after > 600 ? 2 : 4), cx, after + 120, 34, "#A8A196", 400, 1.4, "middle")}
+<text x="${cx}" y="${S - 96}" font-size="34" font-weight="600" fill="#F7F3EA" text-anchor="middle" letter-spacing="-0.5">ROUT · <tspan fill="#7A746B" font-weight="400">${esc(c.url.length > 30 ? "rout.be" : c.url)}</tspan></text>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}" font-family="Inter">${body}</svg>`;
+}
+
+/** Fields for the square variant of an existing page card. */
+export function pageCardFields(key: PageKey, locale: Locale): CardFields {
+  const card = PAGE_CARDS[key];
+  const t = card.text[locale] ?? card.text.en;
+  const title = t.title.replace(/^ROUT\s+—\s+/, "").replace(/\s*\|\s*ROUT$/, "");
+  const accent = /^#(?:[0-9a-f]{2}){3}$/i.test(card.themeColor) && card.themeColor !== "#F4EFE3" ? card.themeColor : "#C9A84C";
+  return { label: key === "home" ? "ROUT" : key, title, desc: t.description, accent, url: `rout.be${card.path === "/" ? "" : card.path}` };
+}
