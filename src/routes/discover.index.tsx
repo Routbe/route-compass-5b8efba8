@@ -1,3 +1,4 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 import { DiscoverIndex } from "@/components/discover/DiscoverIndex";
 import { getRequestLocale } from "@/lib/locale.functions";
@@ -10,7 +11,7 @@ export const Route = createFileRoute("/discover/")({
     const { ui } = discoverCopy(loaderData?.locale);
     const title = `${ui.indexTitle}`;
     return {
-      meta: [
+      meta: [...pathCardMeta("/discover", loaderData?.locale ?? "nl"), 
         { title },
         { name: "description", content: ui.indexLead },
         { property: "og:title", content: title },

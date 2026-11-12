@@ -1,9 +1,10 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 import Page from "@/components/imported-pages/Batch";
 
 export const Route = createFileRoute("/batch")({
   head: () => ({
-    meta: [
+    meta: [...pathCardMeta("/batch", "nl"), 
       { title: "Batch QR-generator | ROUT" },
       {
         name: "description",

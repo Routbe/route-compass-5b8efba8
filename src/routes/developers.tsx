@@ -1,3 +1,4 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { CodeBlock } from "@/components/CodeBlock";
@@ -14,7 +15,7 @@ const DESC = "Integreer Login met ROUT (OIDC + PKCE), begrijp hoe verificaties w
 
 export const Route = createFileRoute("/developers")({
   head: () => ({
-    meta: [
+    meta: [...pathCardMeta("/developers", "nl"), 
       { title: TITLE },
       { name: "description", content: DESC },
       { property: "og:title", content: TITLE },

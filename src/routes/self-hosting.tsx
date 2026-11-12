@@ -1,3 +1,4 @@
+import { pathCardMeta } from "@/lib/path-cards";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { RouteErrorFallback, RoutePendingSkeleton } from "@/components/RouteFallbacks";
@@ -213,7 +214,7 @@ function SelfHosting() {
 
 export const Route = createFileRoute("/self-hosting")({
   head: () => ({
-    meta: [
+    meta: [...pathCardMeta("/self-hosting", "nl"), 
       { title: "Self-hosting ROUT" },
       {
         name: "description",
