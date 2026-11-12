@@ -1,4 +1,5 @@
 import { ArrowUpRight, AtSign, Check, EyeOff, Globe, KeyRound, Layers, Lock, Mail, Nfc, ShieldCheck, UserRound, VenetianMask, Wallet } from "lucide-react";
+import { useRef, useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/router-compat";
@@ -17,6 +18,10 @@ const FAQ = ["scan", "security", "lost", "compare", "metal", "free"] as const;
 /** Homepage blocks: three steps, public vs. private, the three cards, pricing and FAQ. */
 export function HomeSections() {
   const { t } = useI18n();
+  const rail = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const onRail = () => { const el = rail.current; if (!el) return; const w = el.firstElementChild?.clientWidth ?? 1; setActive(Math.min(CARDS.length - 1, Math.round(el.scrollLeft / (w + 12)))); };
+  const go = (i: number) => { const el = rail.current?.children[i] as HTMLElement | undefined; el?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" }); };
   return (
     <>
       <section className="story-section home-block" aria-labelledby="home-steps">
@@ -59,7 +64,7 @@ export function HomeSections() {
         <div className="story-inner">
           <p className="story-small-label">{t("home.cards.kicker")}</p>
           <h2 id="home-cards" className="story-heading mt-5">{t("home.cards.title")}</h2>
-          <div className="home-grid-3 mt-12">
+          <div ref={rail} onScroll={onRail} className="home-grid-3 home-swipe mt-12">
             {CARDS.map(({ key, Icon }) => key === "key" ? (
               <article key={key} className="flex flex-col gap-5">
                 <div className={`home-card home-card-${key} ring-2 ring-primary/60`} aria-hidden>
@@ -88,6 +93,7 @@ export function HomeSections() {
               </Link>
             ))}
           </div>
+          <div className="home-dots">{CARDS.map(({ key }, i) => <button key={key} type="button" aria-label={t(`home.cards.${key}.name`)} aria-current={active === i} onClick={() => go(i)} />)}</div>
           <Button asChild variant="outline" className="infra-action mt-10 gap-2"><Link to="/info/wallet">{t("home.cards.cta")}<ArrowUpRight className="h-4 w-4" /></Link></Button>
         </div>
       </section>
