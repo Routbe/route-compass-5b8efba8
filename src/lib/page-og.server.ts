@@ -79,7 +79,7 @@ const TEMPLATES: Record<PageKey, (c: Ctx) => string> = {
 ${profile}${qr}${card}
 <text x="72" y="118" font-size="20" font-weight="600" fill="${gold}" letter-spacing="4">PROFIEL · QR · WALLET · ID</text>
 ${textBlock(wrap(tagline(title) || headline(title), 18, 3), 72, 210, 60, "#F7F3EA")}
-${textBlock(wrap(desc, 40, 3), 72, 430, 24, "#A8A196", 400, 1.4)}
+${textBlock(wrap(desc, 40, 4), 72, 400, 22, "#A8A196", 400, 1.4)}
 ${footer("#F7F3EA", "#7A746B")}`;
   },
   about: ({ title, desc }) => `<rect width="${W}" height="${H}" fill="#F4EFE3"/>
