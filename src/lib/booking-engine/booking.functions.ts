@@ -118,8 +118,13 @@ export const addBookingCalendar = createServerFn({ method: "POST" })
     ]).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { isPublicHost } = await import("@/lib/open-web-rules");
-    if (!isPublicHost(new URL(data.credentials.url).hostname)) return { ok: false as const, reason: "invalid_url" };
+    // Same outbound gate as the sync itself (shape + DNS), so no internal address is ever stored.
+    const { assertCalendarUrl } = await import("./adapters/fetchers.server");
+    try {
+      await assertCalendarUrl(data.credentials.url);
+    } catch {
+      return { ok: false as const, reason: "invalid_url" };
+    }
     const s = await import("./manage.server");
     try {
       const { id } = await s.addCalendar(context.userId, data.adapter, data.label, data.credentials);
