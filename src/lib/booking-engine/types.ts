@@ -113,9 +113,18 @@ export interface BusyBlock {
   isBlocking: boolean;
 }
 
-export const icsFeedCredentials = z.object({ url: z.string().url().startsWith("https://") });
+/** https on port 443, no userinfo; the DNS check runs server-side before storing and before every fetch. */
+const calendarUrl = z.string().trim().max(2000).url().startsWith("https://").refine((v) => {
+  try {
+    const u = new URL(v);
+    return !u.username && !u.password && (!u.port || u.port === "443");
+  } catch {
+    return false;
+  }
+}, "invalid_url");
+export const icsFeedCredentials = z.object({ url: calendarUrl });
 export const caldavCredentials = z.object({
-  url: z.string().url().startsWith("https://"),
+  url: calendarUrl,
   username: z.string().min(1).max(200),
   password: z.string().min(1).max(500),
 });

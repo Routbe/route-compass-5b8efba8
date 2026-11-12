@@ -5,3 +5,4 @@
 - Team slots are computed per host and only then combined (`slot-rules.ts`); collective = every host, otherwise any single host. Why: partial free time of different hosts is never stitched into one slot.
 - Collective bookings change as one group (paid, release, confirm, decline, cancel). Why: one guest booking must never end half-confirmed.
 - Wall time → UTC follows RFC 5545 (gap moves forward, ambiguous takes the first); external recurrences expand on the event's own wall clock via `rrule`. Why: weekly meetings must not drift an hour across DST.
+- External calendar URLs pass `assertCalendarUrl` (https/443, no userinfo, public DNS via the shared SSRF guard, no redirects) both before they are stored and before every sync. Why: a member must never make the server reach an internal address.

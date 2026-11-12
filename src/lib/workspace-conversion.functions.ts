@@ -42,7 +42,7 @@ export const confirmWorkspaceConversionCode = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ code: z.string().trim().regex(/^\d{6}$/) }).parse(d))
   .handler(async ({ data, context }) => {
     const { verifyConversionCode } = await import("./workspace-conversion.server");
-    return verifyConversionCode(context.userId, data.code);
+    return verifyConversionCode(context.userId, data.code, await req());
   });
 
 export const describeWorkspaceTransfer = createServerFn({ method: "GET" })

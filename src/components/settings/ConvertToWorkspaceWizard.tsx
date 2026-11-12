@@ -24,6 +24,7 @@ const ERRORS: Record<string, string> = {
   rate_limited: "Te veel aanvragen. Probeer het later opnieuw.",
   no_email: "Dit account heeft geen e-mailadres voor de code.",
   no_transfer: "Er loopt geen omzetting meer. Begin opnieuw.",
+  too_many_attempts: "Je hebt vandaag al te vaak een omzetting gestart. Probeer het morgen opnieuw.",
 };
 
 const STEPS = ["Overzicht", "Organisatie", "Eigenaar & team", "Plan", "Bevestigen"] as const;
@@ -92,7 +93,7 @@ export function ConvertToWorkspaceWizard() {
         details: { description: d.description.trim(), category: d.category, invites: d.invites, plan_id: d.plan_id, billing_cycle: d.billing_cycle, slug: (slug ?? s?.suggestedSlug ?? "") || null },
       } });
       if (!r.ok) return void toast.error(ERRORS[r.reason] ?? "Dat lukte niet.");
-      toast.success(`Code verstuurd naar ${r.sentTo}.${r.ownerExists ? "" : " De eigenaar krijgt een uitnodiging om een account te maken."}`);
+      toast.success(`Code verstuurd naar ${r.sentTo}. Na je bevestiging krijgt de eigenaar een uitnodiging.`);
       setStep(null);
       await refresh();
     } finally {
@@ -105,7 +106,7 @@ export function ConvertToWorkspaceWizard() {
     try {
       const r = await confirmFn({ data: { code } });
       if (!r.ok) return void toast.error(ERRORS[r.reason] ?? "Dat lukte niet.");
-      toast.success(r.completed ? "Omgezet naar een Workspace. Je kunt dit account nog 30 dagen gebruiken." : "Bevestigd. Nu wachten op de eigenaar.");
+      toast.success(r.completed ? "Omgezet naar een Workspace. Je kunt dit account nog 30 dagen gebruiken." : "Bevestigd. De eigenaar heeft nu een uitnodiging gekregen.");
       if (r.completed) window.location.reload();
       await refresh();
     } finally {

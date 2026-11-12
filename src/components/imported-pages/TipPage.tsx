@@ -69,7 +69,7 @@ export default function TipPage() {
     const src = page?.socialSource;
     if (!src) return setSocialImgs([]);
     if (src.mode === "picked") return setSocialImgs(src.picked);
-    void loadSocial({ data: { network: src.network, handle: src.handle } })
+    void loadSocial({ data: { handle: page.handle } })
       .then((r) => setSocialImgs(r.ok ? r.images.map((i) => i.url) : []))
       .catch(() => setSocialImgs([]));
   }, [page, loadSocial]);

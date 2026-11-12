@@ -91,36 +91,54 @@ export async function startConversion(
   const err = checkTarget(user.id, user.email, { userId: target?.id ?? null, email: target?.email ?? raw });
   if (err) return { ok: false as const, reason: err };
 
-  const token = crypto.randomUUID() + crypto.randomUUID();
+  // Abuse cap: a handful of conversion attempts per day, so the flow cannot be used to mail many addresses.
+  const recent = (await sql`select count(*)::int as n from public.workspace_transfers
+    where source_user_id = ${user.id} and created_at > now() - interval '24 hours'`) as { n: number }[];
+  if (Number(recent[0]?.n ?? 0) >= MAX_TRANSFERS_PER_DAY) return { ok: false as const, reason: "too_many_attempts" as const };
+
+  // The stored hash is a placeholder: no usable link exists until the source confirms
+  // its own e-mail code, and only then does the owner receive an invitation.
+  const placeholder = crypto.randomUUID() + crypto.randomUUID();
   await sql`update public.workspace_transfers set status = 'cancelled'
     where source_user_id = ${user.id} and status in ('pending','otp_ok','accepted')`;
   await sql`insert into public.workspace_transfers (source_user_id, target_user_id, target_email, workspace_name, token_hash, details)
-    values (${user.id}, ${target?.id ?? null}, ${(target?.email ?? raw).toLowerCase()}, ${input.workspaceName}, ${await hashToken(token)},
+    values (${user.id}, ${target?.id ?? null}, ${(target?.email ?? raw).toLowerCase()}, ${input.workspaceName}, ${await hashToken(placeholder)},
             ${JSON.stringify(input.details)}::jsonb)`;
 
   const { issueSecurityCode } = await import("@/lib/security-code.server");
   const code = await issueSecurityCode(user.id, "workspace_convert", request);
   if (!code.ok) return { ok: false as const, reason: code.reason };
-
-  const { sendLocalizedEmail, localeFromRequest } = await import("@/lib/email.server");
-  const link = `${siteUrl()}/workspace-transfer/${token}`;
-  void sendLocalizedEmail({
-    to: (target?.email ?? raw).toLowerCase(),
-    intent: "workspace-owner-invite",
-    locale: localeFromRequest(request),
-    payload: { link, name: input.workspaceName },
-  }).catch(() => undefined);
   return { ok: true as const, sentTo: code.sentTo, ownerExists: Boolean(target) };
 }
 
-export async function verifyConversionCode(userId: string, code: string) {
+const MAX_TRANSFERS_PER_DAY = 3;
+
+/** Sends the owner invitation with a fresh link; called only after the source confirmed its own code. */
+async function sendOwnerInvite(t: TransferRow, request: Request | null) {
+  const token = crypto.randomUUID() + crypto.randomUUID();
+  const updated = (await sql`update public.workspace_transfers set token_hash = ${await hashToken(token)}
+    where id = ${t.id} and source_user_id = ${t.source_user_id} and otp_verified_at is not null returning id`) as unknown[];
+  if (!updated.length) return;
+  const { sendLocalizedEmail, localeFromRequest } = await import("@/lib/email.server");
+  void sendLocalizedEmail({
+    to: t.target_email.toLowerCase(),
+    intent: "workspace-owner-invite",
+    locale: localeFromRequest(request),
+    payload: { link: `${siteUrl()}/workspace-transfer/${token}`, name: t.workspace_name },
+  }).catch(() => undefined);
+}
+
+export async function verifyConversionCode(userId: string, code: string, request: Request | null = null) {
   const { consumeSecurityCode } = await import("@/lib/security-code.server");
   const t = await getOpenTransfer(userId);
   if (!t) return { ok: false as const, reason: "no_transfer" as const };
   if (!(await consumeSecurityCode(userId, "workspace_convert", code))) return { ok: false as const, reason: "bad_code" as const };
   const status = statusAfter({ otpVerifiedAt: "now", acceptedAt: t.accepted_at });
   await sql`update public.workspace_transfers set otp_verified_at = now(), status = ${status} where id = ${t.id}`;
-  return { ok: true as const, ...(await asSource(userId, () => maybeExecute(t.id))) };
+  const result = await asSource(userId, () => maybeExecute(t.id));
+  // An owner who already accepted (signed in with the invited address) needs no e-mail.
+  if (!result.completed && !t.accepted_at) await sendOwnerInvite(t, request).catch(() => undefined);
+  return { ok: true as const, ...result };
 }
 
 async function transferByToken(token: string) {

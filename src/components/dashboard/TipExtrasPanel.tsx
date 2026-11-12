@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { fetchTipSocialImages } from "@/lib/tip-page.functions";
+import { previewTipSocialImages } from "@/lib/tip-page.functions";
 import { proxied } from "@/lib/image-proxy-rules";
 import {
   EXTERNAL_TIP_CATALOG,
@@ -124,7 +124,7 @@ function ExternalLinksEditor({ links, onChange }: { links: ExternalTipLink[]; on
 }
 
 function SocialPhotosEditor({ source, onChange }: { source: TipSocialSource; onChange: (s: TipSocialSource) => void }) {
-  const fetchImages = useServerFn(fetchTipSocialImages);
+  const fetchImages = useServerFn(previewTipSocialImages);
   const [network, setNetwork] = useState<"bluesky" | "mastodon">(source?.network ?? "bluesky");
   const [handle, setHandle] = useState(source?.handle ?? "");
   const [images, setImages] = useState<{ url: string; alt: string }[] | null>(null);

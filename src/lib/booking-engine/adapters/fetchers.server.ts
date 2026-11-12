@@ -1,6 +1,6 @@
 /** Network side of the ICS and CalDAV adapters. https only, public hosts only, size-capped. */
 import { isPublicHost } from "@/lib/open-web-rules";
-import { assertPublicHost } from "@/lib/safe-fetch.server";
+import { validateOutboundUrl } from "@/lib/security/ssrf-guard.server";
 import { parseIcsBusy } from "./ics-parse";
 import type { RawExternalEvent } from "./zero-knowledge";
 
@@ -12,11 +12,28 @@ export class CalendarFetchError extends Error {
   }
 }
 
-function checkUrl(raw: string): URL {
+/** Syntactic gate: https, port 443, no userinfo, a public DNS name (no literal IPs, no internal suffixes). */
+export function checkCalendarUrlShape(raw: string): URL {
   let u: URL;
-  try { u = new URL(raw.replace(/^webcal:/i, "https:")); } catch { throw new CalendarFetchError("invalid_url"); }
-  if (u.protocol !== "https:" || !isPublicHost(u.hostname) || u.port && u.port !== "443") throw new CalendarFetchError("invalid_url");
+  try { u = new URL(raw.trim().replace(/^webcal:/i, "https:")); } catch { throw new CalendarFetchError("invalid_url"); }
+  if (u.protocol !== "https:" || u.username || u.password || (u.port && u.port !== "443") || !isPublicHost(u.hostname)) {
+    throw new CalendarFetchError("invalid_url");
+  }
   return u;
+}
+
+/**
+ * Full outbound gate, run before persisting a calendar AND before every fetch:
+ * the shape check plus the shared SSRF guard, which resolves the name and
+ * refuses loopback, private, link-local, CGNAT and metadata addresses.
+ */
+export async function assertCalendarUrl(raw: string): Promise<URL> {
+  const u = checkCalendarUrlShape(raw);
+  try {
+    return await validateOutboundUrl(u.toString());
+  } catch {
+    throw new CalendarFetchError("invalid_url");
+  }
 }
 
 async function readCapped(res: Response): Promise<string> {
@@ -40,9 +57,7 @@ async function readCapped(res: Response): Promise<string> {
 }
 
 export async function fetchIcsFeed(url: string, from: Date, to: Date, etag?: string | null) {
-  const u = checkUrl(url);
-  // DNS check too: a public-looking name must not resolve to an internal address.
-  if (!(await assertPublicHost(u.hostname))) throw new CalendarFetchError("invalid_url");
+  const u = await assertCalendarUrl(url);
   let res: Response;
   try {
     res = await fetch(u, { redirect: "error", headers: { Accept: "text/calendar", ...(etag ? { "If-None-Match": etag } : {}) }, signal: AbortSignal.timeout(15000) });
@@ -77,9 +92,7 @@ export function extractCalendarData(xml: string): string[] {
 }
 
 export async function fetchCaldav(creds: { url: string; username: string; password: string }, from: Date, to: Date) {
-  const u = checkUrl(creds.url);
-  // DNS check too: a public-looking name must not resolve to an internal address.
-  if (!(await assertPublicHost(u.hostname))) throw new CalendarFetchError("invalid_url");
+  const u = await assertCalendarUrl(creds.url);
   let res: Response;
   try {
     res = await fetch(u, {

@@ -47,28 +47,10 @@ export async function loadWalletSubject(kind: WalletKind, id: string, origin: st
   const e = (await readPublicEvents(id, null, null))[0];
   if (!e) return null;
   const when = new Date(e.startsAt).toLocaleString("nl-BE", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Brussels" });
-  // A barcode is an access claim: only a proven paid or verified booking
-  // (booking_requests / creator_donations) may put one on the pass.
-  const accessClaim = await eventHasVerifiedAccess(e.slug);
-  return { kind, id: e.slug, title: e.title, subtitle: when, url: `${base}/event/${encodeURIComponent(e.slug)}`, startsAt: e.startsAt, venue: e.venue || null, accessClaim };
-}
-
-/** True only when the event has a paid/verified booking on record. Fails closed. */
-async function eventHasVerifiedAccess(eventSlug: string): Promise<boolean> {
-  try {
-    const { sql } = await import("@/lib/neon");
-    const rows = (await sql`
-      select 1 from public.profile_events pe
-      where pe.slug = ${eventSlug}
-        and exists (
-          select 1 from public.booking_requests br
-          where br.profile_id = pe.profile_id and br.status in ('paid', 'verified', 'confirmed')
-        )
-      limit 1`) as Record<string, unknown>[];
-    return rows.length > 0;
-  } catch {
-    return false;
-  }
+  // A barcode is an access claim. ROUT has no per-holder ticket record for
+  // events, so a public event pass is always informational: it never carries a
+  // barcode and never reads booking data on behalf of an anonymous caller.
+  return { kind, id: e.slug, title: e.title, subtitle: when, url: `${base}/event/${encodeURIComponent(e.slug)}`, startsAt: e.startsAt, venue: e.venue || null, accessClaim: false };
 }
 
 export async function generatePass(kind: WalletKind, id: string, wallet: "apple" | "google", origin: string, space?: "root" | "alias"): Promise<PassResult> {
